@@ -49,6 +49,7 @@ const titleFor = (code: ErrorCode, locale: Locale): string =>
 export class ApiError extends HTTPException {
   readonly code: ErrorCode;
   readonly issues: Problem["issues"];
+  readonly headers: Record<string, string>;
 
   constructor(
     code: ErrorCode,
@@ -56,6 +57,7 @@ export class ApiError extends HTTPException {
       detail?: string;
       issues?: Problem["issues"];
       cause?: unknown;
+      headers?: Record<string, string>;
     } = {}
   ) {
     super(STATUS_BY_CODE[code], {
@@ -65,13 +67,15 @@ export class ApiError extends HTTPException {
     this.name = "ApiError";
     this.code = code;
     this.issues = options.issues;
+    this.headers = options.headers ?? {};
   }
 }
 
 const problem = (
   c: Context<AppEnv>,
   code: ErrorCode,
-  extra: Pick<Problem, "detail" | "issues"> = {}
+  extra: Pick<Problem, "detail" | "issues"> = {},
+  headers: Record<string, string> = {}
 ) => {
   const status = STATUS_BY_CODE[code];
   const body: Problem = {
@@ -83,7 +87,10 @@ const problem = (
     type: `https://orkide.dev/problems/${code.replaceAll("_", "-")}`,
     ...extra,
   };
-  return c.json(body, status, { "content-type": "application/problem+json" });
+  return c.json(body, status, {
+    ...headers,
+    "content-type": "application/problem+json",
+  });
 };
 
 /** Converts a zod error into problem `issues`. */
@@ -118,10 +125,12 @@ const UNIQUE_VIOLATION = /UNIQUE constraint failed/u;
 
 export const onError: ErrorHandler<AppEnv> = (error, c) => {
   if (error instanceof ApiError) {
-    return problem(c, error.code, {
-      detail: error.message || undefined,
-      issues: error.issues,
-    });
+    return problem(
+      c,
+      error.code,
+      { detail: error.message || undefined, issues: error.issues },
+      error.headers
+    );
   }
   if (error instanceof HTTPException) {
     return problem(c, CODE_BY_STATUS[error.status] ?? "bad_request", {

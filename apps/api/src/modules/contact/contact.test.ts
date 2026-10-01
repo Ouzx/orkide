@@ -92,6 +92,33 @@ describe("contact submissions", () => {
       expect.arrayContaining(["body", "email"])
     );
   });
+
+  it("answers 429 with Retry-After once the strict limit is hit", async () => {
+    mockProviders();
+    vi.spyOn(env.RATE_LIMIT_STRICT, "limit").mockResolvedValue({
+      success: false,
+    });
+
+    const response = await jsonRequest("/api/contact", "POST", submission);
+
+    expect(response.status).toBe(429);
+    expect(response.headers.get("retry-after")).toBe("60");
+    expect(response.headers.get("content-type")).toContain(
+      "application/problem+json"
+    );
+  });
+
+  it("honours the contact-form kill switch with a 503 problem", async () => {
+    mockProviders();
+    vi.spyOn(env.FLAGS, "getBooleanValue").mockResolvedValue(false);
+
+    const response = await jsonRequest("/api/contact", "POST", submission);
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toMatchObject({
+      code: "feature_disabled",
+    });
+  });
 });
 
 const storedMessageId = async () => {
