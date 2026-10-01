@@ -98,3 +98,21 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** the dashboard is private, interactive and never cached, so ADR-015's server-rendered-strings rule buys nothing there, while threading every string through props would bloat each admin component.
 - **Decision:** `/admin/**` is one Astro page that checks the session on the server over the Service Binding, then mounts a `client:only` React app (TanStack Router + Query) that imports Paraglide messages directly. RBAC is enforced again by the API on every request. A 429 from `get-session` is retried quietly (backoff, `Retry-After` honoured, capped) and then shown as a translated message with a 429 status; only a real 401 or an absent session redirects to sign-in.
 - **Consequences:** the admin bundle carries the message catalog (public pages still do not); the admin shell stays `private, no-store` and `noindex`.
+
+### ADR-019 · Production on workers.dev with placeholder GitHub OAuth secrets
+
+- **Context:** the production GitHub OAuth app is created by hand, but `@orkide/auth` validates `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET` at module load, so a Worker without them does not boot. Resend's shared `onboarding@resend.dev` sender only delivers to the account owner, and Analytics Engine must be enabled once in the dashboard before a Worker can bind it.
+- **Decision:** the first deploy ships both secrets as the literal `unset-see-morning-todo` so the Workers start and the public site works; sign-in stays impossible until real OAuth credentials replace them. `ANALYTICS_API_TOKEN` is a blank string (the stats code treats blank as "not provisioned"). Secrets are uploaded with `wrangler deploy --secrets-file` from a git-ignored file, never committed.
+- **Consequences:** no production owner can sign in until the OAuth app exists; visitor auto-replies to addresses other than the owner's fail and end in the DLQ until a sending domain is verified (roadmap: custom domain).
+
+### ADR-020 · Auto-deploy with Workers Builds, one build per Worker
+
+- **Context:** both Workers live in one repository and `web` reaches `api` through a Service Binding.
+- **Decision:** Workers Builds (Cloudflare's Git integration) builds each Worker from `main` with watch paths (`apps/<app>/*`, `packages/*`, lockfile, workspace and turbo config; `*.md` and `docs/*` excluded). The API build also runs `d1 migrations apply --remote` before `wrangler deploy`. CI (GitHub Actions) only verifies; it holds no Cloudflare credentials.
+- **Consequences:** a change to `packages/*` triggers both builds in parallel, so a breaking API change must stay backward compatible for the length of one deploy. Deploys are gated by Cloudflare's builds, not by CI; a failing CI run on `main` does not roll back a deploy.
+
+### ADR-021 · CI hygiene: Sherif, Knip, grouped Renovate
+
+- **Context:** strict catalog mode already stops version drift on `pnpm add`; nothing stopped dead dependencies or hand-edited ranges.
+- **Decision:** CI runs `ultracite check` (plus Prettier for `.astro`), Sherif, Knip, typecheck, tests and build. Knip checks files, dependencies, unlisted imports and binaries; unused-export reporting is off because Astro islands (default exports mounted through `client:*`) and tool entry points are not always followed. Renovate groups all `pnpm-workspace.yaml` bumps into one catalog PR and holds back the majors listed in the roadmap.
+- **Consequences:** unused exports must be reviewed by hand (a Knip run with exports enabled lists candidates). Turborepo Remote Cache is wired through optional `TURBO_TOKEN` / `TURBO_TEAM`.
