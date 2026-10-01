@@ -14,6 +14,12 @@ import {
 import { CRONS, scheduled } from "../../scheduled.ts";
 import { rollup } from "./stats.service.ts";
 
+/** A fresh SQL API response per call: a Response body can only be read once. */
+const analyticsResponse = () =>
+  Promise.resolve(
+    Response.json({ data: [{ path: "/en", views: "42", visitors: "17" }] })
+  );
+
 const runCron = async (cron: string, at: Date) => {
   const controller = createScheduledController({
     cron,
@@ -60,17 +66,7 @@ describe("daily rollup", () => {
   });
 
   it("is idempotent and feeds the dashboard overview", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json({
-        data: [
-          {
-            path: "/en",
-            views: "42",
-            visitors: "17",
-          },
-        ],
-      })
-    );
+    vi.spyOn(globalThis, "fetch").mockImplementation(analyticsResponse);
     const day = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 
     await rollup(day);

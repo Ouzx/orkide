@@ -8,3 +8,9 @@ commit-msg:
   jobs:
     - name: commitlint
       run: pnpm exec commitlint --edit {1}
+
+# Nothing reaches the remote without passing types and tests (Turbo replays cached results).
+pre-push:
+  jobs:
+    - name: typecheck and test
+      run: pnpm exec turbo run typecheck test --output-logs=errors-only
