@@ -1,8 +1,8 @@
 import {
   ALLOWED_MEDIA_TYPES,
   MAX_UPLOAD_BYTES,
-} from "@orkide/validators/media";
-import type { AllowedMediaType } from "@orkide/validators/media";
+} from "@orkide/validators/limits";
+import type { AllowedMediaType } from "@orkide/validators/limits";
 import { fileTypeFromBuffer } from "file-type";
 import { createMiddleware } from "hono/factory";
 

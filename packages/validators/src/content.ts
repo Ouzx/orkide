@@ -126,6 +126,8 @@ export const documentSummarySchema = z.object({
 
 export const documentDetailSchema = documentSummarySchema.extend({
   html: z.string(),
+  /** The same content as Markdown, for `.md` alternates, feeds and AI agents. */
+  markdown: z.string(),
   seoDescription: z.string().nullable(),
   seoTitle: z.string().nullable(),
   updatedAt: isoDateSchema,

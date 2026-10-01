@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm";
 
 import { createRouter } from "../../core/factory.ts";
 import { evaluatePublicFlags, flagRegistry } from "../../core/flags.ts";
+import type { FlagKey } from "../../core/flags.ts";
 
 const healthSchema = z
   .object({
@@ -13,11 +14,12 @@ const healthSchema = z
   })
   .openapi("Health");
 
+/** One boolean per registered flag, keyed by flag name (typed end to end for clients). */
 const flagsSchema = z
   .object(
     Object.fromEntries(
       Object.keys(flagRegistry).map((key) => [key, z.boolean()])
-    )
+    ) as Record<FlagKey, z.ZodBoolean>
   )
   .openapi("PublicFlags");
 

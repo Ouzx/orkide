@@ -101,6 +101,7 @@ export const getPublished = async (
     ...summary,
     completedAt: toIso(row.completedAt),
     html: translation.html,
+    markdown: translation.markdown,
     seoDescription: translation.seoDescription,
     seoTitle: translation.seoTitle,
     startedAt: toIso(row.startedAt),

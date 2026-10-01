@@ -8,6 +8,7 @@
     "./common": "./src/common.ts",
     "./contact": "./src/contact.ts",
     "./content": "./src/content.ts",
+    "./limits": "./src/limits.ts",
     "./media": "./src/media.ts",
     "./stats": "./src/stats.ts",
     "./taxonomy": "./src/taxonomy.ts"

@@ -1,4 +1,5 @@
 import type { Locale } from "@orkide/i18n";
+import { IMAGE_WIDTHS } from "@orkide/validators/limits";
 import type { Media, MediaUpdate } from "@orkide/validators/media";
 import { env } from "cloudflare:workers";
 
@@ -11,7 +12,6 @@ import * as repository from "./media.repository.ts";
 const IMMUTABLE = "public, max-age=31536000, immutable";
 
 /** Widths images can be requested at. A fixed set bounds the number of billable transformations. */
-export const IMAGE_WIDTHS = [320, 640, 960, 1280, 1920, 2560] as const;
 const DEFAULT_WIDTH = 1280;
 
 /** Raster formats the Images binding can decode (GIFs keep their animation). */

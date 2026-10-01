@@ -114,6 +114,7 @@ export const getPublished = async (
     attachments: row.attachments.map((media) => toMedia(media, locale)),
     author: row.author,
     html: translation.html,
+    markdown: translation.markdown,
     seoDescription: translation.seoDescription,
     seoTitle: translation.seoTitle,
     updatedAt: translation.updatedAt.toISOString(),

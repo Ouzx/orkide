@@ -1,5 +1,8 @@
 import { cache } from "cloudflare:workers";
+import { tryGetContext } from "hono/context-storage";
 
+import { PURGE_TAGS_HEADER } from "../client.ts";
+import type { CacheTag } from "../client.ts";
 import { factory } from "./factory.ts";
 
 /**
@@ -10,7 +13,7 @@ import { factory } from "./factory.ts";
  *   of the cache key, so opting in is reserved for responses that are identical for every visitor.
  * - Shared responses carry `Cache-Tag`s; writes purge the affected tags globally.
  */
-export type CacheTag = "posts" | "projects" | "taxonomy";
+export type { CacheTag } from "../client.ts";
 
 /** Browser: 1 min. Shared cache: 1 day, refreshed in the background, purged on every write. */
 const SHARED =
@@ -45,10 +48,12 @@ export const shareable = (...tags: CacheTag[]) =>
   });
 
 /**
- * Invalidates every shared response carrying one of `tags`, in every data center.
+ * Invalidates every shared response carrying one of `tags`, in every data center, and reports the
+ * tags on the current response so the web Worker can purge the pages rendered from them.
  * The local runtime (Miniflare) does not emulate Workers Cache, so there is nothing to purge there.
  */
 export const purge = async (...tags: CacheTag[]): Promise<void> => {
+  tryGetContext()?.header(PURGE_TAGS_HEADER, tags.join(","), { append: true });
   if (typeof cache?.purge !== "function") {
     return;
   }

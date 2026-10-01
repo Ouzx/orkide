@@ -44,6 +44,7 @@ describe("posts", () => {
     });
 
     expect(created.status).toBe(201);
+    expect(created.headers.get("orkide-purge-tags")).toBe("posts");
 
     const list = await request("/api/posts?locale=tr");
     const page = await list.json<{
