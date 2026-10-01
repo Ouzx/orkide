@@ -1,5 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { auth } from "@orkide/auth";
+import { except } from "hono/combine";
 import { etag } from "hono/etag";
 
 import { noStoreByDefault } from "./core/cache.ts";
@@ -25,7 +26,10 @@ import { taxonomyRoutes } from "./modules/taxonomy/taxonomy.routes.ts";
  */
 const app = new OpenAPIHono<AppEnv>().basePath("/api");
 
-app.use(requestContext, noStoreByDefault, security, etag());
+app.use(requestContext, noStoreByDefault, security);
+// `etag()` digests a clone of the response body before returning, so an endless SSE stream would
+// never be sent. Skip the whole `/live` subtree (the WebSocket upgrade is a 101, also unhashable).
+app.use(except("/api/live/*", etag()));
 app.use("/auth/*", rateLimit("RATE_LIMIT_STRICT", "auth"));
 app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));
 app.use(rateLimit("RATE_LIMIT_API", "api"), session);

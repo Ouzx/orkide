@@ -1,5 +1,8 @@
 import { DurableObject } from "cloudflare:workers";
 
+const NO_STATUS_CODE = 1005;
+const NORMAL_CLOSE_CODE = 1000;
+
 /** Messages pushed to connected clients. */
 export interface PresenceMessage {
   readonly type: "presence";
@@ -33,7 +36,9 @@ export class LiveVisitors extends DurableObject<Env> {
     code: number,
     reason: string
   ): void {
-    socket.close(code, reason);
+    // 1005 ("no status") is reserved: it is reported when a peer closes without a code and may not
+    // be sent back, so echoing it would throw.
+    socket.close(code === NO_STATUS_CODE ? NORMAL_CLOSE_CODE : code, reason);
     this.broadcast();
   }
 

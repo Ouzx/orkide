@@ -44,7 +44,12 @@ const feed = createRoute({
 });
 
 export const liveRoutes = createRouter()
-  .openapi(connect, (c) => presenceStub(c.env).fetch(c.req.raw))
+  .openapi(connect, async (c) => {
+    const response = await presenceStub(c.env).fetch(c.req.raw);
+    // Responses from a Durable Object stub have immutable headers, which the security and cache
+    // middleware must still be able to set; re-wrapping copies them (and the WebSocket, if any).
+    return new Response(response.body, response);
+  })
   .openapi(feed, (c) =>
     streamSSE(c, async (stream) => {
       const stub = presenceStub(c.env);
