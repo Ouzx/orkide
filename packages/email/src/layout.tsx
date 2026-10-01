@@ -7,6 +7,7 @@ import {
   Head,
   Hr,
   Html,
+  Img,
   Preview,
   Section,
   Tailwind,
@@ -47,15 +48,25 @@ export const Layout = ({ locale, preview, siteUrl, children }: LayoutProps) => (
       <Head />
       <Body className="bg-canvas m-0 font-sans">
         <Preview>{preview}</Preview>
-        <Container className="mx-auto my-8 max-w-[560px] rounded-lg bg-white px-8 py-6">
-          <Section>{children}</Section>
-          <Hr className="border-rule my-6 border-solid" />
-          <Text className="m-0 text-xs text-muted">
-            {m.email_footer(
-              { siteName: m.site_name({}, { locale }), siteUrl },
-              { locale }
-            )}
-          </Text>
+        <Container className="mx-auto my-8 max-w-[560px] overflow-hidden rounded-lg bg-white">
+          {/* Hosted by the web Worker (`pnpm media`): email clients only load absolute URLs. */}
+          <Img
+            src={`${siteUrl}/media/email-header.jpg`}
+            width="560"
+            height="140"
+            alt={m.site_name({}, { locale })}
+            className="block h-auto w-full"
+          />
+          <Section className="px-8 py-6">
+            <Section>{children}</Section>
+            <Hr className="border-rule my-6 border-solid" />
+            <Text className="m-0 text-xs text-muted">
+              {m.email_footer(
+                { siteName: m.site_name({}, { locale }), siteUrl },
+                { locale }
+              )}
+            </Text>
+          </Section>
         </Container>
       </Body>
     </Tailwind>

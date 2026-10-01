@@ -86,3 +86,9 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** `astro check` needs the TypeScript JS API, absent from TypeScript 7.0; its successor (`@astrojs/ts-content-mapper`) requires 7.1 (nightly only).
 - **Decision:** `.pnpmfile.cjs` gives `@astrojs/check` and `@astrojs/language-server` their own `typescript@6`; `apps/web` runs the standalone `astro-check` binary (the `astro check` wrapper refuses when the workspace TypeScript is 7). Everything else stays on TypeScript 7 (ADR-004).
 - **Consequences:** remove the hook and switch to the content mapper once TypeScript 7.1 is stable (roadmap).
+
+### ADR-017 · Media pipeline with fingerprinted outputs
+
+- **Context:** hand-made art arrives as large PNG/MP4 originals; the site needs responsive AVIF/WebP, posters, icons and stable URLs for crawlers and email clients.
+- **Decision:** originals stay out of git (`design/incoming/`); `scripts/media.ts` (sharp + ffmpeg) writes responsive variants and a typed manifest into `src/assets/media/` (imported as URLs, so Vite fingerprints them and they are served immutable), stable-URL files into `public/media/`, and icons into `public/`. Pages use `<Picture>`/`<MediaSlot>`; the hero keeps the artwork as its LCP image and layers WebGL pollen over it.
+- **Consequences:** builds need no image processing at runtime (no Images binding transformations for site art); regenerating is one command.

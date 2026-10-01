@@ -80,14 +80,21 @@ const options = { locale };
       </div>
     </div>
 
-    <!-- Poster first (static, cacheable); the WebGL bloom fades in over it once the page is idle. -->
+    <!--
+      The orchid artwork is static and cacheable; once the page is idle, a WebGL layer of
+      drifting pollen fades in around it (skipped for reduced motion, Save-Data or no WebGL).
+    -->
     <div
       class="relative -mt-6 aspect-square w-full max-w-xs justify-self-center sm:max-w-md lg:mt-0 lg:max-w-none"
     >
       <div
-        class="absolute inset-[12%] overflow-hidden rounded-full [mask-image:radial-gradient(circle,black_45%,transparent_70%)] opacity-70"
+        class="absolute inset-0 [mask-image:radial-gradient(circle,black_40%,transparent_70%)]"
       >
-        <MediaSlot id="home-hero-poster" class="h-full" bare />
+        <MediaSlot
+          id="home-hero-poster"
+          sizes="(min-width: 1024px) 560px, (min-width: 640px) 448px, 320px"
+          class="h-full"
+        />
       </div>
       <HeroScene client:idle enabled={sceneEnabled} />
     </div>

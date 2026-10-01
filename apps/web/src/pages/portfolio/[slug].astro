@@ -42,11 +42,12 @@ Astro.response.headers.set("vary", "accept");
 ---
 
 <BaseLayout
+  section="portfolio"
   title={project.seoTitle ?? project.title}
   description={project.seoDescription ?? project.summary}
   alternates={documentAlternates("/portfolio", project.alternates)}
   type="article"
-  image={project.cover?.url}
+  image={project.cover ? `${project.cover.url}?w=1280` : undefined}
   imageAlt={project.cover?.alt}
   publishedTime={project.publishedAt}
   modifiedTime={project.updatedAt}

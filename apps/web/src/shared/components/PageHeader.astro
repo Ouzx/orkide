@@ -1,13 +1,36 @@
 ---
+import Picture from "@/shared/media/Picture.astro";
+import type { PictureId } from "@/shared/media/pictures.ts";
+
 interface Props {
   eyebrow?: string | undefined;
   title: string;
   lead?: string | undefined;
+  /** Decorative wide picture behind the header, fading into the page. */
+  backdrop?: PictureId | undefined;
 }
-const { eyebrow, title, lead } = Astro.props;
+const { eyebrow, title, lead, backdrop } = Astro.props;
 ---
 
 <header class="relative isolate overflow-hidden border-b">
+  {
+    backdrop && (
+      <Picture
+        id={backdrop}
+        sizes="100vw"
+        priority
+        class="absolute inset-0 -z-20 [mask-image:linear-gradient(to_bottom,black_30%,transparent)] opacity-35 dark:opacity-80"
+      />
+    )
+  }
+  {
+    backdrop && (
+      <div
+        aria-hidden="true"
+        class="absolute inset-0 -z-10 bg-linear-to-r from-background/90 via-background/55 to-transparent"
+      />
+    )
+  }
   <div
     class="absolute inset-0 -z-10 bg-grid [mask-image:linear-gradient(to_bottom,black,transparent)] opacity-50"
   >

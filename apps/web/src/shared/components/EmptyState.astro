@@ -1,12 +1,19 @@
 ---
+import Picture from "@/shared/media/Picture.astro";
+
 interface Props {
   message: string;
 }
 const { message } = Astro.props;
 ---
 
-<p
-  class="rounded-2xl border border-dashed glass p-10 text-center text-muted-foreground"
+<div
+  class="flex flex-col items-center gap-2 rounded-2xl border border-dashed glass px-6 pt-4 pb-10 text-center"
 >
-  {message}
-</p>
+  <Picture
+    id="empty-state"
+    sizes="256px"
+    class="my-4 aspect-[4/3] w-56 rounded-2xl border dark:my-0 dark:w-64 dark:rounded-none dark:border-0 dark:[mask-image:radial-gradient(ellipse,black_45%,transparent_72%)]"
+  />
+  <p class="text-muted-foreground">{message}</p>
+</div>

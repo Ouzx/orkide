@@ -1,69 +1,76 @@
 ---
 import { m } from "@orkide/i18n/messages";
 
+import Picture from "./Picture.astro";
+import { picture, videoSources } from "./pictures.ts";
 import { mediaSlots } from "./slots.ts";
 import type { MediaSlot, MediaSlotId } from "./slots.ts";
 
 interface Props {
   id: MediaSlotId;
+  /** How wide the slot renders (`sizes`). */
+  sizes: string;
   class?: string;
-  /** Above-the-fold media is fetched eagerly with high priority (LCP candidate). */
-  priority?: boolean;
-  /** Accessible text for non-decorative media. */
-  alt?: string;
-  /** Hide the placeholder's caption (for slots used as a backdrop). */
+  /** Hide the placeholder caption (for slots used as a backdrop). */
   bare?: boolean;
 }
 
-const {
-  id,
-  class: className,
-  priority = false,
-  alt = "",
-  bare = false,
-} = Astro.props;
+/*
+ * Slots are decorative: their media is hidden from assistive technology. A slot without an
+ * asset yet renders a placeholder of the final shape.
+ */
+const { id, sizes, class: className, bare = false } = Astro.props;
 const slot: MediaSlot = mediaSlots[id];
 const { locale } = Astro.locals;
+const poster =
+  slot.kind === "video" && slot.poster ? picture(slot.poster) : undefined;
 ---
 
 {
-  slot.src && slot.kind === "image" ? (
-    <img
-      src={slot.src}
-      width={slot.width}
-      height={slot.height}
-      alt={slot.decorative ? "" : alt}
-      loading={priority ? "eager" : "lazy"}
-      fetchpriority={priority ? "high" : "auto"}
-      decoding="async"
-      class:list={["h-auto w-full object-cover", slot.aspect, className]}
-    />
-  ) : slot.src ? (
-    <video
-      src={slot.src}
-      poster={slot.poster}
-      width={slot.width}
-      height={slot.height}
-      autoplay
-      muted
-      loop
-      playsinline
-      preload={priority ? "auto" : "none"}
-      aria-hidden={slot.decorative ? "true" : undefined}
-      aria-label={slot.decorative ? undefined : alt}
-      class:list={[
-        "h-auto w-full object-cover motion-reduce:hidden",
-        slot.aspect,
-        className,
-      ]}
-    />
+  slot.kind === "image" && slot.picture ? (
+    <div aria-hidden="true" class:list={["w-full", slot.aspect, className]}>
+      <Picture
+        id={slot.picture}
+        sizes={sizes}
+        class:list={["size-full", slot.lightPicture && "hidden dark:block"]}
+      />
+      {slot.lightPicture && (
+        <Picture
+          id={slot.lightPicture}
+          sizes={sizes}
+          class="size-full dark:hidden"
+        />
+      )}
+    </div>
+  ) : slot.kind === "video" && slot.video ? (
+    <div aria-hidden="true" class:list={["w-full", slot.aspect, className]}>
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="none"
+        poster={poster?.fallback}
+        width={slot.width}
+        height={slot.height}
+        class="size-full object-cover motion-reduce:hidden"
+      >
+        {videoSources(slot.video).map((source) => (
+          <source src={source.src} type={source.type} />
+        ))}
+      </video>
+      {slot.poster && (
+        <Picture
+          id={slot.poster}
+          sizes={sizes}
+          class="hidden size-full motion-reduce:block"
+        />
+      )}
+    </div>
   ) : (
     <div
-      role={slot.decorative ? undefined : "img"}
-      aria-hidden={slot.decorative ? "true" : undefined}
-      aria-label={
-        slot.decorative ? undefined : m.media_placeholder({ id }, { locale })
-      }
+      role="img"
+      aria-label={m.media_placeholder({ id }, { locale })}
       data-media-slot={id}
       class:list={[
         "relative isolate w-full overflow-hidden rounded-[inherit] bg-card",
@@ -75,11 +82,11 @@ const { locale } = Astro.locals;
       <div class="absolute -top-1/4 -left-1/4 size-3/4 rounded-full bg-orchid/25 blur-3xl" />
       <div class="absolute -right-1/4 -bottom-1/4 size-3/4 rounded-full bg-aurora/20 blur-3xl" />
       <div
+        lang="en"
         class:list={[
           "absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-4 font-mono text-xs tracking-widest text-muted-foreground uppercase",
           bare && "hidden",
         ]}
-        lang="en"
       >
         <span>media · {id}</span>
         <span>

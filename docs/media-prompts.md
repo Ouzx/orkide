@@ -2,6 +2,8 @@
 
 Every hand-made asset the site uses. Generate from the prompts below (images: GPT-6 Astra, video: GPT-6 Sol), name files by **id**, and drop the originals in `design/incoming/` (git-ignored). They are optimized (AVIF/WebP, AV1/H.264, SVG/ICO) and wired in from there; layout slots live in `apps/web/src/shared/media/slots.ts` and render a sized placeholder until filled.
 
+**Pipeline:** `pnpm --filter @orkide/web media` (scripts/media.ts, needs ffmpeg) regenerates every output; the `add-media-asset` skill describes adding one. All assets below are delivered and wired in (2026-10-01).
+
 **Delivery:** images as PNG at the listed size or larger; videos as the highest-quality MP4; brand marks as transparent 2048×2048 PNG (plus SVG if your tool can).
 
 ## Shared art direction

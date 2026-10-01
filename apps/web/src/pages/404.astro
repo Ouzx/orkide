@@ -6,6 +6,7 @@ import { buttonVariants } from "@orkide/ui/components/button";
 import { cn } from "@orkide/ui/lib/utils";
 
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import Picture from "@/shared/media/Picture.astro";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
 
 // Errors can surface before the i18n middleware has run; the layout reads the locale too.
@@ -22,9 +23,17 @@ Astro.response.status = 404;
   noindex
 >
   <section
-    class="mx-auto flex max-w-2xl flex-col items-center px-4 py-32 text-center"
+    class="mx-auto flex max-w-2xl flex-col items-center px-4 py-20 text-center"
   >
-    <p class="text-gradient font-mono text-7xl font-semibold">404</p>
+    <Picture
+      id="not-found"
+      sizes="288px"
+      priority
+      class="size-64 rounded-full border shadow-2xl shadow-orchid/20 dark:size-72 dark:rounded-none dark:border-0 dark:[mask-image:radial-gradient(circle,black_45%,transparent_70%)] dark:shadow-none"
+    />
+    <p class="mt-6 text-gradient font-mono text-7xl font-semibold dark:-mt-8">
+      404
+    </p>
     <h1 class="mt-6 text-3xl font-semibold tracking-tight">
       {m.not_found_title({}, options)}
     </h1>

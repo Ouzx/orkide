@@ -77,6 +77,7 @@ catalog:
   # 1.x moved to a JSX-based AST that prettier-plugin-tailwindcss cannot sort yet (roadmap).
   prettier-plugin-astro: ^0.14.1
   prettier-plugin-tailwindcss: ^0.8.1
+  sharp: ^0.35.5
 
 # Dependencies trusted to run install scripts (pnpm blocks all others).
 allowBuilds:

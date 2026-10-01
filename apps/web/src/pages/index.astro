@@ -72,7 +72,10 @@ cachePage(Astro, "posts", "projects");
       }}
     />
     <div class="mb-6 reveal overflow-hidden rounded-2xl border glass">
-      <MediaSlot id="home-work-loop" />
+      <MediaSlot
+        id="home-work-loop"
+        sizes="(min-width: 1152px) 1104px, 100vw"
+      />
     </div>
     {
       selectedWork.length > 0 && (

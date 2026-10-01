@@ -1,7 +1,10 @@
 ---
 import { m } from "@orkide/i18n/messages";
 
+import Picture from "@/shared/media/Picture.astro";
 import { owner } from "@/shared/site.ts";
+
+import Logo from "./Logo.astro";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -21,16 +24,26 @@ const agents = [
   <div
     class="mx-auto grid max-w-6xl gap-8 px-4 py-12 text-sm text-muted-foreground sm:grid-cols-[1fr_auto_auto] sm:px-6"
   >
-    <div class="space-y-2">
-      <p class="font-medium text-foreground">
-        {
-          m.footer_copyright(
-            { name: owner.name, year: new Date().getFullYear().toString() },
-            options
-          )
-        }
-      </p>
-      <p>{m.footer_built_with({}, options)}</p>
+    <div class="group flex items-start gap-4">
+      <Picture
+        id="portrait"
+        sizes="48px"
+        class="size-12 shrink-0 rounded-full border"
+      />
+      <div class="space-y-2">
+        <p class="font-medium text-foreground">
+          {
+            m.footer_copyright(
+              { name: owner.name, year: new Date().getFullYear().toString() },
+              options
+            )
+          }
+        </p>
+        <p class="flex items-center gap-2">
+          <Logo class="size-5" weight={44} />
+          {m.footer_built_with({}, options)}
+        </p>
+      </div>
     </div>
     <nav aria-labelledby="footer-feeds">
       <h2 id="footer-feeds" class="mb-3 font-medium text-foreground">

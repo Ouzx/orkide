@@ -10,7 +10,8 @@
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types --strict-vars=false",
     "typecheck": "astro sync && tsc --noEmit && astro-check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "media": "node scripts/media.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "catalog:",
@@ -37,6 +38,7 @@
     "@types/react-dom": "catalog:",
     "@types/three": "catalog:",
     "schema-dts": "catalog:",
+    "sharp": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",

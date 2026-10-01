@@ -1,0 +1,48 @@
+---
+import { cn } from "@orkide/ui/lib/utils";
+
+import { picture } from "./pictures.ts";
+import type { PictureId } from "./pictures.ts";
+
+interface Props {
+  id: PictureId;
+  /** How wide the picture renders (`sizes`), so the browser picks the right variant. */
+  sizes: string;
+  alt?: string;
+  /** Above-the-fold pictures load eagerly with high priority (LCP candidates). */
+  priority?: boolean;
+  class?: string;
+  imgClass?: string;
+}
+
+const {
+  id,
+  sizes,
+  alt = "",
+  priority = false,
+  class: className,
+  imgClass,
+} = Astro.props;
+const { avif, fallback, height, placeholder, webp, width } = picture(id);
+---
+
+<picture class={cn("relative isolate block overflow-hidden", className)}>
+  <source type="image/avif" srcset={avif} sizes={sizes} />
+  <source type="image/webp" srcset={webp} sizes={sizes} />
+  <img
+    src={fallback}
+    width={width}
+    height={height}
+    alt={alt}
+    loading={priority ? "eager" : "lazy"}
+    fetchpriority={priority ? "high" : "auto"}
+    decoding={priority ? "sync" : "async"}
+    class={cn("size-full object-cover", imgClass)}
+  />
+  <img
+    src={placeholder}
+    alt=""
+    aria-hidden="true"
+    class="absolute inset-0 -z-10 size-full scale-110 object-cover blur-xl"
+  />
+</picture>

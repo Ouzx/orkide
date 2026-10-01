@@ -1,16 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#e05ad8"/>
-      <stop offset="1" stop-color="#5fd4e8"/>
-    </linearGradient>
-  </defs>
-  <g fill="url(#g)">
-    <ellipse cx="16" cy="8.5" rx="3.6" ry="7" opacity=".9"/>
-    <ellipse cx="16" cy="8.5" rx="3.6" ry="7" opacity=".75" transform="rotate(72 16 16)"/>
-    <ellipse cx="16" cy="8.5" rx="3.6" ry="7" opacity=".75" transform="rotate(-72 16 16)"/>
-    <ellipse cx="16" cy="9.5" rx="3" ry="6" opacity=".6" transform="rotate(144 16 16)"/>
-    <ellipse cx="16" cy="9.5" rx="3" ry="6" opacity=".6" transform="rotate(-144 16 16)"/>
-  </g>
-  <circle cx="16" cy="16" r="1.6" fill="#e05ad8"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1000 1000"><defs><linearGradient id="orchid" x1="0" y1="140" x2="0" y2="860" gradientUnits="userSpaceOnUse"><stop stop-color="#e05ad8"/><stop offset="1" stop-color="#5fd4e8"/></linearGradient><radialGradient id="halo"><stop stop-color="#e05ad8" stop-opacity="0.2"/><stop offset="1" stop-color="#e05ad8" stop-opacity="0"/></radialGradient><linearGradient id="petal0" x1="500.0" y1="140.0" x2="500.0" y2="860.0" gradientUnits="userSpaceOnUse"><stop stop-color="#e05ad8"/><stop offset="1" stop-color="#5fd4e8"/></linearGradient><linearGradient id="petal72" x1="157.61965413374475" y1="388.7538820250189" x2="842.3803458662553" y2="611.2461179749811" gradientUnits="userSpaceOnUse"><stop stop-color="#e05ad8"/><stop offset="1" stop-color="#5fd4e8"/></linearGradient><linearGradient id="petal144" x1="288.3973091747096" y1="791.246117974981" x2="711.6026908252904" y2="208.75388202501898" gradientUnits="userSpaceOnUse"><stop stop-color="#e05ad8"/><stop offset="1" stop-color="#5fd4e8"/></linearGradient><linearGradient id="petal216" x1="711.6026908252903" y1="791.2461179749812" x2="288.3973091747097" y2="208.75388202501887" gradientUnits="userSpaceOnUse"><stop stop-color="#e05ad8"/><stop offset="1" stop-color="#5fd4e8"/></linearGradient><linearGradient id="petal288" x1="842.3803458662553" y1="388.753882025019" x2="157.6196541337447" y2="611.246117974981" gradientUnits="userSpaceOnUse"><stop stop-color="#e05ad8"/><stop offset="1" stop-color="#5fd4e8"/></linearGradient></defs><g fill="url(#orchid)"><path fill="url(#petal0)" transform="rotate(0 500 500)" d="M460 385 C375 330 395 220 500 140 C605 220 625 330 540 385 Q500 370 460 385Z"/><path fill="url(#petal72)" transform="rotate(72 500 500)" d="M460 385 C375 330 395 220 500 140 C605 220 625 330 540 385 Q500 370 460 385Z"/><path fill="url(#petal144)" transform="rotate(144 500 500)" d="M460 385 C375 330 395 220 500 140 C605 220 625 330 540 385 Q500 370 460 385Z"/><path fill="url(#petal216)" transform="rotate(216 500 500)" d="M460 385 C375 330 395 220 500 140 C605 220 625 330 540 385 Q500 370 460 385Z"/><path fill="url(#petal288)" transform="rotate(288 500 500)" d="M460 385 C375 330 395 220 500 140 C605 220 625 330 540 385 Q500 370 460 385Z"/><circle cx="500" cy="500" r="76"/></g></svg>

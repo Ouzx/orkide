@@ -9,7 +9,6 @@ import PageHeader from "@/shared/components/PageHeader.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
-import MediaSlot from "@/shared/media/MediaSlot.astro";
 import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
 
 const { locale } = Astro.locals;
@@ -19,6 +18,7 @@ cachePage(Astro, "projects");
 ---
 
 <BaseLayout
+  section="portfolio"
   title={m.portfolio_title({}, options)}
   description={m.portfolio_description({}, options)}
   alternates={pageAlternates("/portfolio")}
@@ -36,11 +36,9 @@ cachePage(Astro, "projects");
     eyebrow={m.portfolio_title({}, options)}
     title={m.portfolio_title({}, options)}
     lead={m.portfolio_description({}, options)}
+    backdrop="portfolio-banner"
   />
   <div class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
-    <div class="mb-10 reveal overflow-hidden rounded-2xl border glass">
-      <MediaSlot id="portfolio-banner" />
-    </div>
     {
       projects.length > 0 ? (
         <div class="grid gap-6 md:grid-cols-2">

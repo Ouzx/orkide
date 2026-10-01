@@ -6,6 +6,7 @@ import { Badge } from "@orkide/ui/components/badge";
 
 import TagList from "@/modules/blog/TagList.astro";
 import MediaImage from "@/shared/media/MediaImage.astro";
+import Picture from "@/shared/media/Picture.astro";
 
 interface Props {
   project: ProjectSummary;
@@ -30,9 +31,11 @@ const Heading = `h${headingLevel}` as const;
         class="aspect-[16/10] border-b"
       />
     ) : (
-      <div
-        aria-hidden="true"
-        class="aspect-[16/10] border-b bg-linear-to-br from-orchid/20 to-aurora/10"
+      <Picture
+        id="default-project-cover"
+        sizes="(min-width: 1024px) 576px, 100vw"
+        class="aspect-[16/10] border-b"
+        imgClass="transition-transform duration-700 ease-out-expo group-hover:scale-103"
       />
     )
   }

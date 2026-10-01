@@ -4,8 +4,6 @@ import {
   BufferGeometry,
   Color,
   Group,
-  IcosahedronGeometry,
-  Mesh,
   PerspectiveCamera,
   Points,
   Scene,
@@ -14,31 +12,35 @@ import {
   WebGLRenderer,
 } from "three";
 
-import {
-  bloomFragment,
-  bloomVertex,
-  pollenFragment,
-  pollenVertex,
-} from "./shaders.ts";
+import { pollenFragment, pollenVertex } from "./shaders.ts";
 
 /** Brand palette (the `--orchid` / `--aurora` tokens, in sRGB). */
 const ORCHID = new Color("#e05ad8");
 const AURORA = new Color("#5fd4e8");
-const DEEP = new Color("#4b2aa8");
 
-const POLLEN_COUNT = 520;
+const POLLEN_COUNT = 900;
 /** Golden-angle spiral: evenly spread points without randomness (stable across loads). */
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const MAX_PIXEL_RATIO = 1.75;
 
+/** Deterministic pseudo-random in [0, 1) from an index (no `Math.random`: stable frames). */
+const hash = (index: number, salt: number): number => {
+  const x = Math.sin(index * 12.9898 + salt * 78.233) * 43_758.5453;
+  return x - Math.floor(x);
+};
+
 const createPollen = (): BufferGeometry => {
   const positions = new Float32Array(POLLEN_COUNT * 3);
+  const colors = new Float32Array(POLLEN_COUNT * 3);
   const scales = new Float32Array(POLLEN_COUNT);
+  const seeds = new Float32Array(POLLEN_COUNT);
+  const color = new Color();
   for (let index = 0; index < POLLEN_COUNT; index += 1) {
+    // A shell around the flower: dense near it, sparse far away.
     const y = 1 - (index / (POLLEN_COUNT - 1)) * 2;
     const ring = Math.sqrt(1 - y * y);
     const theta = GOLDEN_ANGLE * index;
-    const radius = 2.3 + ((index * 7919) % 100) / 80;
+    const radius = 1.6 + hash(index, 1) ** 2 * 2.2;
     positions.set(
       [
         Math.cos(theta) * ring * radius,
@@ -47,23 +49,28 @@ const createPollen = (): BufferGeometry => {
       ],
       index * 3
     );
-    scales[index] = 0.4 + ((index * 104_729) % 60) / 100;
+    color.copy(ORCHID).lerp(AURORA, hash(index, 2));
+    colors.set([color.r, color.g, color.b], index * 3);
+    scales[index] = 0.35 + hash(index, 3) * 0.9;
+    seeds[index] = hash(index, 4);
   }
   const geometry = new BufferGeometry();
   geometry.setAttribute("position", new BufferAttribute(positions, 3));
+  geometry.setAttribute("aColor", new BufferAttribute(colors, 3));
   geometry.setAttribute("aScale", new BufferAttribute(scales, 1));
+  geometry.setAttribute("aSeed", new BufferAttribute(seeds, 1));
   return geometry;
 };
 
 /**
- * Mounts the orchid bloom into `container` and returns a disposer. Plain Three.js with named
- * imports (tree-shaken), a frame loop that runs only while the canvas is on screen, and pointer
- * parallax eased per frame.
+ * Mounts drifting, twinkling pollen around the hero orchid into `container` and returns a
+ * disposer. Plain Three.js with named imports (tree-shaken), a frame loop that runs only while
+ * the canvas is on screen, and pointer parallax eased per frame.
  */
-export const mountBloomScene = (container: HTMLElement): (() => void) => {
+export const mountPollenScene = (container: HTMLElement): (() => void) => {
   const renderer = new WebGLRenderer({
     alpha: true,
-    antialias: true,
+    antialias: false,
     powerPreference: "low-power",
   });
   const pixelRatio = Math.min(globalThis.devicePixelRatio, MAX_PIXEL_RATIO);
@@ -73,44 +80,26 @@ export const mountBloomScene = (container: HTMLElement): (() => void) => {
   const camera = new PerspectiveCamera(40, 1, 0.1, 100);
   camera.position.z = 7;
   const scene = new Scene();
+  // Outer group follows the pointer (parallax); the inner one spins slowly on its own.
   const group = new Group();
-  group.rotation.x = 0.35;
+  const spin = new Group();
+  group.add(spin);
   scene.add(group);
 
-  // One uniform object shared by both materials: updating its value updates both.
-  const uTime = { value: 0 };
-
-  const bloomGeometry = new IcosahedronGeometry(1, 48);
-  const bloomMaterial = new ShaderMaterial({
-    depthWrite: false,
-    fragmentShader: bloomFragment,
-    transparent: true,
-    uniforms: {
-      uAurora: { value: AURORA },
-      uDeep: { value: DEEP },
-      uOrchid: { value: ORCHID },
-      uTime,
-    },
-    vertexShader: bloomVertex,
-  });
-  const bloom = new Mesh(bloomGeometry, bloomMaterial);
-  bloom.scale.setScalar(1.45);
-  group.add(bloom);
-
-  const pollenGeometry = createPollen();
-  const pollenMaterial = new ShaderMaterial({
+  const geometry = createPollen();
+  const material = new ShaderMaterial({
     blending: AdditiveBlending,
     depthWrite: false,
     fragmentShader: pollenFragment,
     transparent: true,
     uniforms: {
-      uColor: { value: AURORA },
       uPixelRatio: { value: pixelRatio },
-      uTime,
+      uTime: { value: 0 },
     },
     vertexShader: pollenVertex,
   });
-  group.add(new Points(pollenGeometry, pollenMaterial));
+  spin.add(new Points(geometry, material));
+  const time = material.uniforms.uTime;
 
   const resize = () => {
     const { clientWidth: width, clientHeight: height } = container;
@@ -138,11 +127,13 @@ export const mountBloomScene = (container: HTMLElement): (() => void) => {
   const frame = (timestamp: number) => {
     timer.update(timestamp);
     const delta = timer.getDelta();
-    uTime.value = timer.getElapsed();
-    const ease = Math.min(1, delta * 2);
-    group.rotation.y += delta * 0.08;
-    group.rotation.x += (pointer.y * 0.25 + 0.35 - group.rotation.x) * ease;
-    group.rotation.z += (-pointer.x * 0.2 - group.rotation.z) * ease;
+    if (time) {
+      time.value = timer.getElapsed();
+    }
+    const ease = Math.min(1, delta * 1.5);
+    spin.rotation.y += delta * 0.05;
+    group.rotation.y += (pointer.x * 0.3 - group.rotation.y) * ease;
+    group.rotation.x += (-pointer.y * 0.2 - group.rotation.x) * ease;
     renderer.render(scene, camera);
   };
 
@@ -157,10 +148,8 @@ export const mountBloomScene = (container: HTMLElement): (() => void) => {
     resizeObserver.disconnect();
     globalThis.removeEventListener("pointermove", onPointerMove);
     renderer.setAnimationLoop(null);
-    bloomGeometry.dispose();
-    bloomMaterial.dispose();
-    pollenGeometry.dispose();
-    pollenMaterial.dispose();
+    geometry.dispose();
+    material.dispose();
     timer.dispose();
     renderer.dispose();
     renderer.domElement.remove();

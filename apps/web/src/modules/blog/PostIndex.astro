@@ -42,6 +42,7 @@ const blogPath = alternates[locale] ?? basePath;
 ---
 
 <BaseLayout
+  section="blog"
   title={title}
   description={description}
   alternates={alternates}
@@ -52,6 +53,7 @@ const blogPath = alternates[locale] ?? basePath;
   )}
 >
   <PageHeader
+    backdrop="blog-header"
     eyebrow={m.blog_title({}, options)}
     title={title}
     lead={description}

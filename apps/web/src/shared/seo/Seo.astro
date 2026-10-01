@@ -10,14 +10,23 @@ import { absoluteUrl } from "@/shared/site.ts";
 
 import { serializeJsonLd } from "./json-ld.ts";
 
+/** Link-preview artwork per section (public/media, produced by `pnpm media`). */
+const SECTION_IMAGES = {
+  blog: "/media/og-blog.jpg",
+  default: "/media/og-default.jpg",
+  portfolio: "/media/og-portfolio.jpg",
+} as const;
+
 export interface Props {
   title: string;
   description: string;
   /** Localized path of this page in every locale it exists in, including the current one. */
   alternates: Alternates;
   type?: "website" | "article";
-  /** Absolute or root-relative image URL for link previews. */
+  /** Absolute or root-relative image URL for link previews (e.g. the document cover). */
   image?: string | undefined;
+  /** Section artwork used when the page has no image of its own. */
+  section?: keyof typeof SECTION_IMAGES;
   imageAlt?: string | undefined;
   publishedTime?: string | null | undefined;
   modifiedTime?: string | null | undefined;
@@ -34,6 +43,7 @@ const {
   type = "website",
   image,
   imageAlt,
+  section = "default",
   publishedTime,
   modifiedTime,
   markdown,
@@ -42,6 +52,7 @@ const {
 } = Astro.props;
 
 const locale: Locale = Astro.locals.locale;
+const preview = image ?? SECTION_IMAGES[section];
 const siteName = m.site_name({}, { locale });
 const fullTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
 const canonical = absoluteUrl(alternates[locale] ?? Astro.url.pathname);
@@ -91,7 +102,15 @@ const otherLocales = Object.keys(alternates).filter(
     />
   ))
 }
-{image && <meta property="og:image" content={absoluteUrl(image)} />}
+<meta property="og:image" content={absoluteUrl(preview)} />
+{
+  !image && (
+    <>
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+    </>
+  )
+}
 {image && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
 {
   publishedTime && (
@@ -103,7 +122,7 @@ const otherLocales = Object.keys(alternates).filter(
     <meta property="article:modified_time" content={modifiedTime} />
   )
 }
-<meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+<meta name="twitter:card" content="summary_large_image" />
 
 {
   jsonLd && (

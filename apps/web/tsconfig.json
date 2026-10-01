@@ -6,6 +6,6 @@
     "types": ["./worker-configuration.d.ts"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": [".astro/types.d.ts", "src", "astro.config.ts"],
+  "include": [".astro/types.d.ts", "src", "scripts", "astro.config.ts"],
   "exclude": ["dist"]
 }

@@ -21,6 +21,7 @@ const WEBSITE_ID = `${siteUrl.origin}/#website`;
 export const personNode = (): Person => ({
   "@id": PERSON_ID,
   "@type": "Person",
+  image: absoluteUrl("/media/portrait.jpg"),
   name: owner.name,
   sameAs: [owner.github],
   url: siteUrl.origin,
