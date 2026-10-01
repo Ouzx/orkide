@@ -11,6 +11,7 @@ const PROBLEM_DESCRIPTIONS = {
   401: "Not signed in",
   403: "Missing permission",
   404: "Not found",
+  409: "Conflicts with existing data",
   413: "Payload too large",
   415: "Unsupported media type",
   422: "Validation failed",
@@ -42,7 +43,3 @@ export const problems = <const S extends ProblemStatus>(
   }
   return responses as Record<S, ProblemResponse>;
 };
-
-/** Cache policy for public, shared-cacheable reads. */
-export const PUBLIC_CACHE_CONTROL =
-  "public, max-age=60, s-maxage=300, stale-while-revalidate=86400";

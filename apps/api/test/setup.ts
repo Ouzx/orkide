@@ -2,7 +2,7 @@ import { applyD1Migrations } from "cloudflare:test";
 import { env } from "cloudflare:workers";
 import { beforeEach } from "vitest";
 
-// Storage is isolated per test file; migrate once, then give every test empty tables and cache.
+// Storage is isolated per test file; migrate once, then give every test empty tables.
 await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
 
 const { results: tables } = await env.DB.prepare(
@@ -14,6 +14,4 @@ beforeEach(async () => {
     env.DB.prepare("PRAGMA defer_foreign_keys = ON"),
     ...tables.map(({ name }) => env.DB.prepare(`DELETE FROM "${name}"`)),
   ]);
-  const { keys } = await env.CACHE.list();
-  await Promise.all(keys.map(({ name }) => env.CACHE.delete(name)));
 });

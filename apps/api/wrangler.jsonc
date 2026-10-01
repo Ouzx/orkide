@@ -14,6 +14,8 @@
     "traces": { "enabled": true },
   },
   "upload_source_maps": true,
+  // Tiered, request-collapsing cache in front of the Worker. Responses opt in via Cache-Control.
+  "cache": { "enabled": true },
 
   // Production values. Local development overrides them through `.dev.vars`.
   "vars": {
@@ -35,9 +37,6 @@
       "migrations_dir": "../../packages/db/migrations",
       "migrations_pattern": "../../packages/db/migrations/*/migration.sql",
     },
-  ],
-  "kv_namespaces": [
-    { "binding": "CACHE", "id": "17e74ac7da27422db5c97ec81376a202" },
   ],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "orkide-media" }],
   "images": { "binding": "IMAGES" },

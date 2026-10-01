@@ -14,10 +14,11 @@ Short, dated records of decisions that shape the codebase. Newest first. Each en
 
 - **Decision:** flags live in the `orkide` Flagship app; `apps/api/src/core/flags.ts` is the typed registry (key, fallback, visibility). Public flags are served by `GET /api/flags`; any route can be gated with `requireFlag()`.
 
-### ADR-013 · KV response cache with versioned namespaces
+### ADR-013 · Workers Cache with cache tags (supersedes the KV response cache)
 
-- **Context:** the Cache API is a no-op on `*.workers.dev`.
-- **Decision:** public reads go through `cached()` (KV); writes call `invalidate(namespace)`, which bumps a version key so every entry of that namespace is skipped immediately.
+- **Context:** Workers Cache is a tiered, request-collapsing cache in front of the Worker. It works on `workers.dev` and through service bindings, is keyed by path + query, and supports global purges by `Cache-Tag` from any handler.
+- **Decision:** `cache.enabled` on the API. Every response is `private, no-store` by default; reader routes opt in with `shareable(tag)`, which only shares responses whose locale is explicit in the URL (cookies are not part of the cache key). Writes call `purge(tag)`.
+- **Consequences:** no KV cache layer and no `CACHE` binding. Locally (Miniflare) there is no Workers Cache, so purging is a no-op there.
 
 ### ADR-008 · Drizzle ORM v1 (release candidate)
 

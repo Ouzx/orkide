@@ -6,7 +6,7 @@ Orkide is a blog/portfolio that doubles as a production-grade template for futur
 
 - **Monorepo:** pnpm workspaces + Turborepo. Every external version lives in the `catalog:` of `pnpm-workspace.yaml` (`catalogMode: strict`). Never pin a version inside a `package.json`.
 - **Runtime:** Cloudflare Workers only. `apps/api` (Hono) and `apps/web` (Astro + React islands) are two Workers; `web` reaches `api` through a Service Binding, so the browser only ever talks to one origin.
-- **Data:** D1 + Drizzle, R2 for media, KV for cache, Queues for async jobs, Analytics Engine for stats.
+- **Data:** D1 + Drizzle, R2 for media, Workers Cache (tag-purged) for HTTP caching, Queues for async jobs, Analytics Engine for stats, Flagship for feature flags.
 - **Auth:** Better Auth with RBAC (`owner` / `editor` / `viewer`).
 - **i18n:** Paraglide JS, locales `en` and `tr`. Adding a locale: see the `add-locale` skill.
 - **Config:** `wrangler.jsonc` per app, built through `@cloudflare/vite-plugin`.

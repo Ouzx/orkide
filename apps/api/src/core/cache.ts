@@ -1,41 +1,61 @@
-import { env } from "cloudflare:workers";
+import { cache } from "cloudflare:workers";
+
+import { factory } from "./factory.ts";
 
 /**
- * Read-through cache for public API responses, backed by KV.
+ * HTTP caching for the API, built on Workers Cache (a tiered, request-collapsing cache in front of
+ * the Worker, keyed by path + query and shared across `workers.dev`, routes and service bindings).
  *
- * The Cache API is a no-op on `*.workers.dev`, so KV is the edge cache here. Entries are keyed by a
- * per-namespace version: publishing content bumps the version, which invalidates every entry of
- * that namespace instantly without enumerating keys; stale versions simply expire.
+ * - Every response is `private, no-store` unless a route explicitly opts in. Cookies are not part
+ *   of the cache key, so opting in is reserved for responses that are identical for every visitor.
+ * - Shared responses carry `Cache-Tag`s; writes purge the affected tags globally.
  */
-export type CacheNamespace = "posts" | "projects" | "taxonomy";
+export type CacheTag = "posts" | "projects" | "taxonomy";
 
-const VERSION_KEY = (namespace: CacheNamespace) => `cache-version:${namespace}`;
-/** KV's minimum TTL is 60 seconds. */
-const DEFAULT_TTL_SECONDS = 300;
+/** Browser: 1 min. Shared cache: 1 day, refreshed in the background, purged on every write. */
+const SHARED =
+  "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800";
+const PRIVATE = "private, no-store";
 
-const currentVersion = async (namespace: CacheNamespace): Promise<string> =>
-  (await env.CACHE.get(VERSION_KEY(namespace), { cacheTtl: 60 })) ?? "0";
-
-/** Invalidates every cached entry in the namespace. Call after any write that changes public data. */
-export const invalidate = async (namespace: CacheNamespace): Promise<void> => {
-  await env.CACHE.put(VERSION_KEY(namespace), Date.now().toString(36));
-};
-
-/** Returns the cached value for `key`, computing and storing it on a miss. */
-export const cached = async <T>(
-  namespace: CacheNamespace,
-  key: string,
-  load: () => Promise<T>,
-  ttlSeconds = DEFAULT_TTL_SECONDS
-): Promise<T> => {
-  const entryKey = `cache:${namespace}:${await currentVersion(namespace)}:${key}`;
-  const hit = await env.CACHE.get<T>(entryKey, { cacheTtl: 60, type: "json" });
-  if (hit !== null) {
-    return hit;
+/** Fail-safe default: anything a handler did not mark cacheable is never stored. */
+export const noStoreByDefault = factory.createMiddleware(async (c, next) => {
+  await next();
+  if (!c.res.headers.has("cache-control")) {
+    c.header("cache-control", PRIVATE);
   }
-  const value = await load();
-  await env.CACHE.put(entryKey, JSON.stringify(value), {
-    expirationTtl: ttlSeconds,
+});
+
+/**
+ * Marks a reader-facing response as shared-cacheable under `tags`.
+ * Only applied when the locale is explicit in the URL (and therefore in the cache key); a
+ * negotiated locale makes the response visitor-specific, so it stays private.
+ */
+export const shareable = (...tags: CacheTag[]) =>
+  factory.createMiddleware(async (c, next) => {
+    await next();
+    if (!c.res.ok) {
+      return;
+    }
+    if (c.req.query("locale") === undefined) {
+      c.header("cache-control", PRIVATE);
+      return;
+    }
+    c.header("cache-control", SHARED);
+    c.header("cache-tag", tags.join(","));
   });
-  return value;
+
+/**
+ * Invalidates every shared response carrying one of `tags`, in every data center.
+ * The local runtime (Miniflare) does not emulate Workers Cache, so there is nothing to purge there.
+ */
+export const purge = async (...tags: CacheTag[]): Promise<void> => {
+  if (typeof cache?.purge !== "function") {
+    return;
+  }
+  const result = await cache.purge({ tags });
+  if (!result.success) {
+    throw new Error(`Cache purge failed for ${tags.join(", ")}`, {
+      cause: result.errors,
+    });
+  }
 };

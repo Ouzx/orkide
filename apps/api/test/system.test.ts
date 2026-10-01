@@ -1,8 +1,6 @@
-import { exports } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
 
-const request = (path: string, init?: RequestInit) =>
-  exports.default.fetch(new Request(`http://localhost:4321${path}`, init));
+import { request } from "./helpers.ts";
 
 describe("system routes", () => {
   it("reports a healthy database", async () => {
@@ -63,5 +61,26 @@ describe("system routes", () => {
     });
 
     expect(response.status).toBe(403);
+  });
+});
+
+describe("http caching", () => {
+  it("shares reader responses only when the locale is explicit in the URL", async () => {
+    const explicit = await request("/api/posts?locale=en");
+    const negotiated = await request("/api/posts", {
+      headers: { "accept-language": "tr" },
+    });
+
+    expect(explicit.headers.get("cache-control")).toContain("s-maxage");
+    expect(explicit.headers.get("cache-tag")).toBe("posts");
+    expect(negotiated.headers.get("cache-control")).toBe("private, no-store");
+  });
+
+  it("never stores responses that did not opt in", async () => {
+    const health = await request("/api/health");
+    const admin = await request("/api/admin/posts");
+
+    expect(health.headers.get("cache-control")).toBe("no-store");
+    expect(admin.headers.get("cache-control")).toBe("private, no-store");
   });
 });

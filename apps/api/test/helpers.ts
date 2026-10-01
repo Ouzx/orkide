@@ -11,6 +11,12 @@ export const ORIGIN = "http://localhost:4321";
 export const request = (path: string, init: RequestInit = {}) =>
   exports.default.fetch(new Request(`${ORIGIN}${path}`, init));
 
+/** GETs `path` and parses the JSON body. */
+export const getJson = async <T = unknown>(path: string): Promise<T> => {
+  const response = await request(path);
+  return response.json<T>();
+};
+
 export const jsonRequest = (
   path: string,
   method: string,

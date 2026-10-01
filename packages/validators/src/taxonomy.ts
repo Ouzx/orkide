@@ -43,6 +43,18 @@ export const termSchema = z.object({
   slug: slugSchema,
 });
 
+/** Editable state of every term, as loaded by the admin taxonomy manager. */
+export const taxonomyRecordSchema = z.object({
+  categories: z.array(
+    categoryInputSchema.extend({
+      id: idSchema,
+      parentId: idSchema.nullable(),
+      position: z.number().int(),
+    })
+  ),
+  tags: z.array(tagInputSchema.extend({ id: idSchema })),
+});
+
 export type CategoryInput = z.infer<typeof categoryInputSchema>;
 export type TagInput = z.infer<typeof tagInputSchema>;
 export type Term = z.infer<typeof termSchema>;

@@ -14,12 +14,13 @@ import {
   postSummarySchema,
 } from "@orkide/validators/content";
 
+import { shareable } from "../../core/cache.ts";
 import { createRouter } from "../../core/factory.ts";
 import {
   assertPermission,
   requirePermission,
 } from "../../core/middleware/auth.ts";
-import { json, problems, PUBLIC_CACHE_CONTROL } from "../../core/responses.ts";
+import { json, problems } from "../../core/responses.ts";
 import * as service from "./post.service.ts";
 
 const PostSummary = postSummarySchema.openapi("PostSummary");
@@ -38,6 +39,7 @@ const admin = { security: [{ session: [] }], tags: ["Admin · Posts"] };
 
 const list = createRoute({
   method: "get",
+  middleware: [shareable("posts")] as const,
   path: "/posts",
   request: {
     query: pageQuerySchema
@@ -54,6 +56,7 @@ const list = createRoute({
 
 const read = createRoute({
   method: "get",
+  middleware: [shareable("posts")] as const,
   path: "/posts/{slug}",
   request: { params: slugParams, query: localeQuery },
   responses: { 200: json(PostDetail, "The post"), ...problems(404) },
@@ -94,7 +97,10 @@ const create = createRoute({
       required: true,
     },
   },
-  responses: { 201: json(PostRecord, "Created"), ...problems(401, 403, 422) },
+  responses: {
+    201: json(PostRecord, "Created"),
+    ...problems(401, 403, 409, 422),
+  },
   summary: "Create a post",
 });
 
@@ -112,7 +118,7 @@ const update = createRoute({
   },
   responses: {
     200: json(PostRecord, "Updated"),
-    ...problems(401, 403, 404, 422),
+    ...problems(401, 403, 404, 409, 422),
   },
   summary: "Replace a post",
 });
@@ -133,21 +139,17 @@ const PUBLISHING_STATUSES = new Set(["published", "scheduled"]);
 export const postRoutes = createRouter()
   .openapi(list, async (c) => {
     const { locale: _locale, ...query } = c.req.valid("query");
-    c.header("cache-control", PUBLIC_CACHE_CONTROL);
-    c.header("vary", "accept-language, cookie");
     return c.json(
       await service.listPublished({ ...query, locale: c.var.language }),
       200
     );
   })
-  .openapi(read, async (c) => {
-    c.header("cache-control", PUBLIC_CACHE_CONTROL);
-    c.header("vary", "accept-language, cookie");
-    return c.json(
+  .openapi(read, async (c) =>
+    c.json(
       await service.getPublished(c.var.language, c.req.valid("param").slug),
       200
-    );
-  })
+    )
+  )
   .openapi(adminList, async (c) => c.json(await service.listAll(), 200))
   .openapi(adminRead, async (c) =>
     c.json(await service.getById(c.req.valid("param").id), 200)

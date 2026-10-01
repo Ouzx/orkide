@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { jsonRequest, request, signInAs } from "../../../test/helpers.ts";
+import {
+  getJson,
+  jsonRequest,
+  request,
+  signInAs,
+} from "../../../test/helpers.ts";
 
 const paragraph = (text: string) => ({
   content: [{ content: [{ text, type: "text" }], type: "paragraph" }],
@@ -28,13 +33,8 @@ const postInput = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-const fetchPage = async (path: string) => {
-  const response = await request(path);
-  return response.json<{
-    items: { slug: string }[];
-    nextCursor: string | null;
-  }>();
-};
+const fetchPage = (path: string) =>
+  getJson<{ items: { slug: string }[]; nextCursor: string | null }>(path);
 
 describe("posts", () => {
   it("lets an editor publish and readers fetch it per locale", async () => {
