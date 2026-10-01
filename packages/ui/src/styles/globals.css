@@ -271,6 +271,22 @@
   }
 }
 
+/* Tiptap editor: placeholder on an empty document and the selected image. */
+@layer components {
+  .tiptap p.is-editor-empty:first-child::before {
+    float: left;
+    height: 0;
+    color: var(--muted-foreground);
+    pointer-events: none;
+    content: attr(data-placeholder);
+  }
+
+  .tiptap img.ProseMirror-selectednode {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
 @utility bg-grid {
   background-image:
     linear-gradient(to right, var(--border) 1px, transparent 1px),
