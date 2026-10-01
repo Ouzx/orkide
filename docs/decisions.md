@@ -4,6 +4,21 @@ Short, dated records of decisions that shape the codebase. Newest first. Each en
 
 ## 2026-10-01 — Foundations
 
+### ADR-008 · Drizzle ORM v1 (release candidate)
+
+- **Context:** Drizzle v1 is at RC with a frozen API; it ships Relational Queries v2, built-in zod schema generation (`drizzle-orm/zod`) and per-migration folders. Migrating from 0.x later is costly.
+- **Decision:** adopt `drizzle-orm@1.0.0-rc` / `drizzle-kit@1.0.0-rc` now.
+- **Consequences:** the Better Auth CLI still emits RQB v1 relations, so `auth:generate` strips them and all relations live in `@orkide/db/relations`. Wrangler applies the folder layout through `migrations_pattern: "<dir>/*/migration.sql"`. Casing is set per table via `defineTable`.
+
+### ADR-009 · Paraglide compiled once, explicit locale on the server
+
+- **Decision:** `packages/i18n` owns messages and compiles them once (strategy: url → cookie → Accept-Language → base). The web Worker uses `paraglideMiddleware` with translated route segments; the API passes `{ locale }` explicitly to message functions instead of relying on global state.
+
+### ADR-010 · Auth sessions in D1, throttling at the edge
+
+- **Context:** KV is eventually consistent and has no atomic increment.
+- **Decision:** no KV secondary storage for Better Auth; sessions in D1 behind a signed cookie cache, rate limiting through the Workers Rate Limiting binding. Sign-up is closed to `ADMIN_EMAILS`.
+
 ### ADR-001 · Cloudflare-only runtime, two Workers joined by a Service Binding
 
 - **Context:** `*.workers.dev` is on the Public Suffix List, so two Workers there cannot share cookies.

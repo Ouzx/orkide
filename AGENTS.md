@@ -30,7 +30,9 @@ docs/           architecture, decisions (ADR log), conventions, roadmap, media p
 5. **Platform-agnostic packages.** Everything except `packages/ui` must run on Workers, browsers and React Native — no DOM or Node-only APIs there.
 6. **Log through `@orkide/logger`**, never `console.*`.
 7. **Docs live only in `docs/`** and stay few. Record significant decisions in `docs/decisions.md`.
-8. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding).
+8. **Dependencies:** external ones via `pnpm --filter <pkg> add <dep>` (strict catalog mode writes `catalog:`; use `--save-catalog` for a new dependency). Internal ones are written by hand as `"@orkide/<name>": "workspace:*"` — never through `pnpm add`, which would put them in the catalog.
+9. **Generated code is never hand-edited:** `packages/db/src/schema/auth.ts` (`auth:generate`), `packages/i18n/src/paraglide` (`build`), `worker-configuration.d.ts` (`cf-typegen`), migrations (`db:generate`).
+10. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding).
 
 ## Commands
 

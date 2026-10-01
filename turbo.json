@@ -4,9 +4,6 @@
   "globalDependencies": [".node-version", "packages/config/tsconfig/*.json"],
   "globalPassThroughEnv": ["CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN"],
   "tasks": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
     "cf-typegen": {
       "inputs": ["wrangler.jsonc"],
       "outputs": ["worker-configuration.d.ts"]
@@ -22,19 +19,19 @@
       "outputs": ["dist/**"]
     },
     "typecheck": {
-      "dependsOn": ["topo", "cf-typegen"],
+      "dependsOn": ["^build", "cf-typegen"],
       "outputs": []
     },
     "test": {
-      "dependsOn": ["topo", "cf-typegen"],
-      "outputs": ["coverage/**"]
+      "dependsOn": ["^build", "cf-typegen"],
+      "outputs": []
     },
     "test:e2e": {
       "dependsOn": ["build"],
       "outputs": ["playwright-report/**", "test-results/**"]
     },
     "dev": {
-      "dependsOn": ["cf-typegen"],
+      "dependsOn": ["^build", "cf-typegen"],
       "cache": false,
       "persistent": true
     },

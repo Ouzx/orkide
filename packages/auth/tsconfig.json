@@ -1,0 +1,7 @@
+{
+  "extends": "@orkide/config/tsconfig/library.json",
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types", "node"]
+  },
+  "include": ["src", "scripts", "auth.cli.ts"]
+}

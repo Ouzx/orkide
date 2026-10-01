@@ -1,0 +1,4 @@
+{
+  "extends": "@orkide/config/tsconfig/library.json",
+  "include": ["src"]
+}

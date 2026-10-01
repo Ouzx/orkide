@@ -1,0 +1,23 @@
+{
+  "name": "@orkide/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./messages": "./src/paraglide/messages.js",
+    "./runtime": "./src/paraglide/runtime.js",
+    "./server": "./src/paraglide/server.js"
+  },
+  "scripts": {
+    "build": "paraglide-js compile --project ./project.inlang",
+    "dev": "paraglide-js compile --project ./project.inlang --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@inlang/paraglide-js": "catalog:",
+    "@orkide/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
