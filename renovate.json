@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices", ":semanticCommitsDisabled"],
+  "commitMessagePrefix": "chore(deps):",
+  "labels": ["deps"],
+  "rangeStrategy": "bump",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Every external version lives in the pnpm catalog, so one PR bumps it for the whole workspace.",
+      "matchFileNames": ["pnpm-workspace.yaml"],
+      "groupName": "pnpm catalog",
+      "groupSlug": "catalog"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "pinDigests": false
+    },
+    {
+      "description": "Held back until their blockers clear (see docs/roadmap.md).",
+      "matchPackageNames": ["typescript", "vitest", "prettier-plugin-astro"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
+}

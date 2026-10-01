@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Turborepo Remote Cache. Both are optional: without them Turbo simply runs uncached.
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup
+      - run: pnpm check
+      # Catalog and dependency-range consistency across the workspace.
+      - run: pnpm exec sherif
+      # Unused files, dependencies and unlisted imports (see knip.json for what is switched off).
+      - run: pnpm exec knip
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup
+      - run: pnpm typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup
+      - run: pnpm test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup
+      - run: pnpm build
+
+  # TODO(W4): Playwright e2e + axe at 375/768/1440/2560 px. Remove `if: false` once `pnpm test:e2e` exists.
+  e2e:
+    name: E2E and accessibility
+    if: false
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "placeholder - filled in by Phase 8"
+
+  # TODO(W4): Lighthouse CI against the built site (target 100 in every category). Remove `if: false` when wired.
+  lighthouse:
+    name: Lighthouse
+    if: false
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "placeholder - filled in by Phase 8"
+
+  # TODO(W4): size-limit budgets for the web client bundles. Remove `if: false` when wired.
+  size:
+    name: Bundle size
+    if: false
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "placeholder - filled in by Phase 8"

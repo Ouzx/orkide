@@ -28,7 +28,6 @@
     "@tiptap/extensions": "catalog:",
     "@tiptap/pm": "catalog:",
     "@tiptap/react": "catalog:",
-    "@tiptap/starter-kit": "catalog:",
     "astro": "catalog:",
     "feed": "catalog:",
     "hono": "catalog:",

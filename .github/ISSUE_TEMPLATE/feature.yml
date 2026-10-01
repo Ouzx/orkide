@@ -1,0 +1,20 @@
+name: Feature or roadmap item
+description: Propose new work
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or goal
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: Mention the package or app it touches and any ADR it relates to.
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      description: Typed end-to-end, tested, accessible and fast.
