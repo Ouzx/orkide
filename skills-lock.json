@@ -25,12 +25,6 @@
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "f615de216e085a84e31593ad0fa9062232adc40cd87b7c7ab2b8e49abf6500be"
     },
-    "tiptap": {
-      "source": "ueberdosis/tiptap",
-      "sourceType": "github",
-      "skillPath": "skills/tiptap/SKILL.md",
-      "computedHash": "772943440276fedbc27339a57ad35ccd3c2bc19c1df3c7ba5237cc5d88f3604a"
-    },
     "turborepo": {
       "source": "vercel/turborepo",
       "sourceType": "github",

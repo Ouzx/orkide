@@ -11,5 +11,8 @@
         "matcher": "Write|Edit"
       }
     ]
+  },
+  "enabledPlugins": {
+    "resend@claude-plugins-official": false
   }
 }
