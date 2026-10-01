@@ -9,7 +9,7 @@
       "outputs": ["worker-configuration.d.ts"]
     },
     "build": {
-      "dependsOn": ["^build", "cf-typegen"],
+      "dependsOn": ["^build", "cf-typegen", "^types"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "!**/*.test.ts",
@@ -19,11 +19,11 @@
       "outputs": ["dist/**"]
     },
     "typecheck": {
-      "dependsOn": ["^build", "cf-typegen"],
+      "dependsOn": ["^build", "cf-typegen", "^types"],
       "outputs": []
     },
     "test": {
-      "dependsOn": ["^build", "cf-typegen"],
+      "dependsOn": ["^build", "cf-typegen", "^types"],
       "outputs": []
     },
     "test:e2e": {
@@ -31,7 +31,7 @@
       "outputs": ["playwright-report/**", "test-results/**"]
     },
     "dev": {
-      "dependsOn": ["^build", "cf-typegen"],
+      "dependsOn": ["^build", "cf-typegen", "^types"],
       "cache": false,
       "persistent": true
     },
@@ -42,6 +42,11 @@
     "db:generate": {
       "inputs": ["src/schema/**"],
       "outputs": ["migrations/**"]
+    },
+    "types": {
+      "dependsOn": ["^types", "cf-typegen"],
+      "inputs": ["src/**", "tsconfig*.json", "worker-configuration.d.ts"],
+      "outputs": ["dist/types/**"]
     }
   }
 }

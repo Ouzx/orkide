@@ -1,5 +1,5 @@
 import { consoleSink, createLogger } from "@orkide/logger";
-import type { Level, LogSink } from "@orkide/logger";
+import type { Level, Logger, LogSink } from "@orkide/logger";
 import { env } from "cloudflare:workers";
 
 const LEVELS = new Set<string>([
@@ -28,7 +28,7 @@ const loadSink = async (): Promise<LogSink> => {
 const sink = await loadSink();
 
 /** Root logger for the API Worker. Handlers use the request-scoped child on `c.var.logger`. */
-export const logger = createLogger({
+export const logger: Logger = createLogger({
   base: { environment: env.ENVIRONMENT },
   level,
   name: "api",

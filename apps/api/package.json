@@ -4,7 +4,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/app.ts"
+    ".": "./src/app.ts",
+    "./client": {
+      "types": "./dist/types/apps/api/src/client.d.ts",
+      "default": "./src/client.ts"
+    }
   },
   "scripts": {
     "dev": "vite dev",
@@ -15,7 +19,8 @@
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "types": "tsc -p tsconfig.types.json"
   },
   "dependencies": {
     "@hono/zod-openapi": "catalog:",

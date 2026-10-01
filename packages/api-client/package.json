@@ -1,0 +1,23 @@
+{
+  "name": "@orkide/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --typecheck.only"
+  },
+  "dependencies": {
+    "@orkide/api": "workspace:*",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@orkide/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
