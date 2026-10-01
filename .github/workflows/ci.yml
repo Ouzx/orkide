@@ -28,6 +28,8 @@ jobs:
       - run: pnpm check
       # Catalog and dependency-range consistency across the workspace.
       - run: pnpm exec sherif
+      # Knip resolves imports of the generated Paraglide output, so compile it first.
+      - run: pnpm --filter @orkide/i18n build
       # Unused files, dependencies and unlisted imports (see knip.json for what is switched off).
       - run: pnpm exec knip
 
