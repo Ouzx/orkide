@@ -11,8 +11,8 @@
     "./server": "./src/paraglide/server.js"
   },
   "scripts": {
-    "build": "paraglide-js compile --project ./project.inlang --emit-ts-declarations",
-    "dev": "paraglide-js compile --project ./project.inlang --emit-ts-declarations --watch",
+    "build": "paraglide-js compile --project ./project.inlang",
+    "dev": "paraglide-js compile --project ./project.inlang --watch",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

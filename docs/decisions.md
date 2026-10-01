@@ -116,3 +116,9 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** strict catalog mode already stops version drift on `pnpm add`; nothing stopped dead dependencies or hand-edited ranges.
 - **Decision:** CI runs `ultracite check` (plus Prettier for `.astro`), Sherif, Knip, typecheck, tests and build. Knip checks files, dependencies, unlisted imports and binaries; unused-export reporting is off because Astro islands (default exports mounted through `client:*`) and tool entry points are not always followed. Renovate groups all `pnpm-workspace.yaml` bumps into one catalog PR and holds back the majors listed in the roadmap.
 - **Consequences:** unused exports must be reviewed by hand (a Knip run with exports enabled lists candidates). Turborepo Remote Cache is wired through optional `TURBO_TOKEN` / `TURBO_TEAM`.
+
+### ADR-022 · The Paraglide config is force-tracked
+
+- **Context:** Paraglide only reads `paraglide.config.ts` from inside the inlang project directory, and inlang's own `project.inlang/.gitignore` ignores everything except `settings.json`. The config (URL patterns, route strategies, `emitTsDeclarations`) was therefore never committed: local builds worked, but every clean clone (CI, Workers Builds) compiled default strategies and served 404 for every page.
+- **Decision:** `packages/i18n/project.inlang/paraglide.config.ts` is added with `git add -f`; tracked files ignore the nested ignore rule.
+- **Consequences:** never delete it from the index; a clean-clone build (`pnpm i && pnpm turbo build`) is the check that nothing else is hiding behind an ignore rule.
