@@ -5,7 +5,8 @@
       "./worker-configuration.d.ts",
       "vite/client",
       "@cloudflare/vitest-plugin/types"
-    ]
+    ],
+    "jsx": "react-jsx"
   },
   "include": ["src", "test", "*.ts", "worker-configuration.d.ts"]
 }

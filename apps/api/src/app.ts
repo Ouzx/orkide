@@ -10,10 +10,12 @@ import { requestContext } from "./core/middleware/context.ts";
 import { rateLimit } from "./core/middleware/rate-limit.ts";
 import { security } from "./core/middleware/security.ts";
 import { registerOpenApi } from "./core/openapi.ts";
+import { contactRoutes } from "./modules/contact/contact.routes.ts";
 import { liveRoutes } from "./modules/live/live.routes.ts";
 import { mediaRoutes } from "./modules/media/media.routes.ts";
 import { postRoutes } from "./modules/post/post.routes.ts";
 import { projectRoutes } from "./modules/project/project.routes.ts";
+import { statsRoutes } from "./modules/stats/stats.routes.ts";
 import { systemRoutes } from "./modules/system/system.routes.ts";
 import { taxonomyRoutes } from "./modules/taxonomy/taxonomy.routes.ts";
 
@@ -34,7 +36,9 @@ const routes = app
   .route("/", postRoutes)
   .route("/", projectRoutes)
   .route("/", taxonomyRoutes)
-  .route("/", mediaRoutes);
+  .route("/", mediaRoutes)
+  .route("/", contactRoutes)
+  .route("/", statsRoutes);
 
 registerOpenApi(app);
 app.onError(onError);

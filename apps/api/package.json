@@ -22,6 +22,7 @@
     "@orkide/auth": "workspace:*",
     "@orkide/content": "workspace:*",
     "@orkide/db": "workspace:*",
+    "@orkide/email": "workspace:*",
     "@orkide/i18n": "workspace:*",
     "@orkide/logger": "workspace:*",
     "@orkide/validators": "workspace:*",

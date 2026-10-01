@@ -16,7 +16,9 @@ export const MediaImage = Image.extend({
       height: { default: null },
       mediaId: {
         default: null,
-        parseHTML: (element) => element.dataset.mediaId,
+        // `dataset` is absent from the Workers DOM typings this module is also compiled against.
+        // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
+        parseHTML: (element) => element.getAttribute("data-media-id"),
         renderHTML: (attributes: { mediaId?: string | null }) =>
           attributes.mediaId ? { "data-media-id": attributes.mediaId } : {},
       },

@@ -1,0 +1,8 @@
+{
+  "extends": "@orkide/config/tsconfig/library.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["@cloudflare/workers-types"]
+  },
+  "include": ["src"]
+}
