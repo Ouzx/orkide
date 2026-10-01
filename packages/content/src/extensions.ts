@@ -6,6 +6,24 @@ import { StarterKit } from "@tiptap/starter-kit";
 export const ALLOWED_LINK_PROTOCOLS = ["http", "https", "mailto"] as const;
 
 /**
+ * Whether `href` is a relative URL or uses an allowed scheme. The editor (link creation and
+ * paste) and the server-side validators apply this same rule.
+ */
+export const isSafeHref = (href: unknown): boolean => {
+  if (typeof href !== "string") {
+    return false;
+  }
+  if (href.startsWith("/") || href.startsWith("#")) {
+    return true;
+  }
+  const protocol = URL.parse(href)?.protocol.slice(0, -1);
+  return (
+    protocol !== undefined &&
+    (ALLOWED_LINK_PROTOCOLS as readonly string[]).includes(protocol)
+  );
+};
+
+/**
  * Image node backed by the media library: besides `src`/`alt` it keeps the `mediaId` so renders
  * can resolve responsive variants and localized alt text, plus intrinsic dimensions to avoid CLS.
  */
@@ -38,8 +56,9 @@ export const contentExtensions: Extensions = [
       HTMLAttributes: { rel: "noopener noreferrer nofollow" },
       autolink: true,
       defaultProtocol: "https",
+      // http/https/mailto are linkify built-ins; registering them again warns per editor.
+      isAllowedUri: (url) => isSafeHref(url),
       openOnClick: false,
-      protocols: [...ALLOWED_LINK_PROTOCOLS],
     },
   }),
   MediaImage,

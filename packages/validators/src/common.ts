@@ -1,4 +1,4 @@
-import { ALLOWED_LINK_PROTOCOLS } from "@orkide/content/extensions";
+import { isSafeHref } from "@orkide/content/extensions";
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from "@orkide/content/slug";
 import type { RichTextNode } from "@orkide/db/rich-text";
 import { richTextDocumentSchema } from "@orkide/db/rich-text";
@@ -17,20 +17,6 @@ export const slugSchema = z
 
 /** ISO-8601 timestamp on the wire; `Date` in the database. */
 export const isoDateSchema = z.iso.datetime({ offset: true });
-
-const isSafeHref = (href: unknown): boolean => {
-  if (typeof href !== "string") {
-    return false;
-  }
-  if (href.startsWith("/") || href.startsWith("#")) {
-    return true;
-  }
-  const protocol = URL.parse(href)?.protocol.slice(0, -1);
-  return (
-    protocol !== undefined &&
-    (ALLOWED_LINK_PROTOCOLS as readonly string[]).includes(protocol)
-  );
-};
 
 const unsafeLinks = (nodes: readonly RichTextNode[] | undefined): boolean =>
   (nodes ?? []).some(
