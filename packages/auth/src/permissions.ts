@@ -56,3 +56,10 @@ export type Permissions = {
     Resource in keyof typeof statements
   ]?: readonly (typeof statements)[Resource][number][];
 };
+
+export const isRole = (value: unknown): value is Role =>
+  typeof value === "string" && Object.hasOwn(roles, value);
+
+/** Whether `role` grants every permission in `permissions` (pure, no I/O — server and client). */
+export const hasPermission = (role: Role, permissions: Permissions): boolean =>
+  roles[role].authorize(permissions).success;

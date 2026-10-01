@@ -158,3 +158,27 @@ describe("contact jobs", () => {
     expect(result.retryMessages).toStrictEqual([]);
   });
 });
+
+describe("inbox RBAC", () => {
+  it("forbids viewers and editors from reading or updating messages", async () => {
+    const statuses: number[] = [];
+    for (const role of ["viewer", "editor"] as const) {
+      // oxlint-disable-next-line no-await-in-loop -- sequential sessions keep the order stable.
+      const { cookie } = await signInAs(role);
+      // oxlint-disable-next-line no-await-in-loop -- see above.
+      const read = await jsonRequest("/api/admin/messages", "GET", undefined, {
+        cookie,
+      });
+      // oxlint-disable-next-line no-await-in-loop -- see above.
+      const update = await jsonRequest(
+        `/api/admin/messages/${crypto.randomUUID()}`,
+        "PATCH",
+        { status: "read" },
+        { cookie }
+      );
+      statuses.push(read.status, update.status);
+    }
+
+    expect(statuses).toStrictEqual([403, 403, 403, 403]);
+  });
+});

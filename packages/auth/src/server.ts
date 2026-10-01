@@ -62,6 +62,8 @@ export type Auth = typeof auth;
 export type Session = Auth["$Infer"]["Session"];
 
 export {
+  hasPermission,
+  isRole,
   statements,
   roles,
   type Permissions,

@@ -130,3 +130,24 @@ describe("projects", () => {
     ]);
   });
 });
+
+describe("taxonomy RBAC", () => {
+  it("forbids viewers from creating terms", async () => {
+    const { cookie } = await signInAs("viewer");
+
+    const category = await jsonRequest(
+      "/api/admin/taxonomy/categories",
+      "POST",
+      { ...term("Nope", "Hayir"), position: 0 },
+      { cookie }
+    );
+    const tag = await jsonRequest(
+      "/api/admin/taxonomy/tags",
+      "POST",
+      term("Nope", "Hayir"),
+      { cookie }
+    );
+
+    expect([category.status, tag.status]).toStrictEqual([403, 403]);
+  });
+});

@@ -1,5 +1,5 @@
-import { auth, roles } from "@orkide/auth";
-import type { Permissions, Role } from "@orkide/auth";
+import { auth, hasPermission, isRole } from "@orkide/auth";
+import type { Permissions } from "@orkide/auth";
 
 import type { AppVariables } from "../env.ts";
 import { ApiError } from "../errors.ts";
@@ -13,9 +13,6 @@ export const session = factory.createMiddleware(async (c, next) => {
   await next();
 });
 
-const isRole = (value: unknown): value is Role =>
-  typeof value === "string" && value in roles;
-
 type User = NonNullable<AppVariables["user"]>;
 
 /** Asserts that `user` holds every permission; throws `unauthorized`/`forbidden` otherwise. */
@@ -26,7 +23,7 @@ export const assertPermission: (
   if (!user) {
     throw new ApiError("unauthorized");
   }
-  if (!(isRole(user.role) && roles[user.role].authorize(permissions).success)) {
+  if (!(isRole(user.role) && hasPermission(user.role, permissions))) {
     throw new ApiError("forbidden");
   }
 };

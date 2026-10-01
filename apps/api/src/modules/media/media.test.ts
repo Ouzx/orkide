@@ -124,3 +124,21 @@ describe("media delivery", () => {
     expect(missing.status).toBe(404);
   });
 });
+
+describe("media RBAC", () => {
+  it("forbids viewers from updating media", async () => {
+    const { cookie } = await signInAs("viewer");
+
+    const response = await request(`/api/admin/media/${crypto.randomUUID()}`, {
+      body: JSON.stringify({ translations: [] }),
+      headers: {
+        "content-type": "application/json",
+        cookie,
+        origin: ORIGIN,
+      },
+      method: "PUT",
+    });
+
+    expect(response.status).toBe(403);
+  });
+});

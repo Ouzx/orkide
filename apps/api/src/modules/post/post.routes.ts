@@ -157,11 +157,14 @@ export const postRoutes = createRouter()
   .openapi(create, async (c) => {
     const input = c.req.valid("json");
     const { user } = c.var;
+    // `create` is already checked by the route middleware; publishing on creation also needs
+    // `publish`. (An empty permission set would be denied, so drafts assert `create` again,
+    // which also narrows `user` for the author id.)
     assertPermission(
       user,
       PUBLISHING_STATUSES.has(input.status ?? "draft")
         ? { post: ["publish"] }
-        : {}
+        : { post: ["create"] }
     );
     return c.json(await service.create(input, user.id), 201);
   })
