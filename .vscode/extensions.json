@@ -2,6 +2,7 @@
   "recommendations": [
     "oxc.oxc-vscode",
     "astro-build.astro-vscode",
+    "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
     "vitest.explorer",
     "ms-playwright.playwright",

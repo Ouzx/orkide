@@ -6,7 +6,7 @@
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "[astro]": {
-    "editor.defaultFormatter": "astro-build.astro-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
@@ -58,5 +58,12 @@
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
+  },
+  "prettier.requireConfig": true,
+  "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css",
+  "tailwindCSS.classFunctions": ["cn", "cva", "buttonVariants"],
+  "tailwindCSS.classAttributes": ["class", "className", "class:list"],
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
 }

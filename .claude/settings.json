@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && pnpm run fix --hook",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && pnpm exec ultracite fix --hook",
             "type": "command"
           }
         ],

@@ -7,8 +7,8 @@
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "check": "ultracite check",
-    "fix": "ultracite fix",
+    "check": "ultracite check && prettier --check \"**/*.astro\"",
+    "fix": "ultracite fix && prettier --write --log-level warn \"**/*.astro\"",
     "commit": "cz",
     "prepare": "lefthook install"
   },
@@ -26,6 +26,10 @@
     "oxlint": "catalog:",
     "oxlint-plugin-react-doctor": "catalog:",
     "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-astro": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "tailwindcss": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "ultracite": "catalog:"

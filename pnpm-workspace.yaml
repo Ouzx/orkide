@@ -21,7 +21,6 @@ catalog:
   "@hono/zod-openapi": ^1.6.3
   "@inlang/paraglide-js": ^2.25.4
   "@react-email/render": ^2.1.0
-  "@react-three/fiber": ^9.8.1
   "@scalar/hono-api-reference": ^0.12.7
   "@shadcn/lint": ^0.2.0
   "@tailwindcss/vite": ^4.3.3
@@ -74,6 +73,10 @@ catalog:
   web-vitals: ^6.2.2
   wrangler: ^4.144.0
   zod: ^4.6.5
+  prettier: ^3.9.9
+  # 1.x moved to a JSX-based AST that prettier-plugin-tailwindcss cannot sort yet (roadmap).
+  prettier-plugin-astro: ^0.14.1
+  prettier-plugin-tailwindcss: ^0.8.1
 
 # Dependencies trusted to run install scripts (pnpm blocks all others).
 allowBuilds:

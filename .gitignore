@@ -27,3 +27,6 @@ test-results/
 
 # local tooling
 .playwright-mcp/
+
+# design originals (optimized copies are committed under apps/web)
+design/incoming/
