@@ -1,7 +1,7 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "6a2a0374-5972-49cf-b9e2-587839ce6029",
+  "id": "e091d79f-715b-449d-9046-65fa9fd8b221",
   "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
@@ -1360,7 +1360,7 @@
       "autoincrement": false,
       "default": null,
       "generated": null,
-      "name": "blurhash",
+      "name": "placeholder",
       "entityType": "columns",
       "table": "media"
     },

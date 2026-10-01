@@ -17,7 +17,8 @@ export const media = defineTable(
     size: integer().notNull(),
     width: integer(),
     height: integer(),
-    blurhash: text(),
+    /** Tiny inline WebP (data URI) shown while the image loads; needs no client-side decoder. */
+    placeholder: text(),
     uploaderId: ref().references(() => user.id, { onDelete: "set null" }),
     ...timestamps(),
   },

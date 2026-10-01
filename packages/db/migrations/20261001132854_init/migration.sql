@@ -189,7 +189,7 @@ CREATE TABLE `media` (
 	`size` integer NOT NULL,
 	`width` integer,
 	`height` integer,
-	`blurhash` text,
+	`placeholder` text,
 	`uploader_id` text,
 	`created_at` integer DEFAULT (cast(unixepoch('subsec') * 1000 as integer)) NOT NULL,
 	`updated_at` integer DEFAULT (cast(unixepoch('subsec') * 1000 as integer)) NOT NULL,

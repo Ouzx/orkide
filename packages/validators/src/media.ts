@@ -22,9 +22,9 @@ export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 /** A media item as served to clients, with alt text resolved for the requested locale. */
 export const mediaSchema = models.select.media
   .pick({
-    blurhash: true,
     height: true,
     mimeType: true,
+    placeholder: true,
     size: true,
     width: true,
   })

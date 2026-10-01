@@ -11,6 +11,7 @@ import { rateLimit } from "./core/middleware/rate-limit.ts";
 import { security } from "./core/middleware/security.ts";
 import { registerOpenApi } from "./core/openapi.ts";
 import { liveRoutes } from "./modules/live/live.routes.ts";
+import { mediaRoutes } from "./modules/media/media.routes.ts";
 import { postRoutes } from "./modules/post/post.routes.ts";
 import { projectRoutes } from "./modules/project/project.routes.ts";
 import { systemRoutes } from "./modules/system/system.routes.ts";
@@ -32,7 +33,8 @@ const routes = app
   .route("/", liveRoutes)
   .route("/", postRoutes)
   .route("/", projectRoutes)
-  .route("/", taxonomyRoutes);
+  .route("/", taxonomyRoutes)
+  .route("/", mediaRoutes);
 
 registerOpenApi(app);
 app.onError(onError);

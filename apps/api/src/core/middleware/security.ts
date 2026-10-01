@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { bodyLimit } from "hono/body-limit";
-import { every } from "hono/combine";
+import { every, except } from "hono/combine";
 import { csrf } from "hono/csrf";
 import { secureHeaders } from "hono/secure-headers";
 
@@ -8,6 +8,9 @@ import { ApiError } from "../errors.ts";
 
 /** Default request body ceiling; upload routes opt into a larger limit explicitly. */
 export const DEFAULT_BODY_LIMIT_BYTES = 256 * 1024;
+
+/** Routes that accept file uploads and therefore enforce their own body limit. */
+const UPLOAD_PATHS = ["/api/admin/media"];
 
 export const limitBody = (maxSize: number) =>
   bodyLimit({
@@ -32,5 +35,6 @@ export const security = every(
     strictTransportSecurity: "max-age=63072000; includeSubDomains; preload",
   }),
   csrf({ origin: [new URL(env.BETTER_AUTH_URL).origin] }),
-  limitBody(DEFAULT_BODY_LIMIT_BYTES)
+  // Upload routes apply their own, larger ceiling.
+  except(UPLOAD_PATHS, limitBody(DEFAULT_BODY_LIMIT_BYTES))
 );

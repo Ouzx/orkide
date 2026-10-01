@@ -58,7 +58,7 @@ interface MediaRow {
   readonly size: number;
   readonly width: number | null;
   readonly height: number | null;
-  readonly blurhash: string | null;
+  readonly placeholder: string | null;
   readonly translations: readonly (Translated & {
     alt: string;
     caption: string | null;
@@ -67,17 +67,17 @@ interface MediaRow {
 
 /** Public URL of a stored object; served (and transformed for images) by the media module. */
 export const mediaUrl = (key: string): string =>
-  `/media/${key.replace(/^media\//u, "")}`;
+  `/api/media/${key.replace(/^media\//u, "")}`;
 
 export const toMedia = (row: MediaRow, locale: Locale): Media => {
   const translation = pickTranslation(row.translations, locale);
   return {
     alt: translation?.alt ?? "",
-    blurhash: row.blurhash,
     caption: translation?.caption ?? null,
     height: row.height,
     id: row.id,
     mimeType: row.mimeType,
+    placeholder: row.placeholder,
     size: row.size,
     url: mediaUrl(row.key),
     width: row.width,
