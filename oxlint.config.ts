@@ -36,6 +36,26 @@ export default defineConfig({
       files: ["packages/db/src/schema/index.ts"],
       rules: { "oxc/no-barrel-file": "off" },
     },
+    {
+      // shadcn registry code keeps its upstream shape, so `shadcn add --diff` stays readable.
+      files: ["packages/ui/src/components/**"],
+      rules: {
+        "eslint/eqeqeq": "off",
+        "eslint/func-style": "off",
+        "eslint/sort-keys": "off",
+        "jsx-a11y/label-has-associated-control": "off",
+        "jsx-a11y/prefer-tag-over-role": "off",
+        "react-doctor/no-array-index-as-key": "off",
+        "react/function-component-definition": "off",
+        "shadcn/no-arbitrary-values": "off",
+        "shadcn/no-restyle": "off",
+      },
+    },
+    {
+      // Astro components are PascalCase by convention (`<BaseLayout>`, `<Seo>`).
+      files: ["**/*.astro"],
+      rules: { "unicorn/filename-case": "off" },
+    },
   ],
   settings: jsPluginSettings,
 });

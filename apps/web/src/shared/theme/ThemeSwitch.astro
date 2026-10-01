@@ -1,0 +1,64 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { Monitor, Moon, Sun } from "lucide-react";
+
+import { themes } from "./theme.ts";
+import type { Theme } from "./theme.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+const labels: Record<Theme, string> = {
+  dark: m.theme_dark({}, options),
+  light: m.theme_light({}, options),
+  system: m.theme_system({}, options),
+};
+const icons = { dark: Moon, light: Sun, system: Monitor } as const;
+---
+
+<theme-switch>
+  <fieldset class="bg-muted/60 flex items-center gap-0.5 rounded-full border p-0.5">
+    <legend class="sr-only">{m.theme_label({}, options)}</legend>
+    {
+      themes.map((theme) => {
+        const Icon = icons[theme];
+        return (
+          <label
+            class="text-muted-foreground hover:text-foreground has-checked:bg-background has-checked:text-foreground has-focus-visible:outline-ring grid size-7 cursor-pointer place-items-center rounded-full transition-colors has-checked:shadow-sm has-focus-visible:outline-2"
+            title={labels[theme]}
+          >
+            <input class="sr-only" type="radio" name="theme" value={theme} />
+            <Icon aria-hidden="true" className="size-3.5" />
+            <span class="sr-only">{labels[theme]}</span>
+          </label>
+        );
+      })
+    }
+  </fieldset>
+</theme-switch>
+
+<script>
+  import {
+    followSystemTheme,
+    isTheme,
+    readTheme,
+    storeTheme,
+  } from "./theme.ts";
+
+  class ThemeSwitch extends HTMLElement {
+    connectedCallback() {
+      const current = readTheme();
+      for (const input of this.querySelectorAll<HTMLInputElement>("input")) {
+        input.checked = input.value === current;
+      }
+      this.addEventListener("change", (event) => {
+        const { value } = event.target as HTMLInputElement;
+        if (isTheme(value)) {
+          storeTheme(value);
+        }
+      });
+    }
+  }
+
+  customElements.define("theme-switch", ThemeSwitch);
+  followSystemTheme();
+</script>

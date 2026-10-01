@@ -1,0 +1,46 @@
+{
+  "name": "@orkide/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types --strict-vars=false",
+    "typecheck": "astro sync && tsc --noEmit && astro-check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "catalog:",
+    "@astrojs/react": "catalog:",
+    "@orkide/api-client": "workspace:*",
+    "@orkide/i18n": "workspace:*",
+    "@orkide/ui": "workspace:*",
+    "@orkide/validators": "workspace:*",
+    "@react-three/fiber": "catalog:",
+    "astro": "catalog:",
+    "feed": "catalog:",
+    "hono": "catalog:",
+    "lucide-react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-error-boundary": "catalog:",
+    "three": "catalog:",
+    "web-vitals": "catalog:"
+  },
+  "devDependencies": {
+    "@astrojs/check": "catalog:",
+    "@orkide/config": "workspace:*",
+    "@tailwindcss/vite": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/three": "catalog:",
+    "schema-dts": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
+  }
+}

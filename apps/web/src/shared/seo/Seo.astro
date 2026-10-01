@@ -1,0 +1,80 @@
+---
+import { baseLocale } from "@orkide/i18n";
+import type { Locale } from "@orkide/i18n";
+import { m } from "@orkide/i18n/messages";
+import type { Graph } from "schema-dts";
+
+import { languageTag } from "@/shared/lib/i18n.ts";
+import type { Alternates } from "@/shared/lib/i18n.ts";
+import { absoluteUrl } from "@/shared/site.ts";
+
+import { serializeJsonLd } from "./json-ld.ts";
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Localized path of this page in every locale it exists in, including the current one. */
+  alternates: Alternates;
+  type?: "website" | "article";
+  /** Absolute or root-relative image URL for link previews. */
+  image?: string | undefined;
+  imageAlt?: string | undefined;
+  publishedTime?: string | null | undefined;
+  modifiedTime?: string | null | undefined;
+  /** Root-relative path of the Markdown version of this page. */
+  markdown?: string | undefined;
+  jsonLd?: Graph | undefined;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  alternates,
+  type = "website",
+  image,
+  imageAlt,
+  publishedTime,
+  modifiedTime,
+  markdown,
+  jsonLd,
+  noindex = false,
+} = Astro.props;
+
+const locale: Locale = Astro.locals.locale;
+const siteName = m.site_name({}, { locale });
+const fullTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
+const canonical = absoluteUrl(alternates[locale] ?? Astro.url.pathname);
+const defaultHref = alternates[baseLocale];
+const otherLocales = Object.keys(alternates).filter(
+  (other) => other !== locale
+) as Locale[];
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+{
+  Object.entries(alternates).map(([hreflang, href]) => (
+    <link rel="alternate" hreflang={hreflang} href={absoluteUrl(href)} />
+  ))
+}
+{defaultHref && <link rel="alternate" hreflang="x-default" href={absoluteUrl(defaultHref)} />}
+{markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
+<link rel="alternate" type="application/rss+xml" title={m.feed_title({ site: siteName }, { locale })} href={`/${locale}/rss.xml`} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={languageTag[locale].replace("-", "_")} />
+{otherLocales.map((other) => <meta property="og:locale:alternate" content={languageTag[other].replace("-", "_")} />)}
+{image && <meta property="og:image" content={absoluteUrl(image)} />}
+{image && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+<meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+
+{jsonLd && <script is:inline type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}

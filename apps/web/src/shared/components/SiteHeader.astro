@@ -1,0 +1,110 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import { Menu, X } from "lucide-react";
+
+import type { Alternates } from "@/shared/lib/i18n.ts";
+import ThemeSwitch from "@/shared/theme/ThemeSwitch.astro";
+
+import LocaleSwitch from "./LocaleSwitch.astro";
+import Logo from "./Logo.astro";
+
+interface Props {
+  alternates: Alternates;
+}
+
+const { alternates } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+
+/** De-localized path of the current page (the middleware rewrote the localized URL). */
+const path = Astro.url.pathname;
+const links = [
+  { href: "/blog", label: m.nav_blog({}, options) },
+  { href: "/portfolio", label: m.nav_portfolio({}, options) },
+  { href: "/contact", label: m.nav_contact({}, options) },
+].map((link) => ({
+  ...link,
+  current: path === link.href || path.startsWith(`${link.href}/`),
+  localized: localizeHref(link.href, { locale }),
+}));
+---
+
+<header class="bg-background/70 supports-backdrop-filter:bg-background/55 sticky top-0 z-40 border-b backdrop-blur-xl">
+  <div class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
+    <a
+      href={localizeHref("/", { locale })}
+      class="flex items-center gap-2 text-base font-semibold tracking-tight"
+      aria-label={`${m.site_name({}, options)} — ${m.nav_home({}, options)}`}
+    >
+      <Logo class="size-7" />
+      <span>{m.site_name({}, options)}</span>
+    </a>
+
+    <nav aria-label={m.nav_primary({}, options)} class="ml-auto hidden md:block">
+      <ul class="flex items-center gap-1 text-sm">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.localized}
+                aria-current={link.current ? "page" : undefined}
+                class="text-muted-foreground hover:text-foreground aria-[current]:text-foreground rounded-full px-3 py-2 transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2 md:ml-0">
+      <LocaleSwitch alternates={alternates} />
+      <ThemeSwitch />
+      <button
+        type="button"
+        popovertarget="mobile-nav"
+        class="hover:bg-muted grid size-9 place-items-center rounded-full border md:hidden"
+      >
+        <Menu aria-hidden="true" className="size-4" />
+        <span class="sr-only">{m.nav_menu({}, options)}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile navigation: native popover (light dismiss, Esc, focus handling) — no JavaScript. -->
+  <nav
+    id="mobile-nav"
+    popover
+    aria-label={m.nav_primary({}, options)}
+    class="bg-background/95 inset-0 m-0 h-dvh w-full max-w-none backdrop-blur-xl md:hidden"
+  >
+    <div class="flex h-16 items-center justify-end px-4">
+      <button
+        type="button"
+        popovertarget="mobile-nav"
+        popovertargetaction="hide"
+        class="hover:bg-muted grid size-9 place-items-center rounded-full border"
+      >
+        <X aria-hidden="true" className="size-4" />
+        <span class="sr-only">{m.nav_menu({}, options)}</span>
+      </button>
+    </div>
+    <ul class="flex flex-col gap-2 px-6 pt-6 text-3xl font-semibold tracking-tight">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.localized}
+              aria-current={link.current ? "page" : undefined}
+              class="text-muted-foreground hover:text-foreground aria-[current]:text-foreground block py-2"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

@@ -1,0 +1,7 @@
+{
+  "extends": "@orkide/config/tsconfig/react.json",
+  "compilerOptions": {
+    "paths": { "@orkide/ui/*": ["./src/*"] }
+  },
+  "include": ["src"]
+}

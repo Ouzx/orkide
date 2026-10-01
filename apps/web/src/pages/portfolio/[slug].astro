@@ -1,0 +1,106 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import { buttonVariants } from "@orkide/ui/components/button";
+import { ArrowLeft, ArrowUpRight, Code } from "lucide-react";
+
+import TagList from "@/modules/blog/TagList.astro";
+import { getProject } from "@/modules/portfolio/portfolio.data.ts";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { cachePage } from "@/shared/lib/cache.ts";
+import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
+import { notFound } from "@/shared/lib/not-found.ts";
+import { documentAlternates, languageTag } from "@/shared/lib/i18n.ts";
+import MediaImage from "@/shared/media/MediaImage.astro";
+import { absoluteUrl } from "@/shared/site.ts";
+import { breadcrumbNode, graph, projectNode } from "@/shared/seo/json-ld.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+const { slug, markdown } = parseDocumentParam(Astro.params.slug);
+const project = await getProject(slug, locale);
+if (!project) {
+  return notFound(Astro, locale);
+}
+
+const path = localizeHref(`/portfolio/${project.slug}`, options);
+cachePage(Astro, "projects");
+// `<url>.md` and `Accept: text/markdown` (rewritten by the middleware) get the Markdown variant.
+if (markdown) {
+  return markdownResponse(project, absoluteUrl(path));
+}
+const portfolioPath = localizeHref("/portfolio", options);
+const year = new Intl.DateTimeFormat(languageTag[locale], { month: "short", year: "numeric" });
+const timeline = project.startedAt
+  ? `${year.format(new Date(project.startedAt))} – ${project.completedAt ? year.format(new Date(project.completedAt)) : m.portfolio_present({}, options)}`
+  : undefined;
+
+Astro.response.headers.set("vary", "accept");
+---
+
+<BaseLayout
+  title={project.seoTitle ?? project.title}
+  description={project.seoDescription ?? project.summary}
+  alternates={documentAlternates("/portfolio", project.alternates)}
+  type="article"
+  image={project.cover?.url}
+  imageAlt={project.cover?.alt}
+  publishedTime={project.publishedAt}
+  modifiedTime={project.updatedAt}
+  markdown={`${path}.md`}
+  jsonLd={graph(
+    locale,
+    projectNode(project, path),
+    breadcrumbNode([
+      { name: m.portfolio_title({}, options), path: portfolioPath },
+      { name: project.title, path },
+    ])
+  )}
+>
+  <article class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 sm:pt-16">
+    <a href={portfolioPath} class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors">
+      <ArrowLeft aria-hidden="true" className="size-4" />
+      {m.portfolio_back({}, options)}
+    </a>
+
+    <header class="mt-8">
+      {timeline && <p class="text-primary font-mono text-xs tracking-widest uppercase">{timeline}</p>}
+      <h1 class="text-title mt-3 font-semibold text-balance">{project.title}</h1>
+      <p class="text-lead text-muted-foreground mt-5 text-pretty">{project.summary}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        {
+          project.websiteUrl && (
+            <a href={project.websiteUrl} target="_blank" rel="noopener noreferrer" class={buttonVariants({ size: "pill" })}>
+              {m.portfolio_visit({}, options)}
+              <ArrowUpRight aria-hidden="true" />
+            </a>
+          )
+        }
+        {
+          project.repositoryUrl && (
+            <a href={project.repositoryUrl} target="_blank" rel="noopener noreferrer" class={buttonVariants({ size: "pill", variant: "outline" })}>
+              <Code aria-hidden="true" />
+              {m.portfolio_source({}, options)}
+            </a>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      project.cover && (
+        <figure class="mt-10">
+          <MediaImage media={project.cover} sizes="(min-width: 768px) 720px, 100vw" priority class="aspect-[16/10] rounded-2xl border" />
+          {project.cover.caption && <figcaption class="text-muted-foreground mt-3 text-center text-sm">{project.cover.caption}</figcaption>}
+        </figure>
+      )
+    }
+
+    <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
+    <div class="prose-orkide mt-12" set:html={project.html} />
+
+    <footer class="mt-16 border-t pt-8">
+      <TagList tags={project.tags} label={m.blog_tags({}, options)} />
+    </footer>
+  </article>
+</BaseLayout>

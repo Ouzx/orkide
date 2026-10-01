@@ -1,0 +1,43 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import { env } from "cloudflare:workers";
+
+import { ContactForm } from "@/modules/contact/contact-form.tsx";
+import { contactLabels } from "@/modules/contact/labels.ts";
+import PageHeader from "@/shared/components/PageHeader.astro";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { cachePage } from "@/shared/lib/cache.ts";
+import { getFlags } from "@/shared/lib/flags.ts";
+import { pageAlternates } from "@/shared/lib/i18n.ts";
+import MediaSlot from "@/shared/media/MediaSlot.astro";
+import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+const flags = await getFlags();
+cachePage(Astro);
+---
+
+<BaseLayout
+  title={m.contact_title({}, options)}
+  description={m.contact_description({}, options)}
+  alternates={pageAlternates("/contact")}
+  jsonLd={graph(locale, breadcrumbNode([{ name: m.contact_title({}, options), path: localizeHref("/contact", options) }]))}
+>
+  <PageHeader eyebrow={m.contact_title({}, options)} title={m.contact_title({}, options)} lead={m.contact_description({}, options)} />
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
+    {
+      flags["contact-form"] ? (
+        <ContactForm client:visible locale={locale} siteKey={env.TURNSTILE_SITE_KEY} labels={contactLabels(locale)} />
+      ) : (
+        <p role="status" class="bg-card text-muted-foreground rounded-2xl border p-8">
+          {m.contact_disabled({}, options)}
+        </p>
+      )
+    }
+    <div class="hidden overflow-hidden rounded-2xl border lg:block">
+      <MediaSlot id="contact-ambient" />
+    </div>
+  </div>
+</BaseLayout>

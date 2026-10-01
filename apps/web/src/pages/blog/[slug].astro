@@ -1,0 +1,122 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import { ArrowLeft, Paperclip } from "lucide-react";
+
+import PostMeta from "@/modules/blog/PostMeta.astro";
+import TagList from "@/modules/blog/TagList.astro";
+import { getPost } from "@/modules/blog/blog.data.ts";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { cachePage } from "@/shared/lib/cache.ts";
+import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
+import { notFound } from "@/shared/lib/not-found.ts";
+import { documentAlternates, formatDate } from "@/shared/lib/i18n.ts";
+import MediaImage from "@/shared/media/MediaImage.astro";
+import { absoluteUrl } from "@/shared/site.ts";
+import { blogPostingNode, breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+const { slug, markdown } = parseDocumentParam(Astro.params.slug);
+const post = await getPost(slug, locale);
+if (!post) {
+  return notFound(Astro, locale);
+}
+
+const path = localizeHref(`/blog/${post.slug}`, options);
+cachePage(Astro, "posts");
+// `<url>.md` and `Accept: text/markdown` (rewritten by the middleware) get the Markdown variant.
+if (markdown) {
+  return markdownResponse(post, absoluteUrl(path));
+}
+const blogPath = localizeHref("/blog", options);
+// The same URL also serves Markdown to clients that ask for it.
+Astro.response.headers.set("vary", "accept");
+---
+
+<BaseLayout
+  title={post.seoTitle ?? post.title}
+  description={post.seoDescription ?? post.summary}
+  alternates={documentAlternates("/blog", post.alternates)}
+  type="article"
+  image={post.cover?.url}
+  imageAlt={post.cover?.alt}
+  publishedTime={post.publishedAt}
+  modifiedTime={post.updatedAt}
+  markdown={`${path}.md`}
+  jsonLd={graph(
+    locale,
+    blogPostingNode(post, path),
+    breadcrumbNode([
+      { name: m.blog_title({}, options), path: blogPath },
+      { name: post.title, path },
+    ])
+  )}
+>
+  <article class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 sm:pt-16">
+    <a href={blogPath} class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors">
+      <ArrowLeft aria-hidden="true" className="size-4" />
+      {m.blog_back({}, options)}
+    </a>
+
+    <header class="mt-8">
+      {
+        post.category && (
+          <a
+            href={localizeHref(`/blog/category/${post.category.slug}`, options)}
+            class="text-primary font-mono text-xs tracking-widest uppercase hover:underline"
+          >
+            {post.category.name}
+          </a>
+        )
+      }
+      <h1 class="text-title mt-3 font-semibold text-balance">{post.title}</h1>
+      <p class="text-lead text-muted-foreground mt-5 text-pretty">{post.summary}</p>
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-y py-4">
+        <PostMeta publishedAt={post.publishedAt} readingTimeMinutes={post.readingTimeMinutes} />
+        {
+          post.publishedAt && post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
+            <p class="text-muted-foreground font-mono text-xs tracking-wide uppercase">
+              {m.blog_updated({}, options)} <time datetime={post.updatedAt}>{formatDate(post.updatedAt, locale)}</time>
+            </p>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      post.cover && (
+        <figure class="mt-10">
+          <MediaImage media={post.cover} sizes="(min-width: 768px) 720px, 100vw" priority class="aspect-[16/9] rounded-2xl border" />
+          {post.cover.caption && <figcaption class="text-muted-foreground mt-3 text-center text-sm">{post.cover.caption}</figcaption>}
+        </figure>
+      )
+    }
+
+    <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
+    <div class="prose-orkide mt-12" set:html={post.html} />
+
+    {
+      post.attachments.length > 0 && (
+        <section aria-labelledby="attachments" class="mt-16">
+          <h2 id="attachments" class="text-lg font-semibold">{m.blog_attachments({}, options)}</h2>
+          <ul class="mt-4 space-y-2">
+            {post.attachments.map((attachment) => (
+              <li>
+                <a href={attachment.url} class="hover:border-primary/50 flex items-center gap-3 rounded-xl border p-3 text-sm transition-colors" data-astro-prefetch="false">
+                  <Paperclip aria-hidden="true" className="text-muted-foreground size-4" />
+                  <span class="flex-1 truncate">{attachment.alt}</span>
+                  <span class="text-muted-foreground font-mono text-xs">{attachment.mimeType.split("/")[1]?.toUpperCase()}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <footer class="mt-16 border-t pt-8">
+      <TagList tags={post.tags} label={m.blog_tags({}, options)} />
+    </footer>
+  </article>
+</BaseLayout>

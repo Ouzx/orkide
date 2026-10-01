@@ -1,0 +1,40 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import type { PostSummary } from "@orkide/validators/content";
+
+import MediaImage from "@/shared/media/MediaImage.astro";
+
+import PostMeta from "./PostMeta.astro";
+import TagList from "./TagList.astro";
+
+interface Props {
+  post: PostSummary;
+  headingLevel?: 2 | 3;
+}
+
+const { post, headingLevel = 2 } = Astro.props;
+const { locale } = Astro.locals;
+const href = localizeHref(`/blog/${post.slug}`, { locale });
+const Heading = `h${headingLevel}` as const;
+---
+
+<article class="group bg-card/60 hover:border-primary/40 has-focus-visible:ring-ring relative flex flex-col overflow-hidden rounded-2xl border transition-colors has-focus-visible:ring-2">
+  {
+    post.cover && (
+      <MediaImage media={post.cover} sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw" class="aspect-[16/9] border-b" />
+    )
+  }
+  <div class="flex flex-1 flex-col gap-3 p-6">
+    <PostMeta publishedAt={post.publishedAt} readingTimeMinutes={post.readingTimeMinutes} />
+    <Heading class="text-xl font-semibold tracking-tight text-balance">
+      <a href={href} class="outline-none after:absolute after:inset-0">
+        {post.title}
+      </a>
+    </Heading>
+    <p class="text-muted-foreground line-clamp-3 text-pretty">{post.summary}</p>
+    <div class="mt-auto pt-2">
+      <TagList tags={post.tags} label={m.blog_tags({}, { locale })} />
+    </div>
+  </div>
+</article>

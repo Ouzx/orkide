@@ -1,0 +1,11 @@
+{
+  "extends": "@orkide/config/tsconfig/react.json",
+  "compilerOptions": {
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsxImportSource": "react",
+    "types": ["./worker-configuration.d.ts"],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": [".astro/types.d.ts", "src", "astro.config.ts"],
+  "exclude": ["dist"]
+}

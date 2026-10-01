@@ -1,0 +1,39 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import type { ProjectSummary } from "@orkide/validators/content";
+import { Badge } from "@orkide/ui/components/badge";
+
+import TagList from "@/modules/blog/TagList.astro";
+import MediaImage from "@/shared/media/MediaImage.astro";
+
+interface Props {
+  project: ProjectSummary;
+  headingLevel?: 2 | 3;
+}
+
+const { project, headingLevel = 2 } = Astro.props;
+const { locale } = Astro.locals;
+const href = localizeHref(`/portfolio/${project.slug}`, { locale });
+const Heading = `h${headingLevel}` as const;
+---
+
+<article class="group bg-card/60 hover:border-primary/40 has-focus-visible:ring-ring relative flex flex-col overflow-hidden rounded-2xl border transition-colors has-focus-visible:ring-2">
+  {
+    project.cover ? (
+      <MediaImage media={project.cover} sizes="(min-width: 1024px) 576px, 100vw" class="aspect-[16/10] border-b" />
+    ) : (
+      <div aria-hidden="true" class="from-orchid/20 to-aurora/10 aspect-[16/10] border-b bg-linear-to-br" />
+    )
+  }
+  <div class="flex flex-1 flex-col gap-3 p-6">
+    {project.featured && <Badge variant="secondary" className="w-fit">{m.portfolio_featured({}, { locale })}</Badge>}
+    <Heading class="text-xl font-semibold tracking-tight text-balance">
+      <a href={href} class="outline-none after:absolute after:inset-0">{project.title}</a>
+    </Heading>
+    <p class="text-muted-foreground line-clamp-3 text-pretty">{project.summary}</p>
+    <div class="mt-auto pt-2">
+      <TagList tags={project.tags} label={m.blog_tags({}, { locale })} />
+    </div>
+  </div>
+</article>

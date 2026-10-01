@@ -1,0 +1,45 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import type { Term } from "@orkide/validators/taxonomy";
+
+interface Props {
+  categories: readonly Term[];
+  /** Slug of the selected category, if any. */
+  current?: string | undefined;
+}
+
+const { categories, current } = Astro.props;
+const { locale } = Astro.locals;
+const pill =
+  "aria-[current]:bg-primary aria-[current]:text-primary-foreground aria-[current]:border-primary hover:border-primary/50 rounded-full border px-3.5 py-1.5 text-sm transition-colors";
+---
+
+{
+  categories.length > 0 && (
+    <nav aria-label={m.blog_categories({}, { locale })} class="mt-8">
+      <ul class="flex flex-wrap gap-2">
+        <li>
+          <a
+            href={localizeHref("/blog", { locale })}
+            aria-current={current ? undefined : "page"}
+            class={pill}
+          >
+            {m.blog_all({}, { locale })}
+          </a>
+        </li>
+        {categories.map((category) => (
+          <li>
+            <a
+              href={localizeHref(`/blog/category/${category.slug}`, { locale })}
+              aria-current={category.slug === current ? "page" : undefined}
+              class={pill}
+            >
+              {category.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

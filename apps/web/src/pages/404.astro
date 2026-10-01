@@ -1,0 +1,25 @@
+---
+import { baseLocale } from "@orkide/i18n";
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import { buttonVariants } from "@orkide/ui/components/button";
+import { cn } from "@orkide/ui/lib/utils";
+
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { pageAlternates } from "@/shared/lib/i18n.ts";
+
+// Errors can surface before the i18n middleware has run; the layout reads the locale too.
+Astro.locals.locale ??= baseLocale;
+const { locale } = Astro.locals;
+const options = { locale };
+Astro.response.status = 404;
+---
+
+<BaseLayout title={m.not_found_title({}, options)} description={m.not_found_body({}, options)} alternates={pageAlternates("/")} noindex>
+  <section class="mx-auto flex max-w-2xl flex-col items-center px-4 py-32 text-center">
+    <p class="text-gradient font-mono text-7xl font-semibold">404</p>
+    <h1 class="mt-6 text-3xl font-semibold tracking-tight">{m.not_found_title({}, options)}</h1>
+    <p class="text-muted-foreground mt-4">{m.not_found_body({}, options)}</p>
+    <a href={localizeHref("/", options)} class={cn(buttonVariants({ size: "pill" }), "mt-10")}>{m.not_found_home({}, options)}</a>
+  </section>
+</BaseLayout>

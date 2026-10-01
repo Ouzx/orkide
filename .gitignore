@@ -24,3 +24,6 @@ test-results/
 # os / editor
 .DS_Store
 *.log
+
+# local tooling
+.playwright-mcp/

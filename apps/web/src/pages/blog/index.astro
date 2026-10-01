@@ -1,0 +1,25 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+
+import PostIndex from "@/modules/blog/PostIndex.astro";
+import { getTaxonomy, listPosts } from "@/modules/blog/blog.data.ts";
+import { cachePage } from "@/shared/lib/cache.ts";
+import { pageAlternates } from "@/shared/lib/i18n.ts";
+
+const { locale } = Astro.locals;
+const cursor = Astro.url.searchParams.get("cursor") ?? undefined;
+const [posts, taxonomy] = await Promise.all([listPosts({ cursor, locale }), getTaxonomy(locale)]);
+
+cachePage(Astro, "posts", "taxonomy");
+---
+
+<PostIndex
+  title={m.blog_title({}, { locale })}
+  description={m.blog_description({}, { locale })}
+  alternates={pageAlternates("/blog")}
+  basePath={localizeHref("/blog", { locale })}
+  posts={posts}
+  categories={taxonomy.categories}
+  cursor={cursor}
+/>

@@ -1,0 +1,65 @@
+---
+import { locales } from "@orkide/i18n";
+import { m } from "@orkide/i18n/messages";
+import { cookieMaxAge, cookieName, localizeHref } from "@orkide/i18n/runtime";
+
+import { localeName } from "@/shared/lib/i18n.ts";
+import type { Alternates } from "@/shared/lib/i18n.ts";
+
+interface Props {
+  alternates: Alternates;
+}
+
+const { alternates } = Astro.props;
+const { locale } = Astro.locals;
+
+---
+
+<nav
+  aria-label={m.locale_label({}, { locale })}
+  data-locale-cookie={cookieName}
+  data-locale-cookie-max-age={cookieMaxAge}
+>
+  <ul class="flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+    {
+      locales.map((target) => (
+        <li>
+          <a
+            href={alternates[target] ?? localizeHref("/", { locale: target })}
+            hreflang={target}
+            lang={target}
+            title={localeName(target)}
+            aria-current={target === locale ? "true" : undefined}
+            data-locale-link={target}
+            data-astro-prefetch="false"
+            class="text-muted-foreground hover:text-foreground aria-[current]:text-foreground aria-[current]:bg-muted rounded-full px-2 py-1 transition-colors"
+          >
+            <span aria-hidden="true">{target}</span>
+            <span class="sr-only">{localeName(target)}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  // Remember the choice, so the next visit to an unprefixed URL lands in the same language.
+  document.addEventListener("click", (event) => {
+    const link = (event.target as Element).closest<HTMLAnchorElement>(
+      "[data-locale-link]"
+    );
+    const locale = link?.dataset.localeLink;
+    // Cookie settings come from the server-rendered markup: the Paraglide runtime stays off the client.
+    const settings = link?.closest<HTMLElement>("[data-locale-cookie]")?.dataset;
+    if (locale && settings?.localeCookie) {
+      void globalThis.cookieStore?.set({
+        expires: Date.now() + Number(settings.localeCookieMaxAge) * 1000,
+        name: settings.localeCookie,
+        path: "/",
+        sameSite: "lax",
+        value: locale,
+      });
+    }
+  });
+</script>

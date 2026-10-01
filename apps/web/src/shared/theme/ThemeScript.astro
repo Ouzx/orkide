@@ -1,0 +1,10 @@
+---
+/*
+ * Runs before first paint. The HTML stays identical for every visitor (the choice lives in
+ * localStorage), which keeps pages cacheable at the edge. Its hash is allowed by the CSP via
+ * `astro.config.ts`.
+ */
+import { themeScript } from "./theme-script.ts";
+---
+
+<script is:inline set:html={themeScript} />

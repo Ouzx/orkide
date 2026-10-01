@@ -1,0 +1,49 @@
+---
+import { IMAGE_WIDTHS } from "@orkide/validators/limits";
+import type { Media } from "@orkide/validators/media";
+
+interface Props {
+  media: Media;
+  /** The `sizes` attribute: how wide the image renders, so the browser picks the right variant. */
+  sizes: string;
+  /** Above-the-fold images load eagerly with high priority (LCP candidate). */
+  priority?: boolean;
+  class?: string;
+}
+
+/*
+ * The API negotiates AVIF/WebP per request and strips metadata. The inline placeholder (a 16px
+ * WebP) sits blurred underneath until the real image paints over it.
+ */
+const { media, sizes, priority = false, class: className } = Astro.props;
+const intrinsic = media.width ?? undefined;
+// Never offer a variant wider than the original.
+const widths = IMAGE_WIDTHS.filter((width) => !intrinsic || width <= intrinsic);
+const srcset = widths.map((width) => `${media.url}?w=${width} ${width}w`).join(", ");
+const fallback = `${media.url}?w=${widths.find((width) => width >= 960) ?? widths.at(-1) ?? 960}`;
+---
+
+<div class:list={["bg-muted relative isolate overflow-hidden", className]}>
+  {
+    media.placeholder && (
+      <img
+        src={media.placeholder}
+        alt=""
+        aria-hidden="true"
+        class="absolute inset-0 -z-10 size-full scale-110 object-cover blur-xl"
+      />
+    )
+  }
+  <img
+    src={fallback}
+    srcset={srcset}
+    sizes={sizes}
+    width={media.width ?? undefined}
+    height={media.height ?? undefined}
+    alt={media.alt}
+    loading={priority ? "eager" : "lazy"}
+    fetchpriority={priority ? "high" : "auto"}
+    decoding={priority ? "sync" : "async"}
+    class="size-full object-cover"
+  />
+</div>

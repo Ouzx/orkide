@@ -38,6 +38,8 @@ docs/           decisions (ADR log), roadmap, media prompts
 13. **Re-run tests after `ultracite fix`.** A few autofixes change semantics (`sort-keys` on ordering objects, `prefer-mock-promise-shorthand` sharing one `Response`). The `pre-push` hook enforces typecheck + tests.
 14. **Docs live only in `docs/`** and stay few. Record significant decisions in `docs/decisions.md`.
 15. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding).
+16. **Pages are a pure function of their URL** (they are edge-cached and tag-purged): no cookies or per-visitor data in rendered HTML; preferences live client-side; call `cachePage(Astro, ...tags)` on every public page.
+17. **The CSP is hashed (`security.csp`).** No inline `style` attributes, no `define:vars` scripts, no server-rendered React `<form action>`; islands get translated strings as props so Paraglide stays off the client.
 
 ## Commands
 

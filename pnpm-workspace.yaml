@@ -6,56 +6,80 @@ packages:
 # Packages reference these with `catalog:`; strict mode rejects anything else on `pnpm add`.
 catalogMode: strict
 catalog:
+  "@astrojs/check": ^0.9.10
+  "@astrojs/cloudflare": ^14.3.3
+  "@astrojs/react": ^7.0.0
+  "@base-ui/react": ^1.8.0
+  "@better-auth/drizzle-adapter": ^1.7.6
+  "@better-auth/passkey": ^1.7.6
+  "@cloudflare/vite-plugin": ^1.62.2
+  "@cloudflare/vitest-plugin": ^1.3.3
+  "@cloudflare/workers-types": ^5.20260930.2
   "@commitlint/cli": ^21.2.3
   "@commitlint/config-conventional": ^21.2.3
   "@commitlint/config-pnpm-scopes": ^21.2.2
-  "@shadcn/lint": ^0.2.0
-  "@types/node": ^24.19.0
-  commitizen: ^4.3.2
-  cz-git: ^1.14.0
-  lefthook: ^2.1.15
-  lint-staged: ^17.6.0
-  oxfmt: ^0.71.0
-  oxlint-plugin-react-doctor: ^0.9.14
-  oxlint-tsgolint: ^7.0.2003
-  oxlint: ^1.86.0
-  turbo: ^2.11.5
-  typescript: ^7.0.2
-  ultracite: ^7.12.2
-  "@inlang/paraglide-js": ^2.25.4
-  pino: ^10.3.1
-  pino-pretty: ^13.1.3
-  vitest: ^4.1.11
-  drizzle-orm: 1.0.0-rc.4
-  uuid: ^14.0.2
-  zod: ^4.6.5
-  "@cloudflare/workers-types": ^5.20260930.2
-  drizzle-kit: 1.0.0-rc.4
-  "@better-auth/drizzle-adapter": ^1.7.6
-  "@better-auth/passkey": ^1.7.6
-  better-auth: ^1.7.6
-  auth: ^1.7.6
-  "@types/react": ^19.3.0
-  react: ^19.3.0
   "@hono/zod-openapi": ^1.6.3
+  "@inlang/paraglide-js": ^2.25.4
+  "@react-email/render": ^2.1.0
+  "@react-three/fiber": ^9.8.1
   "@scalar/hono-api-reference": ^0.12.7
-  file-type: ^22.1.1
-  hono: ^4.13.12
-  resend: ^6.31.0
-  "@cloudflare/vite-plugin": ^1.62.2
-  vite: ^8.3.1
-  wrangler: ^4.144.0
-  "@cloudflare/vitest-plugin": ^1.3.3
+  "@shadcn/lint": ^0.2.0
+  "@tailwindcss/vite": ^4.3.3
   "@tiptap/core": ^3.31.3
   "@tiptap/extension-image": ^3.31.3
   "@tiptap/pm": ^3.31.3
   "@tiptap/starter-kit": ^3.31.3
   "@tiptap/static-renderer": ^3.31.3
+  "@types/node": ^24.19.0
+  "@types/react": ^19.3.0
+  "@types/react-dom": ^19.3.0
+  "@types/three": ^0.186.0
+  astro: ^7.3.5
+  auth: ^1.7.6
+  better-auth: ^1.7.6
+  class-variance-authority: ^0.7.1
+  cn: ^0.4.0
+  commitizen: ^4.3.2
+  cz-git: ^1.14.0
+  drizzle-kit: 1.0.0-rc.4
+  drizzle-orm: 1.0.0-rc.4
+  feed: ^6.0.0
+  file-type: ^22.1.1
+  hono: ^4.13.12
+  lefthook: ^2.1.15
+  lint-staged: ^17.6.0
+  lucide-react: ^1.49.0
+  oxfmt: ^0.71.0
+  oxlint-plugin-react-doctor: ^0.9.14
+  oxlint-tsgolint: ^7.0.2003
+  oxlint: ^1.86.0
+  pino-pretty: ^13.1.3
+  pino: ^10.3.1
+  react-dom: ^19.3.0
   react-email: ^6.11.0
-  "@react-email/render": ^2.1.0
+  react-error-boundary: ^6.1.6
+  react: ^19.3.0
+  resend: ^6.31.0
+  schema-dts: ^2.0.0
+  shadcn: ^4.21.1
+  tailwindcss: ^4.3.3
+  three: ^0.186.1
+  turbo: ^2.11.5
+  tw-animate-css: ^1.4.0
+  typescript: ^7.0.2
+  ultracite: ^7.12.2
+  uuid: ^14.0.2
+  vite: ^8.3.1
+  vitest: ^4.1.11
+  web-vitals: ^6.2.2
+  wrangler: ^4.144.0
+  zod: ^4.6.5
 
 # Dependencies trusted to run install scripts (pnpm blocks all others).
 allowBuilds:
   esbuild: true
   lefthook: true
   workerd: true
+minimumReleaseAgeExclude:
+  - "@shadcn/registry@0.1.0"
+  - shadcn@4.21.1

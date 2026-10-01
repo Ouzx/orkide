@@ -1,0 +1,42 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+
+import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
+import { listProjects } from "@/modules/portfolio/portfolio.data.ts";
+import EmptyState from "@/shared/components/EmptyState.astro";
+import PageHeader from "@/shared/components/PageHeader.astro";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { cachePage } from "@/shared/lib/cache.ts";
+import { pageAlternates } from "@/shared/lib/i18n.ts";
+import MediaSlot from "@/shared/media/MediaSlot.astro";
+import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+const projects = await listProjects(locale);
+cachePage(Astro, "projects");
+---
+
+<BaseLayout
+  title={m.portfolio_title({}, options)}
+  description={m.portfolio_description({}, options)}
+  alternates={pageAlternates("/portfolio")}
+  jsonLd={graph(locale, breadcrumbNode([{ name: m.portfolio_title({}, options), path: localizeHref("/portfolio", options) }]))}
+>
+  <PageHeader eyebrow={m.portfolio_title({}, options)} title={m.portfolio_title({}, options)} lead={m.portfolio_description({}, options)} />
+  <div class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
+    <div class="mb-10 overflow-hidden rounded-2xl border">
+      <MediaSlot id="portfolio-banner" />
+    </div>
+    {
+      projects.length > 0 ? (
+        <div class="grid gap-6 md:grid-cols-2">
+          {projects.map((project) => <ProjectCard project={project} />)}
+        </div>
+      ) : (
+        <EmptyState message={m.portfolio_empty({}, options)} />
+      )
+    }
+  </div>
+</BaseLayout>

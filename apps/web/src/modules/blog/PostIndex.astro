@@ -1,0 +1,57 @@
+---
+import { m } from "@orkide/i18n/messages";
+import type { PostSummary } from "@orkide/validators/content";
+import type { Term } from "@orkide/validators/taxonomy";
+
+import EmptyState from "@/shared/components/EmptyState.astro";
+import PageHeader from "@/shared/components/PageHeader.astro";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import type { Alternates } from "@/shared/lib/i18n.ts";
+import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+
+import CategoryNav from "./CategoryNav.astro";
+import Pagination from "./Pagination.astro";
+import PostCard from "./PostCard.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  alternates: Alternates;
+  /** Localized path of the first page of this listing. */
+  basePath: string;
+  posts: { items: PostSummary[]; nextCursor: string | null };
+  categories: readonly Term[];
+  currentCategory?: string | undefined;
+  /** The `?cursor` this page was requested with. */
+  cursor?: string | undefined;
+}
+
+const { title, description, alternates, basePath, posts, categories, currentCategory, cursor } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+const blogPath = alternates[locale] ?? basePath;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  alternates={alternates}
+  noindex={cursor !== undefined}
+  jsonLd={graph(locale, breadcrumbNode([{ name: m.blog_title({}, options), path: blogPath }]))}
+>
+  <PageHeader eyebrow={m.blog_title({}, options)} title={title} lead={description}>
+    <CategoryNav categories={categories} current={currentCategory} />
+  </PageHeader>
+  <div class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
+    {
+      posts.items.length > 0 ? (
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.items.map((post) => <PostCard post={post} />)}
+        </div>
+      ) : (
+        <EmptyState message={m.blog_empty({}, options)} />
+      )
+    }
+    <Pagination basePath={basePath} hasPrevious={cursor !== undefined} nextCursor={posts.nextCursor} />
+  </div>
+</BaseLayout>

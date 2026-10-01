@@ -1,0 +1,56 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { getTextDirection } from "@orkide/i18n/runtime";
+import "@orkide/ui/globals.css";
+import { Font } from "astro:assets";
+
+import SiteFooter from "@/shared/components/SiteFooter.astro";
+import SiteHeader from "@/shared/components/SiteHeader.astro";
+import { languageTag } from "@/shared/lib/i18n.ts";
+import Seo from "@/shared/seo/Seo.astro";
+import type { Props as SeoProps } from "@/shared/seo/Seo.astro";
+import ThemeScript from "@/shared/theme/ThemeScript.astro";
+
+type Props = SeoProps;
+
+const { locale } = Astro.locals;
+---
+
+<!doctype html>
+<html lang={languageTag[locale]} dir={getTextDirection(locale)} data-locale={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <ThemeScript />
+    <meta name="theme-color" content="#f9f8fc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f0d1a" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" />
+    <Seo {...Astro.props} />
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="bg-primary text-primary-foreground sr-only z-50 rounded-full px-4 py-2 font-medium focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+    >
+      {m.a11y_skip_to_content({}, { locale })}
+    </a>
+    <SiteHeader alternates={Astro.props.alternates} />
+    <main id="main" tabindex="-1" class="flex-1 outline-none">
+      <slot />
+    </main>
+    <SiteFooter />
+    <script>
+      import { startBeacon } from "@/shared/analytics/beacon.ts";
+
+      // Rendered by the server from the request locale; the API validates it again.
+      const { locale } = document.documentElement.dataset;
+      if (locale) {
+        startBeacon(locale);
+      }
+    </script>
+  </body>
+</html>

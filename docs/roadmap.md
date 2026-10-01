@@ -17,6 +17,8 @@ Planned work that is intentionally out of the first release. Each item is mirror
 
 ## Platform
 
+- **TypeScript 7.1 + `@astrojs/ts-content-mapper`** — type-check `.astro` files with `tsc` and drop the TypeScript 6 hook (ADR-016).
+- **Hero scene without R3F** — rewrite the WebGL bloom on plain `three` with named imports; R3F registers all of Three.js (≈235 KB gzip, loaded after idle).
 - **Vitest 5** — upgrade once `@cloudflare/vitest-plugin` supports it (ADR-011).
 
 - **`cf` CLI migration** — run `cf migrate` once the CLI leaves beta and supports monorepos (ADR-002).
