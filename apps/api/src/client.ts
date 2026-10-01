@@ -2,6 +2,9 @@ import { hc } from "hono/client";
 
 import type { AppType } from "./app.ts";
 
+/** RFC 9457 problem body of every API error (`ApiError`). */
+export type { Problem } from "./core/problem.ts";
+
 /**
  * Pre-instantiated RPC client type (Hono's `hcWithType` pattern). Emitting this as a declaration
  * lets consumers get end-to-end types without compiling the API's sources or its Worker types.

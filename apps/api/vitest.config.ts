@@ -14,6 +14,7 @@ export default defineConfig({
       miniflare: {
         bindings: {
           ADMIN_EMAILS: "owner@orkide.test",
+          ANALYTICS_API_TOKEN: "test-token",
           BETTER_AUTH_SECRET: "test-secret-test-secret-test-secret-0000",
           BETTER_AUTH_URL: "http://localhost:4321",
           ENVIRONMENT: "test",

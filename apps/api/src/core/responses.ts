@@ -1,6 +1,6 @@
 import type { z } from "@hono/zod-openapi";
 
-import { problemSchema } from "./errors.ts";
+import { problemSchema } from "./problem.ts";
 
 /** OpenAPI response object for a JSON body. */
 export const json = <T extends z.ZodType>(schema: T, description: string) =>
@@ -16,6 +16,7 @@ const PROBLEM_DESCRIPTIONS = {
   415: "Unsupported media type",
   422: "Validation failed",
   429: "Rate limited",
+  502: "Upstream service unavailable",
   503: "Feature disabled",
 } as const;
 

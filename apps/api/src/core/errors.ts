@@ -1,4 +1,4 @@
-import { z } from "@hono/zod-openapi";
+import type { z } from "@hono/zod-openapi";
 import type { Locale } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
 import type { Context, ErrorHandler, NotFoundHandler } from "hono";
@@ -6,23 +6,7 @@ import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 
 import type { AppEnv } from "./env.ts";
-
-/** Stable, machine-readable error codes. Clients branch on `code`, never on `detail`. */
-export const errorCodes = [
-  "bad_request",
-  "unauthorized",
-  "forbidden",
-  "not_found",
-  "conflict",
-  "payload_too_large",
-  "unsupported_media_type",
-  "validation_failed",
-  "rate_limited",
-  "feature_disabled",
-  "internal",
-] as const;
-
-export type ErrorCode = (typeof errorCodes)[number];
+import type { ErrorCode, Problem } from "./problem.ts";
 
 const STATUS_BY_CODE = {
   bad_request: 400,
@@ -35,6 +19,7 @@ const STATUS_BY_CODE = {
   rate_limited: 429,
   unauthorized: 401,
   unsupported_media_type: 415,
+  upstream_unavailable: 502,
   validation_failed: 422,
 } as const satisfies Record<ErrorCode, ContentfulStatusCode>;
 
@@ -50,6 +35,7 @@ const TITLES = {
   rate_limited: m.error_rate_limited,
   unauthorized: m.error_unauthorized,
   unsupported_media_type: m.error_unsupported_media_type,
+  upstream_unavailable: m.error_upstream_unavailable,
   validation_failed: m.error_validation,
 } as const satisfies Record<
   ErrorCode,
@@ -58,29 +44,6 @@ const TITLES = {
 
 const titleFor = (code: ErrorCode, locale: Locale): string =>
   TITLES[code]({}, { locale });
-
-/** RFC 9457 problem details, extended with a stable `code` and optional field issues. */
-export const problemSchema = z
-  .object({
-    code: z.enum(errorCodes),
-    detail: z.string().optional(),
-    instance: z.string(),
-    issues: z
-      .array(
-        z.object({
-          message: z.string(),
-          path: z.array(z.union([z.string(), z.number()])),
-        })
-      )
-      .optional(),
-    requestId: z.string(),
-    status: z.number().int(),
-    title: z.string(),
-    type: z.string(),
-  })
-  .openapi("Problem");
-
-export type Problem = z.infer<typeof problemSchema>;
 
 /** Throw from any handler or service to produce a problem response. */
 export class ApiError extends HTTPException {

@@ -63,7 +63,7 @@ const vitals = createRoute({
   request: { query: statsRangeQuerySchema },
   responses: {
     200: json(WebVitals, "p75 per Core Web Vital"),
-    ...problems(401, 403),
+    ...problems(401, 403, 502),
   },
   security: [{ session: [] }],
   summary: "Field Web Vitals",

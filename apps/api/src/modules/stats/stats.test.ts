@@ -20,6 +20,14 @@ const analyticsResponse = () =>
     Response.json({ data: [{ path: "/en", views: "42", visitors: "17" }] })
   );
 
+const vitalsResponse = () =>
+  Promise.resolve(
+    Response.json({ data: [{ name: "LCP", p75: "1800.5", samples: "9" }] })
+  );
+
+const deniedResponse = () =>
+  Promise.resolve(new Response("denied", { status: 403 }));
+
 const runCron = async (cron: string, at: Date) => {
   const controller = createScheduledController({
     cron,
@@ -79,6 +87,64 @@ describe("daily rollup", () => {
     await expect(overview.json()).resolves.toMatchObject({
       topPaths: [{ path: "/en", views: 42 }],
       totals: { views: 42, visitors: 17 },
+    });
+  });
+});
+
+describe("web vitals without or with analytics credentials", () => {
+  const configuredToken = env.ANALYTICS_API_TOKEN;
+
+  afterEach(() => {
+    env.ANALYTICS_API_TOKEN = configuredToken;
+    vi.restoreAllMocks();
+  });
+
+  it("returns an empty list, without calling upstream, when not configured", async () => {
+    env.ANALYTICS_API_TOKEN = "";
+    const upstream = vi.spyOn(globalThis, "fetch");
+    const { cookie } = await signInAs("viewer");
+
+    const response = await request("/api/admin/stats/vitals?days=30", {
+      headers: { cookie },
+    });
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toStrictEqual([]);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
+  it("skips the daily rollup cleanly when not configured", async () => {
+    env.ANALYTICS_API_TOKEN = "  ";
+    const upstream = vi.spyOn(globalThis, "fetch");
+
+    await expect(rollup("2026-01-01")).resolves.toBe(0);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
+  it("serves p75 values when configured", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(vitalsResponse);
+    const { cookie } = await signInAs("viewer");
+
+    const response = await request("/api/admin/stats/vitals?days=30", {
+      headers: { cookie },
+    });
+
+    await expect(response.json()).resolves.toStrictEqual([
+      { name: "LCP", p75: 1800.5, samples: 9 },
+    ]);
+  });
+
+  it("surfaces a real upstream failure as a problem response", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(deniedResponse);
+    const { cookie } = await signInAs("viewer");
+
+    const response = await request("/api/admin/stats/vitals?days=30", {
+      headers: { cookie },
+    });
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toMatchObject({
+      code: "upstream_unavailable",
     });
   });
 });
