@@ -22,6 +22,11 @@ export default defineConfig({
   jsPlugins: [...(jsPlugins.jsPlugins ?? []), ...(shadcn.jsPlugins ?? [])],
   overrides: [
     {
+      // Hono/Astro middleware call `await next()` and then continue; that is not a Node callback.
+      files: ["apps/**", "packages/**"],
+      rules: { "node/callback-return": "off" },
+    },
+    {
       // Column order in a table definition is the DDL column order; it is meaningful, not alphabetical.
       files: ["packages/db/src/schema/**", "packages/db/src/columns.ts"],
       rules: { "eslint/sort-keys": "off" },

@@ -4,6 +4,21 @@ Short, dated records of decisions that shape the codebase. Newest first. Each en
 
 ## 2026-10-01 — Foundations
 
+### ADR-011 · Vitest 4 across the workspace
+
+- **Context:** `@cloudflare/vitest-plugin` (tests inside `workerd`) supports Vitest `^4.1` only.
+- **Decision:** the catalog pins Vitest 4; runtime-faithful tests outweigh the newer major.
+- **Consequences:** upgrade to Vitest 5 when the plugin supports it (roadmap).
+
+### ADR-012 · Cloudflare Flagship for feature flags
+
+- **Decision:** flags live in the `orkide` Flagship app; `apps/api/src/core/flags.ts` is the typed registry (key, fallback, visibility). Public flags are served by `GET /api/flags`; any route can be gated with `requireFlag()`.
+
+### ADR-013 · KV response cache with versioned namespaces
+
+- **Context:** the Cache API is a no-op on `*.workers.dev`.
+- **Decision:** public reads go through `cached()` (KV); writes call `invalidate(namespace)`, which bumps a version key so every entry of that namespace is skipped immediately.
+
 ### ADR-008 · Drizzle ORM v1 (release candidate)
 
 - **Context:** Drizzle v1 is at RC with a frozen API; it ships Relational Queries v2, built-in zod schema generation (`drizzle-orm/zod`) and per-migration folders. Migrating from 0.x later is costly.

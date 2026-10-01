@@ -22,5 +22,8 @@
   "error_rate_limited": "Çok fazla istek gönderildi. Lütfen biraz sonra tekrar deneyin.",
   "error_payload_too_large": "Yüklenen dosya çok büyük.",
   "error_unsupported_media_type": "Bu dosya türüne izin verilmiyor.",
-  "error_internal": "Bizim tarafımızda bir sorun oluştu."
+  "error_internal": "Bizim tarafımızda bir sorun oluştu.",
+  "error_bad_request": "İstek anlaşılamadı.",
+  "error_conflict": "Bu işlem mevcut verilerle çakışıyor.",
+  "error_feature_disabled": "Bu özellik geçici olarak kullanılamıyor."
 }

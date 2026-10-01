@@ -22,5 +22,8 @@
   "error_rate_limited": "Too many requests. Please try again in a moment.",
   "error_payload_too_large": "The uploaded file is too large.",
   "error_unsupported_media_type": "This file type is not allowed.",
-  "error_internal": "Something went wrong on our side."
+  "error_internal": "Something went wrong on our side.",
+  "error_bad_request": "The request could not be understood.",
+  "error_conflict": "This conflicts with existing data.",
+  "error_feature_disabled": "This feature is temporarily unavailable."
 }

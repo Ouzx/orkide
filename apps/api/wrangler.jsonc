@@ -1,0 +1,89 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "orkide-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
+  // Run next to D1 rather than next to the visitor: most requests make several sequential queries.
+  "placement": { "mode": "smart" },
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "invocation_logs": true },
+    "traces": { "enabled": true },
+  },
+  "upload_source_maps": true,
+
+  // Production values. Local development overrides them through `.dev.vars`.
+  "vars": {
+    "ENVIRONMENT": "production",
+    "LOG_LEVEL": "info",
+    "BETTER_AUTH_URL": "https://orkide-web.ouzx.workers.dev",
+    "ADMIN_EMAILS": "oguzhankandakoglu@gmail.com",
+    "CONTACT_INBOX_EMAIL": "oguzhankandakoglu@gmail.com",
+    "EMAIL_FROM": "Orkide <onboarding@resend.dev>",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "orkide",
+      "database_id": "a9cb3b69-25b4-45e2-bb64-1f3b0ec70c15",
+      // Drizzle v1 writes one folder per migration.
+      "migrations_dir": "../../packages/db/migrations",
+      "migrations_pattern": "../../packages/db/migrations/*/migration.sql",
+    },
+  ],
+  "kv_namespaces": [
+    { "binding": "CACHE", "id": "17e74ac7da27422db5c97ec81376a202" },
+  ],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "orkide-media" }],
+  "images": { "binding": "IMAGES" },
+  "analytics_engine_datasets": [
+    { "binding": "ANALYTICS", "dataset": "orkide_events" },
+  ],
+  "flagship": [
+    { "binding": "FLAGS", "app_id": "0a703155-3c83-4c41-b221-450fb2357bbe" },
+  ],
+  "ratelimits": [
+    // General API traffic, keyed by client IP.
+    {
+      "name": "RATE_LIMIT_API",
+      "namespace_id": "1001",
+      "simple": { "limit": 120, "period": 60 },
+    },
+    // Abuse-prone endpoints (sign-in, contact form, uploads).
+    {
+      "name": "RATE_LIMIT_STRICT",
+      "namespace_id": "1002",
+      "simple": { "limit": 10, "period": 60 },
+    },
+  ],
+  "queues": {
+    "producers": [{ "binding": "JOBS", "queue": "orkide-jobs" }],
+    "consumers": [
+      {
+        "queue": "orkide-jobs",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "retry_delay": 30,
+        "dead_letter_queue": "orkide-jobs-dlq",
+      },
+    ],
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "LIVE_VISITORS", "class_name": "LiveVisitors" }],
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LiveVisitors"] }],
+  "triggers": {
+    "crons": [
+      // Publish posts and projects whose `scheduledAt` has passed.
+      "*/5 * * * *",
+      // Roll yesterday's Analytics Engine events into `daily_stat`.
+      "15 0 * * *",
+    ],
+  },
+}

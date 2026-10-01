@@ -17,6 +17,8 @@ Planned work that is intentionally out of the first release. Each item is mirror
 
 ## Platform
 
+- **Vitest 5** — upgrade once `@cloudflare/vitest-plugin` supports it (ADR-011).
+
 - **`cf` CLI migration** — run `cf migrate` once the CLI leaves beta and supports monorepos (ADR-002).
 - **Custom domain** — move off `workers.dev`, enable zone features (Image transformations via URL, Cache Rules, Markdown for Agents) and verify a Resend sending domain.
 - **Mobile app** — `apps/mobile` with Expo, reusing `api-client`, `validators`, `i18n`.
