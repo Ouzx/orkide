@@ -60,9 +60,11 @@ const { locale } = Astro.locals;
     <SiteFooter />
     <script>
       import { startBeacon } from "@/shared/analytics/beacon.ts";
+      import { joinPresence } from "@/shared/analytics/presence.ts";
       import { startSpotlight } from "@/shared/interactions/spotlight.ts";
 
       startSpotlight();
+      joinPresence();
 
       // Rendered by the server from the request locale; the API validates it again.
       const { locale } = document.documentElement.dataset;

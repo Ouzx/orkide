@@ -1,3 +1,4 @@
+import { locales } from "@orkide/i18n";
 import type { APIRoute } from "astro";
 
 import { cachePage } from "@/shared/lib/cache.ts";
@@ -18,6 +19,7 @@ export const GET: APIRoute = (context) => {
     "Allow: /api/docs",
     "Allow: /api/openapi.json",
     "Disallow: /api/",
+    ...locales.map((locale) => `Disallow: /${locale}/admin`),
     "",
     `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
     "",

@@ -1,0 +1,73 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+
+import AdminLayout from "@/modules/admin/AdminLayout.astro";
+import { AdminApp } from "@/modules/admin/admin-app.tsx";
+import { getAdminSession } from "@/modules/admin/session.server.ts";
+import { SignIn } from "@/modules/admin/sign-in.tsx";
+import Picture from "@/shared/media/Picture.astro";
+
+/*
+ * Every dashboard URL lands here. The session is checked on the server (over the Service
+ * Binding) before anything renders; the dashboard itself is a client-side app (TanStack Router +
+ * Query) because it is private, interactive and never cached. The API enforces RBAC again on
+ * every request.
+ */
+const { locale } = Astro.locals;
+const options = { locale };
+const basePath = localizeHref("/admin", options);
+const signInPath = `${basePath}/sign-in`;
+const isSignIn = Astro.params.path === "sign-in";
+const session = await getAdminSession(Astro.request);
+const user = session.status === "ok" ? session.user : undefined;
+const isRateLimited = session.status === "rate-limited";
+
+if (isRateLimited) {
+  Astro.response.status = 429;
+  Astro.response.headers.set("retry-after", String(session.retryAfter));
+}
+
+if (!(user || isSignIn || isRateLimited)) {
+  return Astro.redirect(signInPath, 303);
+}
+if (user && isSignIn) {
+  return Astro.redirect(basePath, 303);
+}
+---
+
+<AdminLayout
+  title={`${isSignIn ? m.admin_sign_in_title({}, options) : m.admin_title({}, options)} · ${m.site_name({}, options)}`}
+>
+  {
+    isSignIn ? (
+      <div class="fixed inset-0 z-0" aria-hidden="true">
+        <Picture id="admin-login" sizes="100vw" priority class="size-full" />
+        {/* Dims the artwork with the theme background so the glass card stays AA-readable. */}
+        <div class="absolute inset-0 bg-background/70 dark:bg-background/60" />
+      </div>
+    ) : null
+  }
+  {
+    isRateLimited ? (
+      <main class="grid min-h-dvh place-items-center p-6">
+        <p
+          role="alert"
+          class="max-w-md rounded-2xl border glass p-6 text-center text-foreground"
+        >
+          {m.error_rate_limited({}, options)}
+        </p>
+      </main>
+    ) : user ? (
+      <AdminApp
+        client:only="react"
+        user={user}
+        locale={locale}
+        basePath={basePath}
+        siteHref={localizeHref("/", options)}
+      />
+    ) : (
+      <SignIn client:only="react" locale={locale} callbackPath={basePath} />
+    )
+  }
+</AdminLayout>

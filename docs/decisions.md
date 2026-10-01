@@ -92,3 +92,9 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** hand-made art arrives as large PNG/MP4 originals; the site needs responsive AVIF/WebP, posters, icons and stable URLs for crawlers and email clients.
 - **Decision:** originals stay out of git (`design/incoming/`); `scripts/media.ts` (sharp + ffmpeg) writes responsive variants and a typed manifest into `src/assets/media/` (imported as URLs, so Vite fingerprints them and they are served immutable), stable-URL files into `public/media/`, and icons into `public/`. Pages use `<Picture>`/`<MediaSlot>`; the hero keeps the artwork as its LCP image and layers WebGL pollen over it.
 - **Consequences:** builds need no image processing at runtime (no Images binding transformations for site art); regenerating is one command.
+
+### ADR-018 · Admin is a client-side app with client Paraglide
+
+- **Context:** the dashboard is private, interactive and never cached, so ADR-015's server-rendered-strings rule buys nothing there, while threading every string through props would bloat each admin component.
+- **Decision:** `/admin/**` is one Astro page that checks the session on the server over the Service Binding, then mounts a `client:only` React app (TanStack Router + Query) that imports Paraglide messages directly. RBAC is enforced again by the API on every request. A 429 from `get-session` is retried quietly (backoff, `Retry-After` honoured, capped) and then shown as a translated message with a 429 status; only a real 401 or an absent session redirects to sign-in.
+- **Consequences:** the admin bundle carries the message catalog (public pages still do not); the admin shell stays `private, no-store` and `noindex`.

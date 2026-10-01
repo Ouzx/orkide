@@ -1,0 +1,42 @@
+---
+import "@orkide/ui/globals.css";
+import { getTextDirection } from "@orkide/i18n/runtime";
+import { Font } from "astro:assets";
+
+import { languageTag } from "@/shared/lib/i18n.ts";
+import ThemeScript from "@/shared/theme/ThemeScript.astro";
+
+interface Props {
+  title: string;
+}
+
+/*
+ * Shell for the dashboard: same tokens, fonts and theme bootstrap as the site, but no site chrome,
+ * no analytics beacon, and never indexed or cached.
+ */
+const { title } = Astro.props;
+const { locale } = Astro.locals;
+Astro.response.headers.set("cache-control", "private, no-store");
+Astro.response.headers.set("x-robots-tag", "noindex, nofollow");
+---
+
+<!doctype html>
+<html
+  lang={languageTag[locale]}
+  dir={getTextDirection(locale)}
+  data-locale={locale}
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <ThemeScript />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-dvh">
+    <slot />
+  </body>
+</html>
