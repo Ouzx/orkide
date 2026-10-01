@@ -15,7 +15,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "wrangler deploy",
-    "cf-typegen": "wrangler types --strict-vars=false",
+    "cf-typegen": "wrangler types --strict-vars=false --env-file .dev.vars.example",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "typecheck": "tsc --noEmit",

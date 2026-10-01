@@ -11,6 +11,3 @@ runs:
         cache: pnpm
     - run: pnpm install --frozen-lockfile
       shell: bash
-    # `wrangler types` derives the secret bindings from `.dev.vars`, which is git-ignored.
-    - run: cp apps/api/.dev.vars.example apps/api/.dev.vars
-      shell: bash
