@@ -25,7 +25,7 @@
     "ADMIN_EMAILS": "oguzhankandakoglu@gmail.com",
     "CONTACT_INBOX_EMAIL": "oguzhankandakoglu@gmail.com",
     "EMAIL_FROM": "Orkide <onboarding@resend.dev>",
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFLfPVF6jH6xMnSu",
     "CLOUDFLARE_ACCOUNT_ID": "55e0c641ab2a26144df0acd1b4ce3371",
   },
 

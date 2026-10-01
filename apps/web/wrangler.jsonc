@@ -19,7 +19,7 @@
   "assets": { "binding": "ASSETS" },
 
   "vars": {
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFLfPVF6jH6xMnSu",
   },
 
   // `/api/*` is forwarded to the API Worker in-process: same origin, no CORS, no network hop.
