@@ -21,11 +21,13 @@ export default defineConfig({
           GITHUB_CLIENT_ID: "test",
           GITHUB_CLIENT_SECRET: "test",
           LOG_LEVEL: "warn",
+          RESEND_API_KEY: "re_test",
           TEST_MIGRATIONS: await readD1Migrations({
             migrationsDir,
             migrationsPattern: `${migrationsDir}/*/migration.sql`,
             projectPath: migrationsDir,
           }),
+          TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
         },
       },
       wrangler: { configPath: "./wrangler.jsonc" },
