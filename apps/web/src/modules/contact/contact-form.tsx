@@ -86,9 +86,9 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
     return (
       <div
         aria-live="polite"
-        className="bg-card flex flex-col items-start gap-3 rounded-2xl border p-8"
+        className="flex flex-col items-start gap-3 rounded-2xl border glass p-8"
       >
-        <CircleCheck aria-hidden="true" className="text-primary size-8" />
+        <CircleCheck aria-hidden="true" className="size-8 text-primary" />
         <h2 className="text-xl font-semibold">{labels.successTitle}</h2>
         <p className="text-muted-foreground">{labels.successBody}</p>
       </div>
@@ -116,10 +116,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
   };
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-card/60 rounded-2xl border p-6 sm:p-8"
-    >
+    <form onSubmit={onSubmit} className="rounded-2xl border glass p-6 sm:p-8">
       <FieldGroup>
         <div className="grid gap-6 sm:grid-cols-2">
           <Field data-invalid={errorFor("name") ? true : undefined}>
@@ -151,7 +148,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
         <Field data-invalid={errorFor("subject") ? true : undefined}>
           <FieldLabel htmlFor="contact-subject">
             {labels.subject}{" "}
-            <span className="text-muted-foreground font-normal">
+            <span className="font-normal text-muted-foreground">
               ({labels.optional})
             </span>
           </FieldLabel>
@@ -180,7 +177,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
         <div ref={turnstileContainer} />
 
         {state.status === "failed" && state.message ? (
-          <p role="alert" className="text-destructive text-sm">
+          <p role="alert" className="text-sm text-destructive">
             {state.message}
           </p>
         ) : null}

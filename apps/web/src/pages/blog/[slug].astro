@@ -13,7 +13,11 @@ import { notFound } from "@/shared/lib/not-found.ts";
 import { documentAlternates, formatDate } from "@/shared/lib/i18n.ts";
 import MediaImage from "@/shared/media/MediaImage.astro";
 import { absoluteUrl } from "@/shared/site.ts";
-import { blogPostingNode, breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+import {
+  blogPostingNode,
+  breadcrumbNode,
+  graph,
+} from "@/shared/seo/json-ld.ts";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -54,7 +58,10 @@ Astro.response.headers.set("vary", "accept");
   )}
 >
   <article class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 sm:pt-16">
-    <a href={blogPath} class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors">
+    <a
+      href={blogPath}
+      class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
       <ArrowLeft aria-hidden="true" className="size-4" />
       {m.blog_back({}, options)}
     </a>
@@ -64,22 +71,33 @@ Astro.response.headers.set("vary", "accept");
         post.category && (
           <a
             href={localizeHref(`/blog/category/${post.category.slug}`, options)}
-            class="text-primary font-mono text-xs tracking-widest uppercase hover:underline"
+            class="font-mono text-xs tracking-widest text-primary uppercase hover:underline"
           >
             {post.category.name}
           </a>
         )
       }
-      <h1 class="text-title mt-3 font-semibold text-balance">{post.title}</h1>
-      <p class="text-lead text-muted-foreground mt-5 text-pretty">{post.summary}</p>
-      <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-y py-4">
-        <PostMeta publishedAt={post.publishedAt} readingTimeMinutes={post.readingTimeMinutes} />
+      <h1 class="mt-3 text-title font-semibold text-balance">{post.title}</h1>
+      <p class="mt-5 text-lead text-pretty text-muted-foreground">
+        {post.summary}
+      </p>
+      <div
+        class="mt-6 flex flex-wrap items-center justify-between gap-4 border-y py-4"
+      >
+        <PostMeta
+          publishedAt={post.publishedAt}
+          readingTimeMinutes={post.readingTimeMinutes}
+        />
         {
-          post.publishedAt && post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
-            <p class="text-muted-foreground font-mono text-xs tracking-wide uppercase">
-              {m.blog_updated({}, options)} <time datetime={post.updatedAt}>{formatDate(post.updatedAt, locale)}</time>
-            </p>
-          )
+          post.publishedAt &&
+            post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
+              <p class="font-mono text-xs tracking-wide text-muted-foreground uppercase">
+                {m.blog_updated({}, options)}{" "}
+                <time datetime={post.updatedAt}>
+                  {formatDate(post.updatedAt, locale)}
+                </time>
+              </p>
+            )
         }
       </div>
     </header>
@@ -87,8 +105,17 @@ Astro.response.headers.set("vary", "accept");
     {
       post.cover && (
         <figure class="mt-10">
-          <MediaImage media={post.cover} sizes="(min-width: 768px) 720px, 100vw" priority class="aspect-[16/9] rounded-2xl border" />
-          {post.cover.caption && <figcaption class="text-muted-foreground mt-3 text-center text-sm">{post.cover.caption}</figcaption>}
+          <MediaImage
+            media={post.cover}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+            class="aspect-[16/9] rounded-2xl border"
+          />
+          {post.cover.caption && (
+            <figcaption class="mt-3 text-center text-sm text-muted-foreground">
+              {post.cover.caption}
+            </figcaption>
+          )}
         </figure>
       )
     }
@@ -99,14 +126,25 @@ Astro.response.headers.set("vary", "accept");
     {
       post.attachments.length > 0 && (
         <section aria-labelledby="attachments" class="mt-16">
-          <h2 id="attachments" class="text-lg font-semibold">{m.blog_attachments({}, options)}</h2>
+          <h2 id="attachments" class="text-lg font-semibold">
+            {m.blog_attachments({}, options)}
+          </h2>
           <ul class="mt-4 space-y-2">
             {post.attachments.map((attachment) => (
               <li>
-                <a href={attachment.url} class="hover:border-primary/50 flex items-center gap-3 rounded-xl border p-3 text-sm transition-colors" data-astro-prefetch="false">
-                  <Paperclip aria-hidden="true" className="text-muted-foreground size-4" />
+                <a
+                  href={attachment.url}
+                  class="live-border flex items-center gap-3 rounded-xl border glass p-3 text-sm"
+                  data-astro-prefetch="false"
+                >
+                  <Paperclip
+                    aria-hidden="true"
+                    className="text-muted-foreground size-4"
+                  />
                   <span class="flex-1 truncate">{attachment.alt}</span>
-                  <span class="text-muted-foreground font-mono text-xs">{attachment.mimeType.split("/")[1]?.toUpperCase()}</span>
+                  <span class="font-mono text-xs text-muted-foreground">
+                    {attachment.mimeType.split("/")[1]?.toUpperCase()}
+                  </span>
                 </a>
               </li>
             ))}

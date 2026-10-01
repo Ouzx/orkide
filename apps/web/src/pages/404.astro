@@ -15,11 +15,25 @@ const options = { locale };
 Astro.response.status = 404;
 ---
 
-<BaseLayout title={m.not_found_title({}, options)} description={m.not_found_body({}, options)} alternates={pageAlternates("/")} noindex>
-  <section class="mx-auto flex max-w-2xl flex-col items-center px-4 py-32 text-center">
+<BaseLayout
+  title={m.not_found_title({}, options)}
+  description={m.not_found_body({}, options)}
+  alternates={pageAlternates("/")}
+  noindex
+>
+  <section
+    class="mx-auto flex max-w-2xl flex-col items-center px-4 py-32 text-center"
+  >
     <p class="text-gradient font-mono text-7xl font-semibold">404</p>
-    <h1 class="mt-6 text-3xl font-semibold tracking-tight">{m.not_found_title({}, options)}</h1>
-    <p class="text-muted-foreground mt-4">{m.not_found_body({}, options)}</p>
-    <a href={localizeHref("/", options)} class={cn(buttonVariants({ size: "pill" }), "mt-10")}>{m.not_found_home({}, options)}</a>
+    <h1 class="mt-6 text-3xl font-semibold tracking-tight">
+      {m.not_found_title({}, options)}
+    </h1>
+    <p class="mt-4 text-muted-foreground">{m.not_found_body({}, options)}</p>
+    <a
+      href={localizeHref("/", options)}
+      class={cn(buttonVariants({ size: "pill" }), "mt-10")}
+    >
+      {m.not_found_home({}, options)}
+    </a>
   </section>
 </BaseLayout>

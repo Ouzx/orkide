@@ -176,11 +176,11 @@
   }
 
   body {
-    @apply bg-background text-foreground min-h-dvh font-sans;
+    @apply min-h-dvh bg-background font-sans text-foreground;
   }
 
   :focus-visible {
-    @apply outline-ring outline-2 outline-offset-2;
+    @apply outline-2 outline-offset-2 outline-ring;
   }
 
   ::selection {
@@ -211,30 +211,30 @@
 @layer components {
   /* Long-form content rendered from Tiptap HTML. */
   .prose-orkide {
-    @apply text-foreground/90 text-lg leading-8;
+    @apply text-lg leading-8 text-foreground/90;
 
     & > * + * {
       @apply mt-6;
     }
 
     & h2 {
-      @apply text-foreground mt-14 scroll-mt-24 text-3xl font-semibold tracking-tight;
+      @apply mt-14 scroll-mt-24 text-3xl font-semibold tracking-tight text-foreground;
     }
 
     & h3 {
-      @apply text-foreground mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight;
+      @apply mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground;
     }
 
     & h4 {
-      @apply text-foreground mt-8 text-xl font-semibold;
+      @apply mt-8 text-xl font-semibold text-foreground;
     }
 
     & a {
-      @apply text-primary decoration-primary/40 hover:decoration-primary underline underline-offset-4 transition-colors;
+      @apply text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary;
     }
 
     & strong {
-      @apply text-foreground font-semibold;
+      @apply font-semibold text-foreground;
     }
 
     & ul {
@@ -250,15 +250,15 @@
     }
 
     & blockquote {
-      @apply border-primary text-muted-foreground border-l-2 pl-6 italic;
+      @apply border-l-2 border-primary pl-6 text-muted-foreground italic;
     }
 
     & code:not(pre code) {
-      @apply bg-muted rounded-md px-1.5 py-0.5 font-mono text-[0.9em];
+      @apply rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.9em];
     }
 
     & pre {
-      @apply bg-card overflow-x-auto rounded-xl border p-5 font-mono text-sm leading-6;
+      @apply overflow-x-auto rounded-xl border bg-card p-5 font-mono text-sm leading-6;
     }
 
     & hr {
@@ -287,4 +287,203 @@
   );
   background-clip: text;
   color: transparent;
+}
+
+/*
+ * ─── Ambient light & glass ────────────────────────────────────────────────────────────────
+ * A fixed, very faint aurora behind every page gives glass surfaces something to refract.
+ * Gradients only (no filters), so it costs one composited layer.
+ */
+@layer base {
+  body::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background:
+      radial-gradient(
+        60rem 40rem at 8% -12%,
+        color-mix(in oklch, var(--orchid) 11%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        48rem 36rem at 100% 35%,
+        color-mix(in oklch, var(--aurora) 8%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        40rem 30rem at 30% 110%,
+        color-mix(in oklch, var(--orchid) 7%, transparent),
+        transparent 70%
+      );
+  }
+}
+
+/* Frosted surface: translucent fill, blur + saturation, a hairline top highlight. */
+@utility glass {
+  background-color: color-mix(in oklch, var(--card) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklch, var(--foreground) 7%, transparent),
+    0 1px 2px 0 oklch(0 0 0 / 4%);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+
+/* Lighter variant for small chips and pills. */
+@utility glass-subtle {
+  background-color: color-mix(in oklch, var(--background) 45%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+}
+
+/*
+ * ─── Live border ──────────────────────────────────────────────────────────────────────────
+ * On hover/focus, an orchid → aurora arc travels around the element's border. `@property`
+ * makes the angle animatable; the mask keeps only the 1px ring. Static arc for reduced motion.
+ */
+@property --orkide-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes orkide-orbit {
+  to {
+    --orkide-angle: 360deg;
+  }
+}
+
+@utility live-border {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    content: "";
+    background: conic-gradient(
+      from var(--orkide-angle),
+      transparent 0%,
+      transparent 52%,
+      var(--orchid) 70%,
+      var(--aurora) 82%,
+      transparent 96%
+    );
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out-expo);
+    animation: orkide-orbit 3.2s linear infinite paused;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+
+  &:hover::before,
+  &:focus-within::before {
+    opacity: 1;
+    animation-play-state: running;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      --orkide-angle: 120deg;
+      animation: none;
+    }
+  }
+}
+
+/*
+ * ─── Spotlight ────────────────────────────────────────────────────────────────────────────
+ * A soft glow that follows the pointer inside the element. `--spot-x/--spot-y` are set by one
+ * delegated, rAF-throttled listener (`data-spotlight`); without it the glow sits at the center.
+ */
+@utility spotlight {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    content: "";
+    background: radial-gradient(
+      26rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      color-mix(in oklch, var(--orchid) 13%, transparent),
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity 500ms var(--ease-out-expo);
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+/* A light sweep across a call to action on hover. */
+@utility shine {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      oklch(1 0 0 / 35%) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+  }
+
+  &:hover::after {
+    transform: translateX(120%);
+    transition: transform 900ms var(--ease-out-expo);
+  }
+}
+
+/* Link underline that draws in from the left. */
+@utility link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 350ms var(--ease-out-expo);
+
+  &:hover,
+  &:focus-visible,
+  &[aria-current] {
+    background-size: 100% 1px;
+  }
+}
+
+/*
+ * ─── Reveal on scroll ─────────────────────────────────────────────────────────────────────
+ * Scroll-driven (no JavaScript, off the main thread): elements ease in as they enter the
+ * viewport. Browsers without scroll timelines, and reduced-motion visitors, see them as is.
+ */
+@keyframes orkide-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.985);
+  }
+}
+
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: orkide-reveal linear both;
+      animation-range: entry 0% entry 60%;
+      animation-timeline: view();
+    }
+  }
 }

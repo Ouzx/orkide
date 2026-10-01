@@ -19,20 +19,30 @@ const href = localizeHref(`/blog/${post.slug}`, { locale });
 const Heading = `h${headingLevel}` as const;
 ---
 
-<article class="group bg-card/60 hover:border-primary/40 has-focus-visible:ring-ring relative flex flex-col overflow-hidden rounded-2xl border transition-colors has-focus-visible:ring-2">
+<article
+  data-spotlight
+  class="group live-border spotlight flex reveal flex-col overflow-hidden rounded-2xl border glass transition-transform duration-500 ease-out-expo hover:-translate-y-1 has-focus-visible:ring-2 has-focus-visible:ring-ring"
+>
   {
     post.cover && (
-      <MediaImage media={post.cover} sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw" class="aspect-[16/9] border-b" />
+      <MediaImage
+        media={post.cover}
+        sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw"
+        class="aspect-[16/9] border-b"
+      />
     )
   }
   <div class="flex flex-1 flex-col gap-3 p-6">
-    <PostMeta publishedAt={post.publishedAt} readingTimeMinutes={post.readingTimeMinutes} />
+    <PostMeta
+      publishedAt={post.publishedAt}
+      readingTimeMinutes={post.readingTimeMinutes}
+    />
     <Heading class="text-xl font-semibold tracking-tight text-balance">
       <a href={href} class="outline-none after:absolute after:inset-0">
         {post.title}
       </a>
     </Heading>
-    <p class="text-muted-foreground line-clamp-3 text-pretty">{post.summary}</p>
+    <p class="line-clamp-3 text-pretty text-muted-foreground">{post.summary}</p>
     <div class="mt-auto pt-2">
       <TagList tags={post.tags} label={m.blog_tags({}, { locale })} />
     </div>

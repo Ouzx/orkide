@@ -19,7 +19,6 @@
     "@orkide/i18n": "workspace:*",
     "@orkide/ui": "workspace:*",
     "@orkide/validators": "workspace:*",
-    "@react-three/fiber": "catalog:",
     "astro": "catalog:",
     "feed": "catalog:",
     "hono": "catalog:",

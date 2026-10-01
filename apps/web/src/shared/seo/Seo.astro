@@ -60,9 +60,22 @@ const otherLocales = Object.keys(alternates).filter(
     <link rel="alternate" hreflang={hreflang} href={absoluteUrl(href)} />
   ))
 }
-{defaultHref && <link rel="alternate" hreflang="x-default" href={absoluteUrl(defaultHref)} />}
+{
+  defaultHref && (
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={absoluteUrl(defaultHref)}
+    />
+  )
+}
 {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
-<link rel="alternate" type="application/rss+xml" title={m.feed_title({ site: siteName }, { locale })} href={`/${locale}/rss.xml`} />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={m.feed_title({ site: siteName }, { locale })}
+  href={`/${locale}/rss.xml`}
+/>
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={siteName} />
@@ -70,11 +83,34 @@ const otherLocales = Object.keys(alternates).filter(
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:locale" content={languageTag[locale].replace("-", "_")} />
-{otherLocales.map((other) => <meta property="og:locale:alternate" content={languageTag[other].replace("-", "_")} />)}
+{
+  otherLocales.map((other) => (
+    <meta
+      property="og:locale:alternate"
+      content={languageTag[other].replace("-", "_")}
+    />
+  ))
+}
 {image && <meta property="og:image" content={absoluteUrl(image)} />}
 {image && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
-{publishedTime && <meta property="article:published_time" content={publishedTime} />}
-{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{
+  publishedTime && (
+    <meta property="article:published_time" content={publishedTime} />
+  )
+}
+{
+  modifiedTime && (
+    <meta property="article:modified_time" content={modifiedTime} />
+  )
+}
 <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
 
-{jsonLd && <script is:inline type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}
+{
+  jsonLd && (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={serializeJsonLd(jsonLd)}
+    />
+  )
+}

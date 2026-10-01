@@ -17,24 +17,59 @@ const agents = [
 ];
 ---
 
-<footer class="mt-24 border-t">
-  <div class="text-muted-foreground mx-auto grid max-w-6xl gap-8 px-4 py-12 text-sm sm:grid-cols-[1fr_auto_auto] sm:px-6">
+<footer class="mt-24 border-t glass">
+  <div
+    class="mx-auto grid max-w-6xl gap-8 px-4 py-12 text-sm text-muted-foreground sm:grid-cols-[1fr_auto_auto] sm:px-6"
+  >
     <div class="space-y-2">
-      <p class="text-foreground font-medium">
-        {m.footer_copyright({ name: owner.name, year: new Date().getFullYear().toString() }, options)}
+      <p class="font-medium text-foreground">
+        {
+          m.footer_copyright(
+            { name: owner.name, year: new Date().getFullYear().toString() },
+            options
+          )
+        }
       </p>
       <p>{m.footer_built_with({}, options)}</p>
     </div>
     <nav aria-labelledby="footer-feeds">
-      <h2 id="footer-feeds" class="text-foreground mb-3 font-medium">{m.footer_feeds({}, options)}</h2>
+      <h2 id="footer-feeds" class="mb-3 font-medium text-foreground">
+        {m.footer_feeds({}, options)}
+      </h2>
       <ul class="space-y-2">
-        {feeds.map((feed) => <li><a class="hover:text-foreground" href={feed.href} data-astro-prefetch="false">{feed.label}</a></li>)}
+        {
+          feeds.map((feed) => (
+            <li>
+              <a
+                class="link-draw transition-colors hover:text-foreground"
+                href={feed.href}
+                data-astro-prefetch="false"
+              >
+                {feed.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
     <nav aria-labelledby="footer-agents">
-      <h2 id="footer-agents" class="text-foreground mb-3 font-medium">{m.footer_for_agents({}, options)}</h2>
+      <h2 id="footer-agents" class="mb-3 font-medium text-foreground">
+        {m.footer_for_agents({}, options)}
+      </h2>
       <ul class="space-y-2">
-        {agents.map((link) => <li><a class="hover:text-foreground" href={link.href} data-astro-prefetch="false">{link.label}</a></li>)}
+        {
+          agents.map((link) => (
+            <li>
+              <a
+                class="link-draw transition-colors hover:text-foreground"
+                href={link.href}
+                data-astro-prefetch="false"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
   </div>

@@ -17,13 +17,25 @@ const { locale } = Astro.locals;
 ---
 
 <!doctype html>
-<html lang={languageTag[locale]} dir={getTextDirection(locale)} data-locale={locale}>
+<html
+  lang={languageTag[locale]}
+  dir={getTextDirection(locale)}
+  data-locale={locale}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <ThemeScript />
-    <meta name="theme-color" content="#f9f8fc" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f0d1a" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#f9f8fc"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0f0d1a"
+      media="(prefers-color-scheme: dark)"
+    />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <Font cssVariable="--font-geist" preload />
@@ -34,7 +46,7 @@ const { locale } = Astro.locals;
   <body class="flex min-h-dvh flex-col">
     <a
       href="#main"
-      class="bg-primary text-primary-foreground sr-only z-50 rounded-full px-4 py-2 font-medium focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      class="sr-only z-50 rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
     >
       {m.a11y_skip_to_content({}, { locale })}
     </a>
@@ -45,6 +57,9 @@ const { locale } = Astro.locals;
     <SiteFooter />
     <script>
       import { startBeacon } from "@/shared/analytics/beacon.ts";
+      import { startSpotlight } from "@/shared/interactions/spotlight.ts";
+
+      startSpotlight();
 
       // Rendered by the server from the request locale; the API validates it again.
       const { locale } = document.documentElement.dataset;

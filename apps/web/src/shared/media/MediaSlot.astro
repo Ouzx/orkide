@@ -15,7 +15,13 @@ interface Props {
   bare?: boolean;
 }
 
-const { id, class: className, priority = false, alt = "", bare = false } = Astro.props;
+const {
+  id,
+  class: className,
+  priority = false,
+  alt = "",
+  bare = false,
+} = Astro.props;
 const slot: MediaSlot = mediaSlots[id];
 const { locale } = Astro.locals;
 ---
@@ -45,24 +51,36 @@ const { locale } = Astro.locals;
       preload={priority ? "auto" : "none"}
       aria-hidden={slot.decorative ? "true" : undefined}
       aria-label={slot.decorative ? undefined : alt}
-      class:list={["h-auto w-full object-cover motion-reduce:hidden", slot.aspect, className]}
+      class:list={[
+        "h-auto w-full object-cover motion-reduce:hidden",
+        slot.aspect,
+        className,
+      ]}
     />
   ) : (
     <div
       role={slot.decorative ? undefined : "img"}
       aria-hidden={slot.decorative ? "true" : undefined}
-      aria-label={slot.decorative ? undefined : m.media_placeholder({ id }, { locale })}
+      aria-label={
+        slot.decorative ? undefined : m.media_placeholder({ id }, { locale })
+      }
       data-media-slot={id}
       class:list={[
-        "bg-card relative isolate w-full overflow-hidden rounded-[inherit]",
+        "relative isolate w-full overflow-hidden rounded-[inherit] bg-card",
         slot.aspect,
         className,
       ]}
     >
-      <div class="bg-grid absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
-      <div class="bg-orchid/25 absolute -top-1/4 -left-1/4 size-3/4 rounded-full blur-3xl" />
-      <div class="bg-aurora/20 absolute -right-1/4 -bottom-1/4 size-3/4 rounded-full blur-3xl" />
-      <div class:list={["text-muted-foreground absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-4 font-mono text-xs tracking-widest uppercase", bare && "hidden"]} lang="en">
+      <div class="absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)] opacity-60" />
+      <div class="absolute -top-1/4 -left-1/4 size-3/4 rounded-full bg-orchid/25 blur-3xl" />
+      <div class="absolute -right-1/4 -bottom-1/4 size-3/4 rounded-full bg-aurora/20 blur-3xl" />
+      <div
+        class:list={[
+          "absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-4 font-mono text-xs tracking-widest text-muted-foreground uppercase",
+          bare && "hidden",
+        ]}
+        lang="en"
+      >
         <span>media · {id}</span>
         <span>
           {slot.kind} · {slot.width}×{slot.height}

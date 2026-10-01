@@ -18,7 +18,7 @@ const { locale } = Astro.locals;
         <li>
           <a
             href={localizeHref(`/blog/tag/${tag.slug}`, { locale })}
-            class="text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-2.5 py-0.5 text-xs transition-colors"
+            class="rounded-full border glass-subtle px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
           >
             #{tag.name}
           </a>

@@ -12,7 +12,6 @@ interface Props {
 
 const { alternates } = Astro.props;
 const { locale } = Astro.locals;
-
 ---
 
 <nav
@@ -20,7 +19,9 @@ const { locale } = Astro.locals;
   data-locale-cookie={cookieName}
   data-locale-cookie-max-age={cookieMaxAge}
 >
-  <ul class="flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+  <ul
+    class="flex items-center gap-1 text-xs font-medium tracking-wide uppercase"
+  >
     {
       locales.map((target) => (
         <li>
@@ -32,7 +33,7 @@ const { locale } = Astro.locals;
             aria-current={target === locale ? "true" : undefined}
             data-locale-link={target}
             data-astro-prefetch="false"
-            class="text-muted-foreground hover:text-foreground aria-[current]:text-foreground aria-[current]:bg-muted rounded-full px-2 py-1 transition-colors"
+            class="rounded-full px-2 py-1 text-muted-foreground transition-colors hover:text-foreground aria-[current]:bg-muted aria-[current]:text-foreground"
           >
             <span aria-hidden="true">{target}</span>
             <span class="sr-only">{localeName(target)}</span>
@@ -51,7 +52,9 @@ const { locale } = Astro.locals;
     );
     const locale = link?.dataset.localeLink;
     // Cookie settings come from the server-rendered markup: the Paraglide runtime stays off the client.
-    const settings = link?.closest<HTMLElement>("[data-locale-cookie]")?.dataset;
+    const settings = link?.closest<HTMLElement>(
+      "[data-locale-cookie]"
+    )?.dataset;
     if (locale && settings?.localeCookie) {
       void globalThis.cookieStore?.set({
         expires: Date.now() + Number(settings.localeCookieMaxAge) * 1000,

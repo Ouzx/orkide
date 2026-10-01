@@ -29,7 +29,7 @@ export const ContactNotification = (props: ContactNotificationProps) => {
       <Heading as="h1" className="text-ink m-0 mb-4 text-2xl font-semibold">
         {m.email_contact_notify_heading({}, options)}
       </Heading>
-      <Text className="text-muted m-0 text-sm">
+      <Text className="m-0 text-sm text-muted">
         {name} &lt;{email}&gt; · {senderLocale.toUpperCase()}
       </Text>
       {subject ? (
@@ -41,7 +41,7 @@ export const ContactNotification = (props: ContactNotificationProps) => {
         </Text>
       </Section>
       <Button
-        className="bg-accent mt-6 box-border block rounded-md px-5 py-3 text-center text-base font-semibold text-white no-underline"
+        className="mt-6 box-border block rounded-md bg-accent px-5 py-3 text-center text-base font-semibold text-white no-underline"
         href={`mailto:${email}?subject=${encodeURIComponent(`Re: ${subject ?? ""}`.trim())}`}
       >
         {m.email_contact_notify_reply({ name }, options)}

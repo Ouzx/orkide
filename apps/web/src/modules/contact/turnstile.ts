@@ -45,10 +45,7 @@ const loadTurnstile = (): Promise<Turnstile> => {
   script.addEventListener("error", () =>
     reject(new Error("Turnstile failed to load"))
   );
-  // `appendChild`, not `append`: the Workers types (HTMLRewriter's `Element.append`) shadow the
-  // DOM overload in this mixed server/browser project.
-  // oxlint-disable-next-line unicorn/prefer-dom-node-append
-  document.head.appendChild(script);
+  document.head.append(script);
   loading = promise;
   return promise;
 };

@@ -50,7 +50,7 @@ export const Layout = ({ locale, preview, siteUrl, children }: LayoutProps) => (
         <Container className="mx-auto my-8 max-w-[560px] rounded-lg bg-white px-8 py-6">
           <Section>{children}</Section>
           <Hr className="border-rule my-6 border-solid" />
-          <Text className="text-muted m-0 text-xs">
+          <Text className="m-0 text-xs text-muted">
             {m.email_footer(
               { siteName: m.site_name({}, { locale }), siteUrl },
               { locale }

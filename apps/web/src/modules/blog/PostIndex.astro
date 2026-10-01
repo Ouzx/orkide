@@ -26,7 +26,16 @@ interface Props {
   cursor?: string | undefined;
 }
 
-const { title, description, alternates, basePath, posts, categories, currentCategory, cursor } = Astro.props;
+const {
+  title,
+  description,
+  alternates,
+  basePath,
+  posts,
+  categories,
+  currentCategory,
+  cursor,
+} = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
 const blogPath = alternates[locale] ?? basePath;
@@ -37,21 +46,34 @@ const blogPath = alternates[locale] ?? basePath;
   description={description}
   alternates={alternates}
   noindex={cursor !== undefined}
-  jsonLd={graph(locale, breadcrumbNode([{ name: m.blog_title({}, options), path: blogPath }]))}
+  jsonLd={graph(
+    locale,
+    breadcrumbNode([{ name: m.blog_title({}, options), path: blogPath }])
+  )}
 >
-  <PageHeader eyebrow={m.blog_title({}, options)} title={title} lead={description}>
+  <PageHeader
+    eyebrow={m.blog_title({}, options)}
+    title={title}
+    lead={description}
+  >
     <CategoryNav categories={categories} current={currentCategory} />
   </PageHeader>
   <div class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
     {
       posts.items.length > 0 ? (
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.items.map((post) => <PostCard post={post} />)}
+          {posts.items.map((post) => (
+            <PostCard post={post} />
+          ))}
         </div>
       ) : (
         <EmptyState message={m.blog_empty({}, options)} />
       )
     }
-    <Pagination basePath={basePath} hasPrevious={cursor !== undefined} nextCursor={posts.nextCursor} />
+    <Pagination
+      basePath={basePath}
+      hasPrevious={cursor !== undefined}
+      nextCursor={posts.nextCursor}
+    />
   </div>
 </BaseLayout>

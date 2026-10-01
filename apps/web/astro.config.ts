@@ -71,6 +71,11 @@ export default defineConfig({
   site,
   trailingSlash: "never",
   vite: {
+    build: {
+      // Budget: the largest chunk is the lazy hero scene (Three.js renderer core, ~130 KB gzip),
+      // fetched only after idle and never on the critical path. Anything bigger is a regression.
+      chunkSizeWarningLimit: 560,
+    },
     plugins: [tailwindcss()],
   },
 });

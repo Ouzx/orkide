@@ -12,12 +12,16 @@ interface Props {
 
 const { basePath, hasPrevious, nextCursor } = Astro.props;
 const { locale } = Astro.locals;
-const link = "hover:bg-muted inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors";
+const link =
+  "group glass live-border inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors";
 ---
 
 {
   (hasPrevious || nextCursor) && (
-    <nav aria-label={m.blog_pagination({}, { locale })} class="mt-12 flex justify-between gap-4">
+    <nav
+      aria-label={m.blog_pagination({}, { locale })}
+      class="mt-12 flex justify-between gap-4"
+    >
       {hasPrevious ? (
         <a href={basePath} class={link}>
           <ArrowLeft aria-hidden="true" className="size-4" />
@@ -27,7 +31,11 @@ const link = "hover:bg-muted inline-flex items-center gap-2 rounded-full border 
         <span />
       )}
       {nextCursor && (
-        <a href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`} rel="next" class={link}>
+        <a
+          href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`}
+          rel="next"
+          class={link}
+        >
           {m.blog_older({}, { locale })}
           <ArrowRight aria-hidden="true" className="size-4" />
         </a>

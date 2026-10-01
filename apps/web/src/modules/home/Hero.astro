@@ -19,37 +19,74 @@ const { locale } = Astro.locals;
 const options = { locale };
 ---
 
-<section aria-labelledby="hero-title" class="relative isolate overflow-hidden border-b">
-  <div class="bg-grid absolute inset-0 -z-20 opacity-40 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]"></div>
-  <div class="bg-orchid/20 absolute -top-40 -left-40 -z-20 size-[36rem] rounded-full blur-3xl"></div>
-  <div class="bg-aurora/15 absolute -right-40 -bottom-40 -z-20 size-[30rem] rounded-full blur-3xl"></div>
+<section
+  aria-labelledby="hero-title"
+  class="relative isolate overflow-hidden border-b"
+>
+  <div
+    class="absolute inset-0 -z-20 bg-grid [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)] opacity-40"
+  >
+  </div>
+  <div
+    class="absolute -top-40 -left-40 -z-20 size-[36rem] rounded-full bg-orchid/20 blur-3xl"
+  >
+  </div>
+  <div
+    class="absolute -right-40 -bottom-40 -z-20 size-[30rem] rounded-full bg-aurora/15 blur-3xl"
+  >
+  </div>
 
-  <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:py-28">
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:py-28"
+  >
     <div class="relative">
-      <p class="bg-background/60 text-muted-foreground mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs tracking-widest uppercase backdrop-blur">
-        <span class="bg-primary size-1.5 animate-pulse rounded-full" aria-hidden="true"></span>
+      <p
+        class="mb-6 inline-flex items-center gap-2 rounded-full border glass-subtle px-3 py-1 font-mono text-xs tracking-widest text-muted-foreground uppercase"
+      >
+        <span
+          class="size-1.5 animate-pulse rounded-full bg-primary"
+          aria-hidden="true"></span>
         {m.home_hero_eyebrow({}, options)}
       </p>
-      <h1 id="hero-title" class="text-display text-gradient font-semibold text-balance">
+      <h1
+        id="hero-title"
+        class="text-gradient text-display font-semibold text-balance"
+      >
         {m.home_hero_title({}, options)}
       </h1>
-      <p class="text-lead text-muted-foreground mt-6 max-w-xl text-pretty">
+      <p class="mt-6 max-w-xl text-lead text-pretty text-muted-foreground">
         {m.home_hero_lead({}, options)}
       </p>
       <div class="mt-10 flex flex-wrap gap-3">
-        <a href={localizeHref("/portfolio", options)} class={cn(buttonVariants({ size: "pill" }), "group")}>
+        <a
+          href={localizeHref("/portfolio", options)}
+          class={cn(buttonVariants({ size: "pill" }), "group shine")}
+        >
           {m.home_hero_cta_work({}, options)}
-          <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight
+            aria-hidden="true"
+            className="transition-transform group-hover:translate-x-0.5"
+          />
         </a>
-        <a href={localizeHref("/contact", options)} class={buttonVariants({ size: "pill", variant: "outline" })}>
+        <a
+          href={localizeHref("/contact", options)}
+          class={cn(
+            buttonVariants({ size: "pill", variant: "outline" }),
+            "live-border glass-subtle"
+          )}
+        >
           {m.home_hero_cta_contact({}, options)}
         </a>
       </div>
     </div>
 
     <!-- Poster first (static, cacheable); the WebGL bloom fades in over it once the page is idle. -->
-    <div class="relative -mt-6 aspect-square w-full max-w-xs justify-self-center sm:max-w-md lg:mt-0 lg:max-w-none">
-      <div class="absolute inset-[12%] overflow-hidden rounded-full opacity-70 [mask-image:radial-gradient(circle,black_45%,transparent_70%)]">
+    <div
+      class="relative -mt-6 aspect-square w-full max-w-xs justify-self-center sm:max-w-md lg:mt-0 lg:max-w-none"
+    >
+      <div
+        class="absolute inset-[12%] overflow-hidden rounded-full [mask-image:radial-gradient(circle,black_45%,transparent_70%)] opacity-70"
+      >
         <MediaSlot id="home-hero-poster" class="h-full" bare />
       </div>
       <HeroScene client:idle enabled={sceneEnabled} />

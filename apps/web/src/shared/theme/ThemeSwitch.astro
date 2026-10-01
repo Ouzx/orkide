@@ -16,14 +16,16 @@ const icons = { dark: Moon, light: Sun, system: Monitor } as const;
 ---
 
 <theme-switch>
-  <fieldset class="bg-muted/60 flex items-center gap-0.5 rounded-full border p-0.5">
+  <fieldset
+    class="flex items-center gap-0.5 rounded-full border glass-subtle p-0.5"
+  >
     <legend class="sr-only">{m.theme_label({}, options)}</legend>
     {
       themes.map((theme) => {
         const Icon = icons[theme];
         return (
           <label
-            class="text-muted-foreground hover:text-foreground has-checked:bg-background has-checked:text-foreground has-focus-visible:outline-ring grid size-7 cursor-pointer place-items-center rounded-full transition-colors has-checked:shadow-sm has-focus-visible:outline-2"
+            class="grid size-7 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:text-foreground has-checked:bg-background has-checked:text-foreground has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-ring"
             title={labels[theme]}
           >
             <input class="sr-only" type="radio" name="theme" value={theme} />

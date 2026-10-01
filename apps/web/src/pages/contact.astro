@@ -23,20 +23,42 @@ cachePage(Astro);
   title={m.contact_title({}, options)}
   description={m.contact_description({}, options)}
   alternates={pageAlternates("/contact")}
-  jsonLd={graph(locale, breadcrumbNode([{ name: m.contact_title({}, options), path: localizeHref("/contact", options) }]))}
+  jsonLd={graph(
+    locale,
+    breadcrumbNode([
+      {
+        name: m.contact_title({}, options),
+        path: localizeHref("/contact", options),
+      },
+    ])
+  )}
 >
-  <PageHeader eyebrow={m.contact_title({}, options)} title={m.contact_title({}, options)} lead={m.contact_description({}, options)} />
-  <div class="mx-auto grid max-w-6xl gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
+  <PageHeader
+    eyebrow={m.contact_title({}, options)}
+    title={m.contact_title({}, options)}
+    lead={m.contact_description({}, options)}
+  />
+  <div
+    class="mx-auto grid max-w-6xl gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[1.4fr_1fr]"
+  >
     {
       flags["contact-form"] ? (
-        <ContactForm client:visible locale={locale} siteKey={env.TURNSTILE_SITE_KEY} labels={contactLabels(locale)} />
+        <ContactForm
+          client:visible
+          locale={locale}
+          siteKey={env.TURNSTILE_SITE_KEY}
+          labels={contactLabels(locale)}
+        />
       ) : (
-        <p role="status" class="bg-card text-muted-foreground rounded-2xl border p-8">
+        <p
+          role="status"
+          class="rounded-2xl border glass p-8 text-muted-foreground"
+        >
           {m.contact_disabled({}, options)}
         </p>
       )
     }
-    <div class="hidden overflow-hidden rounded-2xl border lg:block">
+    <div class="hidden overflow-hidden rounded-2xl border glass lg:block">
       <MediaSlot id="contact-ambient" />
     </div>
   </div>

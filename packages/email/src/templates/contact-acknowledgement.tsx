@@ -31,8 +31,8 @@ export const ContactAcknowledgement = ({
       <Text className="text-ink text-base leading-6.5">
         {m.email_contact_ack_body({ name }, options)}
       </Text>
-      <Section className="border-accent bg-panel mt-4 rounded-md border-l-4 border-none border-solid px-4 py-2">
-        <Text className="text-muted m-0 text-xs font-semibold tracking-wide uppercase">
+      <Section className="bg-panel mt-4 rounded-md border-l-4 border-none border-solid border-accent px-4 py-2">
+        <Text className="m-0 text-xs font-semibold tracking-wide text-muted uppercase">
           {m.email_contact_ack_copy_label({}, options)}
         </Text>
         <Text className="text-ink text-base leading-6 whitespace-pre-wrap">

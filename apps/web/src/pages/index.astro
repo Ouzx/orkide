@@ -38,32 +38,48 @@ cachePage(Astro, "posts", "projects");
 
   {
     posts.items.length > 0 && (
-      <section aria-labelledby="latest-posts" class="mx-auto max-w-6xl px-4 pt-24 sm:px-6">
+      <section
+        aria-labelledby="latest-posts"
+        class="mx-auto max-w-6xl px-4 pt-24 sm:px-6"
+      >
         <SectionHeading
           id="latest-posts"
           title={m.home_latest_posts({}, options)}
-          action={{ href: localizeHref("/blog", options), label: m.home_view_all_posts({}, options) }}
+          action={{
+            href: localizeHref("/blog", options),
+            label: m.home_view_all_posts({}, options),
+          }}
         />
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.items.map((post) => <PostCard post={post} headingLevel={3} />)}
+          {posts.items.map((post) => (
+            <PostCard post={post} headingLevel={3} />
+          ))}
         </div>
       </section>
     )
   }
 
-  <section aria-labelledby="selected-work" class="mx-auto max-w-6xl px-4 pt-24 sm:px-6">
+  <section
+    aria-labelledby="selected-work"
+    class="mx-auto max-w-6xl px-4 pt-24 sm:px-6"
+  >
     <SectionHeading
       id="selected-work"
       title={m.home_featured_projects({}, options)}
-      action={{ href: localizeHref("/portfolio", options), label: m.home_view_all_projects({}, options) }}
+      action={{
+        href: localizeHref("/portfolio", options),
+        label: m.home_view_all_projects({}, options),
+      }}
     />
-    <div class="mb-6 overflow-hidden rounded-2xl border">
+    <div class="mb-6 reveal overflow-hidden rounded-2xl border glass">
       <MediaSlot id="home-work-loop" />
     </div>
     {
       selectedWork.length > 0 && (
         <div class="grid gap-6 md:grid-cols-2">
-          {selectedWork.map((project) => <ProjectCard project={project} headingLevel={3} />)}
+          {selectedWork.map((project) => (
+            <ProjectCard project={project} headingLevel={3} />
+          ))}
         </div>
       )
     }

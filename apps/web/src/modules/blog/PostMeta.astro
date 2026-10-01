@@ -13,8 +13,24 @@ const { publishedAt, readingTimeMinutes, class: className } = Astro.props;
 const { locale } = Astro.locals;
 ---
 
-<p class:list={["text-muted-foreground flex flex-wrap items-center gap-x-2 font-mono text-xs tracking-wide uppercase", className]}>
-  {publishedAt && <time datetime={publishedAt}>{formatDate(publishedAt, locale)}</time>}
+<p
+  class:list={[
+    "flex flex-wrap items-center gap-x-2 font-mono text-xs tracking-wide text-muted-foreground uppercase",
+    className,
+  ]}
+>
+  {
+    publishedAt && (
+      <time datetime={publishedAt}>{formatDate(publishedAt, locale)}</time>
+    )
+  }
   {publishedAt && <span aria-hidden="true">·</span>}
-  <span>{m.blog_reading_time({ minutes: readingTimeMinutes.toString() }, { locale })}</span>
+  <span>
+    {
+      m.blog_reading_time(
+        { minutes: readingTimeMinutes.toString() },
+        { locale }
+      )
+    }
+  </span>
 </p>
