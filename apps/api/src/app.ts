@@ -10,6 +10,7 @@ import { rateLimit } from "./core/middleware/rate-limit.ts";
 import { security } from "./core/middleware/security.ts";
 import { registerOpenApi } from "./core/openapi.ts";
 import { liveRoutes } from "./modules/live/live.routes.ts";
+import { postRoutes } from "./modules/post/post.routes.ts";
 import { systemRoutes } from "./modules/system/system.routes.ts";
 
 /**
@@ -23,7 +24,10 @@ app.use("/auth/*", rateLimit("RATE_LIMIT_STRICT", "auth"));
 app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));
 app.use(rateLimit("RATE_LIMIT_API", "api"), session);
 
-const routes = app.route("/", systemRoutes).route("/", liveRoutes);
+const routes = app
+  .route("/", systemRoutes)
+  .route("/", liveRoutes)
+  .route("/", postRoutes);
 
 registerOpenApi(app);
 app.onError(onError);

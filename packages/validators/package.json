@@ -1,0 +1,31 @@
+{
+  "name": "@orkide/validators",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./common": "./src/common.ts",
+    "./contact": "./src/contact.ts",
+    "./content": "./src/content.ts",
+    "./media": "./src/media.ts",
+    "./stats": "./src/stats.ts",
+    "./taxonomy": "./src/taxonomy.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@orkide/content": "workspace:*",
+    "@orkide/db": "workspace:*",
+    "@orkide/i18n": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@orkide/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

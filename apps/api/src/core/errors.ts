@@ -139,6 +139,20 @@ const CODE_BY_STATUS: Readonly<Record<number, ErrorCode>> = Object.fromEntries(
   ])
 );
 
+/** Walks an error's `cause` chain (Drizzle wraps driver errors) looking for a matching message. */
+const causedBy = (error: unknown, pattern: RegExp): boolean => {
+  let current: unknown = error;
+  while (current instanceof Error) {
+    if (pattern.test(current.message)) {
+      return true;
+    }
+    current = current.cause;
+  }
+  return false;
+};
+
+const UNIQUE_VIOLATION = /UNIQUE constraint failed/u;
+
 export const onError: ErrorHandler<AppEnv> = (error, c) => {
   if (error instanceof ApiError) {
     return problem(c, error.code, {
@@ -150,6 +164,9 @@ export const onError: ErrorHandler<AppEnv> = (error, c) => {
     return problem(c, CODE_BY_STATUS[error.status] ?? "bad_request", {
       detail: error.message || undefined,
     });
+  }
+  if (causedBy(error, UNIQUE_VIOLATION)) {
+    return problem(c, "conflict");
   }
   c.var.logger.error({ err: error }, "unhandled error");
   return problem(c, "internal");

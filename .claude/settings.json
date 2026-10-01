@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "pnpm run fix --hook",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && pnpm run fix --hook",
             "type": "command"
           }
         ],

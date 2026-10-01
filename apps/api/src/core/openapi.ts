@@ -1,8 +1,12 @@
 import type { OpenAPIHono } from "@hono/zod-openapi";
+import { richTextNodeReference } from "@orkide/db/rich-text";
 import { Scalar } from "@scalar/hono-api-reference";
 import type { Schema } from "hono";
 
 import type { AppEnv } from "./env.ts";
+
+// Names the recursive Tiptap node so the generator references it instead of expanding it forever.
+richTextNodeReference.openapi("RichTextNode");
 
 /** Serves the OpenAPI 3.1 document at `/api/openapi.json` and the Scalar reference at `/api/docs`. */
 export const registerOpenApi = <S extends Schema>(

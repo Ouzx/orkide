@@ -1,6 +1,7 @@
 import { auth, roles } from "@orkide/auth";
 import type { Permissions, Role } from "@orkide/auth";
 
+import type { AppVariables } from "../env.ts";
 import { ApiError } from "../errors.ts";
 import { factory } from "../factory.ts";
 
@@ -15,21 +16,27 @@ export const session = factory.createMiddleware(async (c, next) => {
 const isRole = (value: unknown): value is Role =>
   typeof value === "string" && value in roles;
 
+type User = NonNullable<AppVariables["user"]>;
+
+/** Asserts that `user` holds every permission; throws `unauthorized`/`forbidden` otherwise. */
+export const assertPermission: (
+  user: AppVariables["user"],
+  permissions: Permissions
+) => asserts user is User = (user, permissions) => {
+  if (!user) {
+    throw new ApiError("unauthorized");
+  }
+  if (!(isRole(user.role) && roles[user.role].authorize(permissions).success)) {
+    throw new ApiError("forbidden");
+  }
+};
+
 /**
  * Guards a route with RBAC. Permissions are checked in-process against the role definitions
  * from `@orkide/auth`, so authorization costs no extra database round-trip.
  */
 export const requirePermission = (permissions: Permissions) =>
   factory.createMiddleware(async (c, next) => {
-    const { user } = c.var;
-    if (!user) {
-      throw new ApiError("unauthorized");
-    }
-    if (
-      !isRole(user.role) ||
-      !roles[user.role].authorize(permissions).success
-    ) {
-      throw new ApiError("forbidden");
-    }
+    assertPermission(c.var.user, permissions);
     await next();
   });

@@ -1,0 +1,30 @@
+{
+  "name": "@orkide/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./extensions": "./src/extensions.ts",
+    "./render": "./src/render.ts",
+    "./slug": "./src/slug.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@orkide/db": "workspace:*",
+    "@tiptap/core": "catalog:",
+    "@tiptap/extension-image": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
+    "@tiptap/static-renderer": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@orkide/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
