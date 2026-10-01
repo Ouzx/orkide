@@ -1,0 +1,3 @@
+{
+  "*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,css,md,mdx,yaml,yml,astro}": "pnpm exec ultracite fix"
+}

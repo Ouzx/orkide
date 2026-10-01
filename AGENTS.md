@@ -1,0 +1,173 @@
+# Orkide — Agent Guide
+
+Orkide is a blog/portfolio that doubles as a production-grade template for future products. Technical excellence is the product: every change must be typed end-to-end, tested, accessible and fast.
+
+## Stack
+
+- **Monorepo:** pnpm workspaces + Turborepo. Every external version lives in the `catalog:` of `pnpm-workspace.yaml` (`catalogMode: strict`). Never pin a version inside a `package.json`.
+- **Runtime:** Cloudflare Workers only. `apps/api` (Hono) and `apps/web` (Astro + React islands) are two Workers; `web` reaches `api` through a Service Binding, so the browser only ever talks to one origin.
+- **Data:** D1 + Drizzle, R2 for media, KV for cache, Queues for async jobs, Analytics Engine for stats.
+- **Auth:** Better Auth with RBAC (`owner` / `editor` / `viewer`).
+- **i18n:** Paraglide JS, locales `en` and `tr`. Adding a locale: see the `add-locale` skill.
+- **Config:** `wrangler.jsonc` per app, built through `@cloudflare/vite-plugin`.
+
+## Layout
+
+```
+apps/api        Hono Worker      — src/{core,shared,modules/<name>}
+apps/web        Astro Worker     — src/{modules/<name>,shared,pages/[locale]}
+packages/*      config, ui, db, auth, i18n, logger, validators, api-client, email, env
+docs/           architecture, decisions (ADR log), conventions, roadmap, media prompts
+.agents/skills  project + vendor skills (`.claude/skills` is a symlink to it)
+```
+
+## Rules
+
+1. **Feature modules, not layers.** A module owns its routes, service, repository, schemas and tests (`modules/post/post.routes.ts`, …). Logic used by two modules moves to `shared/` or `core/`; logic used by two apps moves to a package. No global `services/` or `controllers/` folders.
+2. **Never hand-write data types.** Derive them: Drizzle table → `drizzle-zod` schema (`models.*`) → refine with `.pick/.omit/.extend` → `z.infer`. API types come from Hono RPC (`InferResponseType`).
+3. **IDs are UUIDv7 strings** via the shared `id()` column helper. URLs use slugs, never IDs.
+4. **No hard-coded user-facing strings.** Every string goes through Paraglide messages in `packages/i18n`.
+5. **Platform-agnostic packages.** Everything except `packages/ui` must run on Workers, browsers and React Native — no DOM or Node-only APIs there.
+6. **Log through `@orkide/logger`**, never `console.*`.
+7. **Docs live only in `docs/`** and stay few. Record significant decisions in `docs/decisions.md`.
+8. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding).
+
+## Commands
+
+```bash
+pnpm dev            # all apps (Miniflare, local bindings)
+pnpm check | fix    # ultracite (oxlint + oxfmt)
+pnpm typecheck      # tsc 7 across the workspace
+pnpm test           # vitest
+pnpm commit         # conventional commit prompt (cz-git); commitlint runs on commit-msg
+```
+
+Commits follow Conventional Commits; scopes are workspace package names plus `agents, ci, deps, docs, release, repo`.
+
+## Code Standards (Ultracite)
+
+This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
+
+### Quick Reference
+
+- **Format code**: `pnpm exec ultracite fix`
+- **Check for issues**: `pnpm exec ultracite check`
+- **Diagnose setup**: `pnpm exec ultracite doctor`
+
+Oxlint + Oxfmt (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+---
+
+### Core Principles
+
+Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+
+### Type Safety & Explicitness
+
+- Use explicit types for function parameters and return values when they enhance clarity
+- Prefer `unknown` over `any` when the type is genuinely unknown
+- Use const assertions (`as const`) for immutable values and literal types
+- Leverage TypeScript's type narrowing instead of type assertions
+- Use meaningful variable names instead of magic numbers - extract constants with descriptive names
+
+### Modern JavaScript/TypeScript
+
+- Use arrow functions for callbacks and short functions
+- Prefer `for...of` loops over `.forEach()` and indexed `for` loops
+- Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
+- Prefer template literals over string concatenation
+- Use destructuring for object and array assignments
+- Use `const` by default, `let` only when reassignment is needed, never `var`
+
+### Async & Promises
+
+- Always `await` promises in async functions - don't forget to use the return value
+- Use `async/await` syntax instead of promise chains for better readability
+- Handle errors appropriately in async code with try-catch blocks
+- Don't use async functions as Promise executors
+
+### React & JSX
+
+- Use function components over class components
+- Call hooks at the top level only, never conditionally
+- Specify all dependencies in hook dependency arrays correctly
+- Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
+- Nest children between opening and closing tags instead of passing as props
+- Don't define components inside other components
+- Use semantic HTML and ARIA attributes for accessibility:
+  - Provide meaningful alt text for images
+  - Use proper heading hierarchy
+  - Add labels for form inputs
+  - Include keyboard event handlers alongside mouse events
+  - Use semantic elements (`<button>`, `<nav>`, etc.) instead of divs with roles
+
+### Error Handling & Debugging
+
+- Remove `console.log`, `debugger`, and `alert` statements from production code
+- Throw `Error` objects with descriptive messages, not strings or other values
+- Use `try-catch` blocks meaningfully - don't catch errors just to rethrow them
+- Prefer early returns over nested conditionals for error cases
+
+### Code Organization
+
+- Keep functions focused and under reasonable cognitive complexity limits
+- Extract complex conditions into well-named boolean variables
+- Use early returns to reduce nesting
+- Prefer simple conditionals over nested ternary operators
+- Group related code together and separate concerns
+
+### Security
+
+- Add `rel="noopener"` when using `target="_blank"` on links
+- Avoid `dangerouslySetInnerHTML` unless absolutely necessary
+- Don't use `eval()` or assign directly to `document.cookie`
+- Validate and sanitize user input
+
+### Performance
+
+- Avoid spread syntax in accumulators within loops
+- Use top-level regex literals instead of creating them in loops
+- Prefer specific imports over namespace imports
+- Avoid barrel files (index files that re-export everything)
+- Use Astro `<Image>`/`<Picture>` (or the media pipeline) over raw `<img>` tags
+
+### Framework-Specific Guidance
+
+**React 19+:**
+
+- Use ref as a prop instead of `React.forwardRef`
+
+---
+
+### Testing
+
+- Write assertions inside `it()` or `test()` blocks
+- Avoid done callbacks in async tests - use async/await instead
+- Don't use `.only` or `.skip` in committed code
+- Keep test suites reasonably flat - avoid excessive `describe` nesting
+
+### When Oxlint + Oxfmt Can't Help
+
+Oxlint + Oxfmt will catch most mechanical issues automatically. Focus your attention on:
+
+1. **Business logic correctness** - Oxlint + Oxfmt can't validate your algorithms
+2. **Meaningful naming** - Use descriptive names for functions, variables, and types
+3. **Architecture decisions** - Component structure, data flow, and API design
+4. **Edge cases** - Handle boundary conditions and error states
+5. **User experience** - Accessibility, performance, and usability considerations
+6. **Documentation** - Add comments for complex logic, but prefer self-documenting code
+
+---
+
+Most formatting and common issues are automatically fixed by Oxlint + Oxfmt. Run `pnpm exec ultracite fix` before committing to ensure compliance.
+
+<!-- BEGIN:turborepo-agent-rules -->
+
+# This is NOT the Turborepo you know
+
+Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
+
+Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
+
+This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
+<!-- END:turborepo-agent-rules -->

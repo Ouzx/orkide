@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+.wrangler/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# environment
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# test artifacts
+playwright-report/
+test-results/
+.lighthouseci/
+
+# os / editor
+.DS_Store
+*.log

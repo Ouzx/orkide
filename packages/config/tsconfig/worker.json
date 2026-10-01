@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Cloudflare Worker (runtime types come from `wrangler types`)",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["es2024"],
+    "types": []
+  }
+}

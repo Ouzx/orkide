@@ -1,0 +1,30 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Single source of truth for every external dependency version.
+# Packages reference these with `catalog:`; strict mode rejects anything else on `pnpm add`.
+catalogMode: strict
+catalog:
+  "@commitlint/cli": ^21.2.3
+  "@commitlint/config-conventional": ^21.2.3
+  "@commitlint/config-pnpm-scopes": ^21.2.2
+  "@shadcn/lint": ^0.2.0
+  "@types/node": ^24.19.0
+  commitizen: ^4.3.2
+  cz-git: ^1.14.0
+  lefthook: ^2.1.15
+  lint-staged: ^17.6.0
+  oxfmt: ^0.71.0
+  oxlint-plugin-react-doctor: ^0.9.14
+  oxlint-tsgolint: ^7.0.2003
+  oxlint: ^1.86.0
+  turbo: ^2.11.5
+  typescript: ^7.0.2
+  ultracite: ^7.12.2
+
+# Dependencies trusted to run install scripts (pnpm blocks all others).
+allowBuilds:
+  esbuild: true
+  lefthook: true
+  workerd: true
