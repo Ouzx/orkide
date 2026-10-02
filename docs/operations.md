@@ -27,3 +27,7 @@ Production runs on workers.dev: web `https://orkide-web.ouzx.workers.dev`, api `
 - Remote migrations: `pnpm --filter @orkide/api db:migrate:remote` (the API build runs it before every deploy).
 - Secrets: `wrangler secret put <NAME>` inside `apps/api`; values never go in git. Required: `BETTER_AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `ANALYTICS_API_TOKEN`.
 - Turborepo Remote Cache in CI: set repo secret `TURBO_TOKEN` and variable `TURBO_TEAM`.
+
+## Rate limiting is approximate
+
+The `RATE_LIMIT_*` bindings are Workers Rate Limiting: counters are local to one Cloudflare location, cached per isolate, permissive and eventually consistent (the docs say it is "intentionally designed to not be used as an accurate accounting system"). On 2026-10-02 bursts of 14 and 40 invalid POSTs to `/api/contact` on workers.dev, all served from FRA with `cf-connecting-ip` present and the limiter code deployed, returned 422 and never 429. Treat the binding as soft abuse damping, not a guarantee. Contact abuse is bounded by Turnstile; for a hard limit add a WAF rate-limiting rule once a custom domain exists (issue #10). Open question: why 40 sequential requests from one IP in one location did not trip a 10/60s limit.

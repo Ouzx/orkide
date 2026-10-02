@@ -143,3 +143,9 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** the only guard was Vite's `chunkSizeWarningLimit`, which warns and does not fail.
 - **Decision:** `apps/web/.size-limit.json` enforces brotli budgets on the built `_astro` assets: the lazy hero scene (Three.js) 115 kB, the React runtime 60 kB, the admin editor (Tiptap) 125 kB, the admin shell 55 kB, all JavaScript 480 kB. There is no CSS budget: the stylesheet is inlined into each document (ADR-024). Each sits about 5 to 10 % above today's size. `pnpm size` runs in CI after a build.
 - **Consequences:** a dependency bump that grows a bundle fails the Bundle size job and must either be justified by raising the number in the same PR, or fixed.
+
+### ADR-023 · Treat Workers Rate Limiting as best-effort
+
+- **Context:** production bursts above the configured 10/60s never produced a 429 (see `docs/operations.md`); Cloudflare documents the binding as per-location, per-isolate cached and permissive.
+- **Decision:** keep the bindings as soft damping; rely on Turnstile for the contact form and plan a WAF rate-limiting rule on a custom domain for hard limits. Local tests still prove the limiter runs before validation.
+- **Consequences:** do not promise strict throttling in product docs; revisit when the custom domain lands.
