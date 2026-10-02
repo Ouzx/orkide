@@ -99,13 +99,25 @@ describe("contact submissions", () => {
       success: false,
     });
 
-    const response = await jsonRequest("/api/contact", "POST", submission);
+    const response = await jsonRequest("/api/contact", "POST", submission, {
+      "cf-connecting-ip": "203.0.113.7",
+    });
 
     expect(response.status).toBe(429);
     expect(response.headers.get("retry-after")).toBe("60");
     expect(response.headers.get("content-type")).toContain(
       "application/problem+json"
     );
+  });
+
+  it("does not throttle internal calls that carry no client IP", async () => {
+    mockProviders();
+    const limit = vi.spyOn(env.RATE_LIMIT_STRICT, "limit");
+
+    const response = await jsonRequest("/api/contact", "POST", submission);
+
+    expect(response.status).toBe(202);
+    expect(limit).not.toHaveBeenCalled();
   });
 
   it("honours the contact-form kill switch with a 503 problem", async () => {
