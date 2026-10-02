@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dive Mode"
+  short_description: "Planning-heavy deep orchestration"
+  default_prompt: "Use $dive-mode for planning-heavy orchestration through a Planner pass and Workers."
