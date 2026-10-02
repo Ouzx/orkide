@@ -10,7 +10,8 @@ type RateLimiterBinding = "RATE_LIMIT_API" | "RATE_LIMIT_STRICT";
  * Throttles requests with a Workers Rate Limiting binding, keyed by client IP and route scope.
  * Limits are configured per binding in `wrangler.jsonc`.
  *
- * The edge stamps `cf-connecting-ip` on every public request. A request without it never came
+ * Invariant: the edge stamps `cf-connecting-ip` on every request to either public host, so a
+ * visitor cannot omit it. The web Worker also forwards it explicitly (`forwardToApi`). A request without it never came
  * from a visitor: it is the web Worker's server-side render calling over the Service Binding.
  * Counting those would pool every page render under one shared key and throttle all visitors
  * together, so they are not limited. Local development is not limited either: the dev server,

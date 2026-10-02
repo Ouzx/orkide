@@ -6,6 +6,8 @@ import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import { trimTrailingSlash } from "hono/trailing-slash";
 
+import { forwardToApi } from "@/shared/lib/forward.ts";
+
 /**
  * Web Worker entry. Hono sits in front of Astro so the Worker owns every request:
  *
@@ -18,7 +20,7 @@ import { trimTrailingSlash } from "hono/trailing-slash";
 const app = new Hono<{ Bindings: Env }>();
 
 app.all("/api/*", async (c) => {
-  const response = await c.env.API.fetch(c.req.raw);
+  const response = await c.env.API.fetch(forwardToApi(c.req.raw));
   const tags = response.headers.get(PURGE_TAGS_HEADER);
   if (!tags) {
     return response;
