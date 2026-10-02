@@ -1,7 +1,7 @@
 [
   {
     "name": "Hero scene (lazy Three.js chunk)",
-    "path": "dist/client/_astro/hero-canvas.*.js",
+    "path": "dist/client/_astro/pollen-scene.*.js",
     "limit": "115 kB"
   },
   {
