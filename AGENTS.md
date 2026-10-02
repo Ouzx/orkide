@@ -8,7 +8,7 @@ Orkide is a blog/portfolio that doubles as a production-grade template for futur
 - **Runtime:** Cloudflare Workers only. `apps/api` (Hono) and `apps/web` (Astro + React islands) are two Workers; `web` reaches `api` through a Service Binding, so the browser only ever talks to one origin.
 - **Data:** D1 + Drizzle, R2 for media, Workers Cache (tag-purged) for HTTP caching, Queues for async jobs, Analytics Engine for stats, Flagship for feature flags.
 - **Auth:** Better Auth with RBAC (`owner` / `editor` / `viewer`).
-- **i18n:** Paraglide JS, locales `en` and `tr`. Adding a locale: see the `add-locale` skill.
+- **i18n:** Paraglide JS, locales `en` and `tr`. Adding a locale: see the `add-locale` skill (`.agents/skills/add-locale`).
 - **Config:** `wrangler.jsonc` per app, built through `@cloudflare/vite-plugin`.
 
 ## Layout
@@ -17,7 +17,8 @@ Orkide is a blog/portfolio that doubles as a production-grade template for futur
 apps/api        Hono Worker      — src/{core,shared,modules/<name>}, queue.ts, scheduled.ts
 apps/web        Astro Worker     — src/{modules/<name>,shared,pages}
 packages/*      config, ui, db, auth, i18n, logger, validators, content, email, api-client
-docs/           decisions (ADR log), roadmap, media prompts
+docs/           decisions (ADR log), roadmap, operations runbook, media prompts
+.github/        CI workflow (lint, typecheck, test, build, e2e + axe, Lighthouse, size-limit), local-stack and setup actions, issue/PR templates
 .agents/skills  project + vendor skills (`.claude/skills` is a symlink to it)
 ```
 
@@ -37,7 +38,7 @@ docs/           decisions (ADR log), roadmap, media prompts
 12. **Generated code is never hand-edited:** `packages/db/src/schema/auth.ts` (`auth:generate`), `packages/i18n/src/paraglide` (`build`), `worker-configuration.d.ts` (`cf-typegen`), migrations (`db:generate`).
 13. **Re-run tests after `ultracite fix`.** A few autofixes change semantics (`sort-keys` on ordering objects, `prefer-mock-promise-shorthand` sharing one `Response`). The `pre-push` hook enforces typecheck + tests.
 14. **Docs live only in `docs/`** and stay few. Record significant decisions in `docs/decisions.md`.
-15. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding).
+15. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding). Project skills: `add-locale`, `add-api-module`, `add-db-table`, `add-admin-resource`, `add-media-asset`.
 16. **Pages are a pure function of their URL** (they are edge-cached and tag-purged): no cookies or per-visitor data in rendered HTML; preferences live client-side; call `cachePage(Astro, ...tags)` on every public page.
 17. **The CSP is hashed (`security.csp`).** No inline `style` attributes, no `define:vars` scripts, no server-rendered React `<form action>`; islands get translated strings as props so Paraglide stays off the client.
 
@@ -48,6 +49,9 @@ pnpm dev            # all apps (Miniflare, local bindings)
 pnpm check | fix    # ultracite (oxlint + oxfmt)
 pnpm typecheck      # tsc 7 across the workspace
 pnpm test           # vitest
+pnpm test:e2e       # Playwright + axe at 375/768/1440/2560 px (after `pnpm build` and `pnpm e2e:prepare`)
+pnpm lighthouse     # Lighthouse CI against the local build (after the same two steps)
+pnpm size           # size-limit budgets for the web client bundles (after `pnpm build`)
 pnpm commit         # conventional commit prompt (cz-git); commitlint runs on commit-msg
 ```
 

@@ -122,3 +122,24 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** Paraglide only reads `paraglide.config.ts` from inside the inlang project directory, and inlang's own `project.inlang/.gitignore` ignores everything except `settings.json`. The config (URL patterns, route strategies, `emitTsDeclarations`) was therefore never committed: local builds worked, but every clean clone (CI, Workers Builds) compiled default strategies and served 404 for every page.
 - **Decision:** `packages/i18n/project.inlang/paraglide.config.ts` is added with `git add -f`; tracked files ignore the nested ignore rule.
 - **Consequences:** never delete it from the index; a clean-clone build (`pnpm i && pnpm turbo build`) is the check that nothing else is hiding behind an ignore rule.
+
+## 2026-10-02 — Quality gates
+
+### ADR-023 · End-to-end and accessibility checks against the production build
+
+- **Context:** unit tests cannot see CSP violations, hydration failures, layout overflow or contrast problems, and the layouts are fluid from phone to 4K.
+- **Decision:** Playwright (`apps/web/e2e`) drives the real build of both Workers locally (`vite preview` + `astro preview`, joined by the same Service Binding as in production) against a throwaway D1 database migrated and seeded by `pnpm e2e:prepare` (`apps/api/seed/e2e.sql`). One Chromium project per width (375, 768, 1440, 2560 px); every public page, the 404 and the admin sign-in run axe-core (WCAG 2.0 to 2.2 A/AA plus best practices) in light and dark, assert no horizontal scroll, and the key pages assert a clean console (which is where CSP violations surface). Violations are fixed, never suppressed.
+- **Consequences:** `pnpm build` must precede `pnpm test:e2e`. CI runs the suite in its own job with a placeholder `.dev.vars` (`.github/actions/local-stack`). The API's per-IP rate limits are skipped when `ENVIRONMENT=development`, and for calls without `cf-connecting-ip` (the web Worker's server-side renders over the Service Binding, which would otherwise share one key and throttle every visitor together).
+
+### ADR-024 · Lighthouse CI with honest budgets
+
+- **Context:** the goal was 100 in all four categories on the home page, the blog index and a post, measured with Lighthouse's default mobile profile against the local build.
+- **Decision:** `@lhci/cli` (`apps/web/lighthouserc.json`, 3 runs per URL, best run asserted) runs against `scripts/preview-stack.ts`, which adds a small compressing front (brotli/gzip, like the Cloudflare edge; Miniflare serves text uncompressed and would fail "enable text compression" for a reason production does not have). Stylesheets are inlined (`build.inlineStylesheets: "always"`; Astro hashes them into the CSP), which removed the render-blocking request. Accessibility and Best Practices must be 100. Performance must be at least 0.95 on the blog pages and 0.90 on the home page; SEO at least 0.92.
+- **Why not 100:** SEO loses 8 points to one audit, `robots-txt`, which rejects the `Content-Signal` directive in `robots.txt` as unknown. That directive is the site's deliberate, explicit AI-usage policy (contentsignals.org), so it stays; Lighthouse's validator simply does not know it yet. Performance is capped by the simulated 4x CPU / slow-4G profile: the blog pages score 0.99 (FCP 1.3 s); the home page is 0.93 to 0.97 because its LCP is the hero poster inside a blurred, masked stack of layers on a throttled CPU.
+- **Consequences:** raise the thresholds when either cause is removed (tracked in the roadmap). CI uploads the reports as an artifact.
+
+### ADR-025 · size-limit budgets per client bundle
+
+- **Context:** the only guard was Vite's `chunkSizeWarningLimit`, which warns and does not fail.
+- **Decision:** `apps/web/.size-limit.json` enforces brotli budgets on the built `_astro` assets: the lazy hero scene (Three.js) 115 kB, the React runtime 60 kB, the admin editor (Tiptap) 125 kB, the admin shell 55 kB, all JavaScript 480 kB. There is no CSS budget: the stylesheet is inlined into each document (ADR-024). Each sits about 5 to 10 % above today's size. `pnpm size` runs in CI after a build.
+- **Consequences:** a dependency bump that grows a bundle fails the Bundle size job and must either be justified by raising the number in the same PR, or fixed.
