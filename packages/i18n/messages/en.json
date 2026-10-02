@@ -99,7 +99,7 @@
   "footer_copyright": "© {year} {name}",
   "feed_title": "{site} — Blog",
   "media_placeholder": "Placeholder for media “{id}”",
-  "llms_intro": "Personal site of {name}. Every page has a Markdown alternate at `<url>.md`, also served for `Accept: text/markdown`. The full corpus is at {corpus}; the API is described at {api}.",
+  "llms_intro": "Personal site of {name}. Every post and project has a Markdown alternate at `<url>.md`, also served for `Accept: text/markdown`. The full corpus is at {corpus}; the API is described at {api}.",
   "admin_title": "Dashboard",
   "admin_nav_label": "Dashboard sections",
   "admin_nav_dashboard": "Overview",

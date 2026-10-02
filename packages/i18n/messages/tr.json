@@ -99,7 +99,7 @@
   "footer_copyright": "© {year} {name}",
   "feed_title": "{site} — Blog",
   "media_placeholder": "“{id}” medyası için yer tutucu",
-  "llms_intro": "{name} kişisel sitesi. Her sayfanın `<url>.md` adresinde bir Markdown sürümü vardır; `Accept: text/markdown` isteğine de sunulur. Tüm içerik {corpus} adresinde; API {api} adresinde tanımlıdır.",
+  "llms_intro": "{name} kişisel sitesi. Her yazı ve projenin `<url>.md` adresinde bir Markdown sürümü vardır; `Accept: text/markdown` isteğine de sunulur. Tüm içerik {corpus} adresinde; API {api} adresinde tanımlıdır.",
   "admin_title": "Panel",
   "admin_nav_label": "Panel bölümleri",
   "admin_nav_dashboard": "Genel bakış",
