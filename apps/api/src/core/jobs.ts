@@ -9,11 +9,6 @@ import { env } from "cloudflare:workers";
 export const jobSchema = z.discriminatedUnion("type", [
   /** Email the site owner about a new contact message. */
   z.object({ messageId: idSchema, type: z.literal("contact.notify-owner") }),
-  /** Email the visitor a localized acknowledgement with a copy of their message. */
-  z.object({
-    messageId: idSchema,
-    type: z.literal("contact.acknowledge-sender"),
-  }),
 ]);
 
 export type Job = z.infer<typeof jobSchema>;

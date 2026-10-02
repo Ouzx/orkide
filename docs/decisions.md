@@ -149,3 +149,11 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** production bursts above the configured 10/60s never produced a 429 (see `docs/operations.md`); Cloudflare documents the binding as per-location, per-isolate cached and permissive.
 - **Decision:** keep the bindings as soft damping; rely on Turnstile for the contact form and plan a WAF rate-limiting rule on a custom domain for hard limits. Local tests still prove the limiter runs before validation.
 - **Consequences:** do not promise strict throttling in product docs; revisit when the custom domain lands.
+
+## 2026-10-02 — Email
+
+### ADR-027 · Owner notification only; no visitor auto-reply
+
+- **Context:** production sends from `onboarding@resend.dev`, which Resend only delivers to the account owner, so the `contact.acknowledge-sender` job failed for every visitor and ended in the dead-letter queue. This is a template project that stays on `workers.dev`, so a verified sending domain is not planned.
+- **Decision:** remove the visitor acknowledgement entirely (job type, enqueue, handler, email template, `email_contact_ack_*` messages) rather than hide it behind a flag. `contact.notify-owner` remains the only email.
+- **Consequences:** visitors get no confirmation mail; the form's on-page success state is the only feedback. Re-adding it later means a verified domain, a new job type and a template. The custom domain (#10) is no longer a blocker for email.

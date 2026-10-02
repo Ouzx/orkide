@@ -19,7 +19,7 @@ apps/web        Astro Worker     — src/{modules/<name>,shared,pages}
 packages/*      config, ui, db, auth, i18n, logger, validators, content, email, api-client
 docs/           decisions (ADR log), roadmap, operations runbook, media prompts
 .github/        CI workflow (lint, typecheck, test, build, e2e + axe, Lighthouse, size-limit), local-stack and setup actions, issue/PR templates
-.agents/skills  project skills + a few vendor ones (`turborepo`, `web-design-guidelines`) (`.claude/skills` is a symlink to it)
+.agents/skills  project skills, vendor ones (`turborepo`, `web-design-guidelines`) and the `dive-mode`, `flight-mode`, `sloth` orchestration skills (`.claude/skills` symlinks here)
 ```
 
 ## Rules

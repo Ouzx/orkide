@@ -1,15 +1,11 @@
 import { jobSchema, PermanentJobError } from "./core/jobs.ts";
 import type { JobOf, JobType } from "./core/jobs.ts";
 import { logger } from "./core/logger.ts";
-import {
-  acknowledgeSender,
-  notifyOwner,
-} from "./modules/contact/contact.service.ts";
+import { notifyOwner } from "./modules/contact/contact.service.ts";
 
 /** Maps every job type to the module function that performs it. Exhaustive by construction. */
 const handlers: { readonly [T in JobType]: (job: JobOf<T>) => Promise<void> } =
   {
-    "contact.acknowledge-sender": acknowledgeSender,
     "contact.notify-owner": notifyOwner,
   };
 

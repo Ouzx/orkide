@@ -21,7 +21,7 @@ Network: the default **Trusted** list covers npm, GitHub and nodejs.org. Use **C
 ## Pending production setup
 
 1. **Enable Analytics Engine** once: dashboard -> Workers & Pages -> Analytics Engine -> Enable. Until then the API Worker cannot bind `ANALYTICS` and Workers Builds cannot deploy it. The first deploy was made with that one binding removed (`/api/track` returns 500 meanwhile).
-2. **GitHub OAuth app** (needed to sign in): GitHub -> Settings -> Developer settings -> OAuth Apps -> New. Homepage `https://orkide-web.ouzx.workers.dev`, callback `https://orkide-web.ouzx.workers.dev/api/auth/callback/github`. Then:
+2. **GitHub OAuth app** (done; needed to sign in): GitHub -> Settings -> Developer settings -> OAuth Apps -> New. Homepage `https://orkide-web.ouzx.workers.dev`, callback `https://orkide-web.ouzx.workers.dev/api/auth/callback/github`. Then:
    ```bash
    cd apps/api
    pnpm exec wrangler secret put GITHUB_CLIENT_ID
@@ -29,7 +29,7 @@ Network: the default **Trusted** list covers npm, GitHub and nodejs.org. Use **C
    ```
    The first sign-in with an `ADMIN_EMAILS` address creates the `owner` account (sign-up is otherwise closed); add a passkey afterwards.
 3. **`ANALYTICS_API_TOKEN`**: create an API token with _Account Analytics: Read_, then `pnpm exec wrangler secret put ANALYTICS_API_TOKEN` (stats and vitals are empty until then).
-4. **Resend sending domain**: verify a domain, change `EMAIL_FROM` in `apps/api/wrangler.jsonc`. With `onboarding@resend.dev` Resend only delivers to the account owner.
+4. **Email**: nothing to do. Only the owner notification is sent, from `onboarding@resend.dev` to the Resend account owner (ADR-027). Verify a sending domain and change `EMAIL_FROM` only if visitor-facing mail is ever added back.
 
 ## Day to day
 

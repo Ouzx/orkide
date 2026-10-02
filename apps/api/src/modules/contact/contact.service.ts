@@ -41,10 +41,7 @@ export const submit = async (
     subject: input.subject ?? null,
     userAgent: context.userAgent?.slice(0, 512) ?? null,
   });
-  await enqueue(
-    { messageId, type: "contact.notify-owner" },
-    { messageId, type: "contact.acknowledge-sender" }
-  );
+  await enqueue({ messageId, type: "contact.notify-owner" });
   return messageId;
 };
 
@@ -75,25 +72,6 @@ export const notifyOwner = async ({
     idempotencyKey: `contact-notify/${messageId}`,
     replyTo: message.email,
     to: env.CONTACT_INBOX_EMAIL,
-  });
-};
-
-export const acknowledgeSender = async ({
-  messageId,
-}: JobOf<"contact.acknowledge-sender">) => {
-  const message = await loadMessage(messageId);
-  if (message.status === "spam") {
-    return;
-  }
-  const email = await emails.contactAcknowledgement({
-    body: message.body,
-    locale: message.locale,
-    name: message.name,
-    siteUrl: env.BETTER_AUTH_URL,
-  });
-  await send(email, {
-    idempotencyKey: `contact-ack/${messageId}`,
-    to: message.email,
   });
 };
 

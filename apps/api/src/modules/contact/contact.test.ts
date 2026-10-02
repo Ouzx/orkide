@@ -161,7 +161,7 @@ describe("contact jobs", () => {
     vi.restoreAllMocks();
   });
 
-  it("emails the owner and the sender with stable idempotency keys", async () => {
+  it("emails the owner with a stable idempotency key", async () => {
     const sent = mockProviders();
     const messageId = await storedMessageId();
     const batch = createMessageBatch("orkide-jobs", [
@@ -171,26 +171,19 @@ describe("contact jobs", () => {
         id: "1",
         timestamp: new Date(),
       },
-      {
-        attempts: 1,
-        body: { messageId, type: "contact.acknowledge-sender" },
-        id: "2",
-        timestamp: new Date(),
-      },
     ]);
     const context = createExecutionContext();
 
     await queue(batch, env, context);
     const result = await getQueueResult(batch, context);
 
-    expect(result.explicitAcks).toStrictEqual(["1", "2"]);
-    expect(sent.map((email) => email.idempotencyKey).toSorted()).toStrictEqual([
-      `contact-ack/${messageId}`,
+    expect(result.explicitAcks).toStrictEqual(["1"]);
+    expect(sent.map((email) => email.idempotencyKey)).toStrictEqual([
       `contact-notify/${messageId}`,
     ]);
     expect(
-      sent.find((email) => email.body.to === "ada@example.com")?.body.subject
-    ).toBe("Ulaştığın için teşekkürler, Ada");
+      sent.every((email) => email.body.to !== "ada@example.com")
+    ).toBeTruthy();
   });
 
   it("acknowledges permanently rejected emails instead of retrying them", async () => {
@@ -199,7 +192,7 @@ describe("contact jobs", () => {
     const batch = createMessageBatch("orkide-jobs", [
       {
         attempts: 1,
-        body: { messageId, type: "contact.acknowledge-sender" },
+        body: { messageId, type: "contact.notify-owner" },
         id: "1",
         timestamp: new Date(),
       },

@@ -5,19 +5,6 @@ import { emails } from "./index.ts";
 const siteUrl = "https://orkide.test";
 
 describe("contact emails", () => {
-  it("acknowledges the sender in their language", async () => {
-    const email = await emails.contactAcknowledgement({
-      body: "Merhaba!",
-      locale: "tr",
-      name: "Ada",
-      siteUrl,
-    });
-
-    expect(email.subject).toBe("Ulaştığın için teşekkürler, Ada");
-    expect(email.html).toContain('lang="tr"');
-    expect(email.text).toContain("Merhaba!");
-  });
-
   it("escapes visitor-provided content", async () => {
     const email = await emails.contactNotification({
       body: "<img src=x onerror=alert(1)>",

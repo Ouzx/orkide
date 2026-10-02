@@ -21,7 +21,7 @@ Planned work that is intentionally out of the first release. Each item is mirror
 - [#7](https://github.com/Ouzx/orkide/issues/7) **`prettier-plugin-astro` 1.x** — upgrade once `prettier-plugin-tailwindcss` supports its JSX-based AST (pinned to 0.14 so `.astro` classes stay sorted).
 - [#8](https://github.com/Ouzx/orkide/issues/8) **Vitest 5** — upgrade once `@cloudflare/vitest-plugin` supports it (ADR-011).
 - [#9](https://github.com/Ouzx/orkide/issues/9) **`cf` CLI migration** — run `cf migrate` once the CLI leaves beta and supports monorepos (ADR-002).
-- [#10](https://github.com/Ouzx/orkide/issues/10) **Custom domain** — move off `workers.dev`, enable zone features (Image transformations via URL, Cache Rules, Markdown for Agents) and verify a Resend sending domain.
+- [#10](https://github.com/Ouzx/orkide/issues/10) **Custom domain** — move off `workers.dev`, enable zone features (Image transformations via URL, Cache Rules, Markdown for Agents) and a WAF rate-limiting rule. Email no longer depends on it (ADR-027).
 - [#11](https://github.com/Ouzx/orkide/issues/11) **Mobile app** — `apps/mobile` with Expo, reusing `api-client`, `validators`, `i18n`.
 - [#12](https://github.com/Ouzx/orkide/issues/12) **NLWeb / MCP endpoint** — let AI agents query site content directly.
 - [#16](https://github.com/Ouzx/orkide/issues/16) **Lighthouse 100** — SEO is held at 92 by Lighthouse not knowing the `Content-Signal` robots directive, and the home page performance at 93-97 by its hero LCP (ADR-024).
