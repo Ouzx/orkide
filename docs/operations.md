@@ -2,6 +2,12 @@
 
 Production runs on workers.dev: web `https://orkide-web.ouzx.workers.dev`, api `https://orkide-api.ouzx.workers.dev` (the browser only talks to web; `/api/*` is forwarded over the Service Binding). Decisions behind this setup: ADR-019 to ADR-021.
 
+## Local setup
+
+1. `pnpm install`, then create `apps/api/.dev.vars` from `apps/api/.dev.vars.example`. `BETTER_AUTH_SECRET` needs 32+ characters (any value locally); `BETTER_AUTH_URL` is `http://localhost:4321`; GitHub, Resend and Turnstile values may be placeholders unless you exercise those flows (Turnstile's test secret `1x0000000000000000000000000000000AA` always passes). Set `ENVIRONMENT=development` (this also switches the per-IP rate limits off).
+2. `pnpm dev` for the live stack. For the production build: `pnpm build`, `pnpm e2e:prepare` (migrates and seeds the local D1), then `pnpm test:e2e` / `pnpm lighthouse`.
+3. The file is copied into the API build output, so a missing or incomplete `.dev.vars` makes the Worker fail at boot with a ZodError. `pnpm dev` and `pnpm preview` in `apps/api` check it first and say what is missing; builds themselves never need secrets (production secrets live in Cloudflare).
+
 ## Pending production setup
 
 1. **Enable Analytics Engine** once: dashboard -> Workers & Pages -> Analytics Engine -> Enable. Until then the API Worker cannot bind `ANALYTICS` and Workers Builds cannot deploy it. The first deploy was made with that one binding removed (`/api/track` returns 500 meanwhile).
