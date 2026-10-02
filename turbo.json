@@ -44,7 +44,7 @@
       "outputs": ["migrations/**"]
     },
     "types": {
-      "dependsOn": ["^types", "cf-typegen"],
+      "dependsOn": ["^build", "^types", "cf-typegen"],
       "inputs": ["src/**", "tsconfig*.json", "worker-configuration.d.ts"],
       "outputs": ["dist/types/**"]
     }
