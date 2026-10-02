@@ -91,6 +91,34 @@ describe("daily rollup", () => {
   });
 });
 
+describe("daily rollup at scale", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("stores days with more paths than D1 binds in one statement", async () => {
+    // D1 allows 100 bound parameters per statement; each row binds four.
+    const data = Array.from({ length: 60 }, (_, index) => ({
+      path: `/en/blog/post-${index}`,
+      views: "1",
+      visitors: "1",
+    }));
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ data }));
+    const day = new Date(Date.now() - 2 * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+
+    await expect(rollup(day)).resolves.toBe(60);
+    const { results } = await env.DB.prepare(
+      "SELECT count(*) AS rows FROM daily_stat WHERE day = ?"
+    )
+      .bind(day)
+      .all<{ rows: number }>();
+
+    expect(results[0]?.rows).toBe(60);
+  });
+});
+
 describe("web vitals without or with analytics credentials", () => {
   const configuredToken = env.ANALYTICS_API_TOKEN;
 

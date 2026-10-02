@@ -55,6 +55,14 @@ const rollupRowSchema = z.object({
   visitors: z.coerce.number(),
 });
 
+/** D1 binds at most 100 parameters per statement, and each `daily_stat` row binds four. */
+const ROWS_PER_STATEMENT = 25;
+/**
+ * The beacon accepts any path, so a day's distinct paths are unbounded; only the most viewed are
+ * kept, which bounds the rollup's writes and the table's growth.
+ */
+const MAX_PATHS_PER_DAY = 1000;
+
 /**
  * Cron: aggregates one UTC day of page views into `daily_stat`. Idempotent — re-running a day
  * overwrites its rows — so a missed or repeated cron run never double counts.
@@ -66,19 +74,34 @@ export const rollup = async (day: string): Promise<number> => {
      WHERE blob1 = 'pageview'
        AND timestamp >= toDateTime('${day} 00:00:00')
        AND timestamp < toDateTime('${day} 00:00:00') + INTERVAL '1' DAY
-     GROUP BY path`,
+     GROUP BY path
+     ORDER BY views DESC
+     LIMIT ${MAX_PATHS_PER_DAY}`,
     rollupRowSchema
   );
   if (rows.length === 0) {
     return 0;
   }
-  await db
-    .insert(dailyStat)
-    .values(rows.map((row) => ({ ...row, day })))
-    .onConflictDoUpdate({
-      set: { views: sql`excluded.views`, visitors: sql`excluded.visitors` },
-      target: [dailyStat.day, dailyStat.path],
-    });
+  const values = rows.map((row) => ({ ...row, day }));
+  const [first, ...rest] = Array.from(
+    { length: Math.ceil(values.length / ROWS_PER_STATEMENT) },
+    (_, index) =>
+      db
+        .insert(dailyStat)
+        .values(
+          values.slice(
+            index * ROWS_PER_STATEMENT,
+            (index + 1) * ROWS_PER_STATEMENT
+          )
+        )
+        .onConflictDoUpdate({
+          set: { views: sql`excluded.views`, visitors: sql`excluded.visitors` },
+          target: [dailyStat.day, dailyStat.path],
+        })
+  );
+  if (first) {
+    await db.batch([first, ...rest]);
+  }
   return rows.length;
 };
 
