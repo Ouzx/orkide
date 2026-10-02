@@ -10,6 +10,10 @@ import type { CSSProperties } from "react";
 import { Toaster as Sonner } from "sonner";
 import type { ToasterProps } from "sonner";
 
+// Sonner would inject this as a runtime <style>, which the hashed CSP blocks; patches/sonner.patch
+// turns that off and the stylesheet ships with the bundle instead.
+import "sonner/dist/styles.css";
+
 // Orkide: follow the `.dark` class the theme switch sets on <html> (no next-themes).
 const subscribe = (onChange: () => void) => {
   const observer = new MutationObserver(onChange);

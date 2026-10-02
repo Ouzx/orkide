@@ -28,3 +28,11 @@ INSERT OR IGNORE INTO post_translation (post_id, locale, slug, title, summary, c
     '## İki Worker, tek köken' || char(10) || char(10) || 'Web Worker, API çağrılarını Service Binding üzerinden süreç içinde iletir.',
     1
   );
+
+-- A signed-in owner for the admin console checks. The session cookie is the token signed with
+-- BETTER_AUTH_SECRET (see apps/web/e2e/session.ts). Never applied to a remote database.
+INSERT OR IGNORE INTO user (id, name, email, email_verified, role) VALUES
+  ('0192f000-0000-7000-8000-00000000a001', 'E2E Owner', 'e2e-owner@orkide.test', 1, 'owner');
+
+INSERT OR IGNORE INTO session (id, expires_at, token, updated_at, user_id) VALUES
+  ('0192f000-0000-7000-8000-00000000b001', 4102444800000, 'e2e-session-token', 1790000000000, '0192f000-0000-7000-8000-00000000a001');

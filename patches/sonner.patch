@@ -1,0 +1,24 @@
+diff --git a/dist/index.js b/dist/index.js
+index 394dbc2272f43b84642b0f9d5cc7eb1eacb0ffb3..9c4076a144f8529328b7890ce40307021daadca7 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,6 +1,6 @@
+ 'use client';
+ function __insertCSS(code) {
+-  if (!code || typeof document == 'undefined') return
++  return // CSP: styles ship as sonner/dist/styles.css instead of a runtime <style>
+   let head = document.head || document.getElementsByTagName('head')[0]
+   let style = document.createElement('style')
+   style.type = 'text/css'
+diff --git a/dist/index.mjs b/dist/index.mjs
+index c124f821a68f7070647a5a04441d0caa53689662..f092a681e5087854b88b356194f7b6215924f0e4 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1,6 +1,6 @@
+ 'use client';
+ function __insertCSS(code) {
+-  if (!code || typeof document == 'undefined') return
++  return // CSP: styles ship as sonner/dist/styles.css instead of a runtime <style>
+   let head = document.head || document.getElementsByTagName('head')[0]
+   let style = document.createElement('style')
+   style.type = 'text/css'

@@ -416,6 +416,9 @@ catalogs:
 
 pnpmfileChecksum: sha256-0zxSDM2Gtn92LOvgi1CTBBnObehQmPMf86L9eo6QVKU=
 
+patchedDependencies:
+  sonner: a0c44e15aa89fd9bdf5bef16eee6659492690b6a86688737e4d8a4921910502e
+
 importers:
 
   .:
@@ -627,7 +630,7 @@ importers:
         version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
       sonner:
         specifier: 'catalog:'
-        version: 2.0.8(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 2.0.8(patch_hash=a0c44e15aa89fd9bdf5bef16eee6659492690b6a86688737e4d8a4921910502e)(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       three:
         specifier: 'catalog:'
         version: 0.186.1
@@ -900,7 +903,7 @@ importers:
         version: 4.21.1(supports-color@7.2.0)(typescript@7.0.2)
       sonner:
         specifier: 'catalog:'
-        version: 2.0.8(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 2.0.8(patch_hash=a0c44e15aa89fd9bdf5bef16eee6659492690b6a86688737e4d8a4921910502e)(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       tw-animate-css:
         specifier: 'catalog:'
         version: 1.4.0
@@ -15174,7 +15177,7 @@ snapshots:
     dependencies:
       atomic-sleep: 1.0.0
 
-  sonner@2.0.8(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  sonner@2.0.8(patch_hash=a0c44e15aa89fd9bdf5bef16eee6659492690b6a86688737e4d8a4921910502e)(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
