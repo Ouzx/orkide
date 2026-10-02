@@ -17,7 +17,9 @@ runs:
         GITHUB_CLIENT_ID=ci-placeholder
         GITHUB_CLIENT_SECRET=ci-placeholder
         VARS
-    - run: pnpm build
+    # --force: the Vite plugin copies .dev.vars into dist/orkide_api, but a Turborepo remote-cache hit restores
+    # dist without it (the file is not a cache input), and the preview then refuses to start.
+    - run: pnpm build --force
       shell: bash
     - name: Migrate and seed the local database
       shell: bash
