@@ -18,7 +18,11 @@ const submission = {
 };
 
 /** Routes outbound calls to fakes for Turnstile and Resend; everything else is unexpected. */
-const mockProviders = ({ human = true, resendStatus = 200 } = {}) => {
+const mockProviders = ({
+  human = true,
+  hostname = "localhost",
+  resendStatus = 200,
+} = {}) => {
   const sent: {
     body: Record<string, unknown>;
     idempotencyKey: string | null;
@@ -26,7 +30,7 @@ const mockProviders = ({ human = true, resendStatus = 200 } = {}) => {
   vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     const request = new Request(input, init);
     if (request.url.startsWith("https://challenges.cloudflare.com/")) {
-      return Response.json({ success: human });
+      return Response.json({ hostname, success: human });
     }
     if (request.url.startsWith("https://api.resend.com/emails")) {
       sent.push({
@@ -75,6 +79,26 @@ describe("contact submissions", () => {
     const response = await jsonRequest("/api/contact", "POST", submission);
 
     expect(response.status).toBe(403);
+  });
+
+  describe("with a production Turnstile secret", () => {
+    const testSecret = env.TURNSTILE_SECRET_KEY;
+
+    afterEach(() => {
+      env.TURNSTILE_SECRET_KEY = testSecret;
+    });
+
+    it.each([
+      ["this site", "localhost", 202],
+      ["another site", "evil.example", 403],
+    ])("answers a token solved on %s with %i", async (_, hostname, status) => {
+      env.TURNSTILE_SECRET_KEY = "0x4AAAAAAAproductionSecretForTests";
+      mockProviders({ hostname });
+
+      const response = await jsonRequest("/api/contact", "POST", submission);
+
+      expect(response.status).toBe(status);
+    });
   });
 
   it("validates input with field-level issues", async () => {
