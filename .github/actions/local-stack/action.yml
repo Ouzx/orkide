@@ -1,0 +1,22 @@
+name: Local stack
+description: Build both Workers and prepare the local D1 database that the e2e and Lighthouse jobs serve.
+runs:
+  using: composite
+  steps:
+    # Secrets are throwaway values: nothing here reaches a real service (Turnstile's always-pass test secret).
+    - name: Write local secrets
+      shell: bash
+      run: |
+        cat > apps/api/.dev.vars <<'VARS'
+        ENVIRONMENT=development
+        LOG_LEVEL=warn
+        BETTER_AUTH_SECRET=ci-only-secret-ci-only-secret-0000
+        BETTER_AUTH_URL=http://localhost:4322
+        TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+        RESEND_API_KEY=re_ci_placeholder
+        VARS
+    - run: pnpm build
+      shell: bash
+    - name: Migrate and seed the local database
+      shell: bash
+      run: pnpm e2e:prepare
