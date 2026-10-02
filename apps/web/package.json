@@ -11,7 +11,11 @@
     "cf-typegen": "wrangler types --strict-vars=false",
     "typecheck": "astro sync && tsc --noEmit && astro-check",
     "test": "vitest run",
-    "media": "node scripts/media.ts"
+    "media": "node scripts/media.ts",
+    "size": "size-limit",
+    "test:e2e": "playwright test",
+    "preview:stack": "node scripts/preview-stack.ts",
+    "lighthouse": "lhci autorun"
   },
   "dependencies": {
     "@astrojs/cloudflare": "catalog:",
@@ -41,13 +45,18 @@
   },
   "devDependencies": {
     "@astrojs/check": "catalog:",
+    "@axe-core/playwright": "catalog:",
+    "@lhci/cli": "catalog:",
     "@orkide/config": "workspace:*",
+    "@playwright/test": "catalog:",
+    "@size-limit/file": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/three": "catalog:",
     "schema-dts": "catalog:",
     "sharp": "catalog:",
+    "size-limit": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",

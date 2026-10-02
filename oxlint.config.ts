@@ -52,6 +52,24 @@ export default defineConfig({
       },
     },
     {
+      // Playwright specs import `test`/`expect` from `@playwright/test`, not from Vitest.
+      files: ["apps/web/e2e/**"],
+      plugins: ["vitest"],
+      rules: {
+        "vitest/consistent-test-it": "off",
+        "vitest/prefer-each": "off",
+        "vitest/prefer-importing-vitest-globals": "off",
+      },
+    },
+    {
+      // Polling for readiness is inherently sequential.
+      files: ["apps/web/scripts/preview-stack.ts"],
+      rules: {
+        "eslint/no-await-in-loop": "off",
+        "promise/avoid-new": "off",
+      },
+    },
+    {
       // Astro components are PascalCase by convention (`<BaseLayout>`, `<Seo>`).
       files: ["**/*.astro"],
       rules: { "unicorn/filename-case": "off" },

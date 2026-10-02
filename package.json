@@ -10,7 +10,11 @@
     "check": "ultracite check && prettier --check \"**/*.astro\"",
     "fix": "ultracite fix && prettier --write --log-level warn \"**/*.astro\"",
     "commit": "cz",
-    "prepare": "lefthook install"
+    "prepare": "lefthook install",
+    "e2e:prepare": "pnpm --filter @orkide/api db:migrate:local && pnpm --filter @orkide/api db:seed:e2e",
+    "test:e2e": "pnpm --filter @orkide/web test:e2e",
+    "size": "pnpm --filter @orkide/web size",
+    "lighthouse": "pnpm --filter @orkide/web lighthouse"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:",
