@@ -11,8 +11,14 @@ const siteverifySchema = z.object({
 });
 
 /**
- * Validates a Turnstile token server-side. Tokens are single-use and expire after five minutes;
- * the client-side widget alone proves nothing.
+ * Cloudflare's dummy secret keys (always pass, always fail, already spent) used in development and
+ * CI. Their tokens report `hostname: "example.com"`, so the hostname cannot be checked for them.
+ */
+const TEST_SECRET_KEY = /^[123]x0{33}AA$/u;
+
+/**
+ * Validates a Turnstile token server-side: the challenge was passed, and on this site's hostname.
+ * Tokens are single-use and expire after five minutes; the client-side widget alone proves nothing.
  */
 export const verifyTurnstile = async (
   token: string,
@@ -30,5 +36,12 @@ export const verifyTurnstile = async (
     return false;
   }
   const result = siteverifySchema.safeParse(await response.json());
-  return result.success && result.data.success;
+  if (!(result.success && result.data.success)) {
+    return false;
+  }
+  // A token solved on another site that embeds the same widget must not count here.
+  return (
+    TEST_SECRET_KEY.test(env.TURNSTILE_SECRET_KEY) ||
+    result.data.hostname === new URL(env.BETTER_AUTH_URL).hostname
+  );
 };

@@ -39,4 +39,7 @@ GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-cloud-placeholder}
 ANALYTICS_API_TOKEN=${ANALYTICS_API_TOKEN:-}
 VARS
 fi
+
+# Fresh containers start with an empty local D1; apply pending migrations (idempotent) so `pnpm dev` serves pages.
+pnpm --filter @orkide/api db:migrate:local >/dev/null 2>&1 || true
 exit 0

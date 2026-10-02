@@ -100,4 +100,4 @@ export const graph = (locale: Locale, ...nodes: Thing[]): Graph => ({
  * can never close the script element.
  */
 export const serializeJsonLd = (value: Graph): string =>
-  JSON.stringify(value).replaceAll("<", String.raw`<`);
+  JSON.stringify(value).replaceAll("<", "\\u003c");

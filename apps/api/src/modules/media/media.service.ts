@@ -154,6 +154,14 @@ const negotiateFormat = (
   return accept?.includes("image/webp") ? "webp" : "jpeg";
 };
 
+/** Whether an `If-None-Match` header lists `etag` (weak comparison, as for GET). */
+const matchesEtag = (ifNoneMatch: string | null, etag: string): boolean =>
+  ifNoneMatch !== null &&
+  ifNoneMatch.split(",").some((tag) => {
+    const value = tag.trim();
+    return value === "*" || value.replace(/^W\//u, "") === etag;
+  });
+
 /**
  * Serves an image variant. Originals are never served for images: every response passes through
  * the Images binding, which strips EXIF/GPS metadata. Variants are persisted in R2 so a transform
@@ -161,33 +169,45 @@ const negotiateFormat = (
  */
 const serveImage = async (
   sha256: string,
-  original: R2ObjectBody,
+  originalKey: string,
   width: number,
-  accept: string | undefined,
+  request: Request,
   waitUntil: (promise: Promise<unknown>) => void
 ) => {
-  const format = negotiateFormat(accept);
-  const headers = { "cache-control": IMMUTABLE, vary: "accept" };
+  const format = negotiateFormat(request.headers.get("accept") ?? undefined);
+  // A variant is fully determined by (bytes, width, format), so its ETag is known up front: a
+  // revalidation is answered before touching R2 or the Images binding, and the global `etag()`
+  // middleware never has to buffer and hash the image body.
+  const etag = `"${sha256}-${width}.${format}"`;
+  const headers = { "cache-control": IMMUTABLE, etag, vary: "accept" };
+  if (matchesEtag(request.headers.get("if-none-match"), etag)) {
+    return new Response(null, { headers, status: 304 });
+  }
   const key = variantKey(sha256, width, format);
 
   const stored = await env.MEDIA.get(key);
   if (stored) {
-    original.body.cancel();
     return new Response(stored.body, {
       headers: { ...headers, "content-type": `image/${format}` },
     });
   }
 
+  const original = await env.MEDIA.get(originalKey);
+  if (!original) {
+    throw new ApiError("not_found");
+  }
   const result = await env.IMAGES.input(original.body)
     .transform({ fit: "scale-down", width })
     .output({ format: `image/${format}`, quality: 80 });
-  const [client, persist] = result.image().tee();
+  // R2 only accepts streams of known length, which a transform's output is not. Variants are small
+  // and produced once, so buffering them is cheap and lets the same bytes be stored and served.
+  const variant = await result.response().arrayBuffer();
   waitUntil(
-    env.MEDIA.put(key, persist, {
+    env.MEDIA.put(key, variant, {
       httpMetadata: { cacheControl: IMMUTABLE, contentType: `image/${format}` },
     })
   );
-  return new Response(client, {
+  return new Response(variant, {
     headers: { ...headers, "content-type": `image/${format}` },
   });
 };
@@ -236,15 +256,11 @@ export const serve = async (
   if (!TRANSFORMABLE.has(head.httpMetadata?.contentType ?? "")) {
     return serveFile(key, options.request);
   }
-  const original = await env.MEDIA.get(key);
-  if (!original) {
-    throw new ApiError("not_found");
-  }
   return serveImage(
     sha256,
-    original,
+    key,
     snapWidth(options.width),
-    options.request.headers.get("accept") ?? undefined,
+    options.request,
     options.waitUntil
   );
 };

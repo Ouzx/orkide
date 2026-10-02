@@ -46,7 +46,13 @@ export const auth = betterAuth({
     user: {
       create: {
         before: (user) => {
-          if (!authEnv.ADMIN_EMAILS.has(user.email.toLowerCase())) {
+          // The allow-list is only as strong as the provider's proof that the email is owned.
+          if (
+            !(
+              user.emailVerified &&
+              authEnv.ADMIN_EMAILS.has(user.email.toLowerCase())
+            )
+          ) {
             throw new APIError("FORBIDDEN", {
               message: "Sign-up is restricted.",
             });

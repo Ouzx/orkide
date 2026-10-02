@@ -7,8 +7,6 @@ import { ArrowRight } from "lucide-react";
 
 import MediaSlot from "@/shared/media/MediaSlot.astro";
 
-import { HeroScene } from "./hero-scene.tsx";
-
 interface Props {
   /** The `hero-scene` feature flag. */
   sceneEnabled: boolean;
@@ -96,7 +94,65 @@ const options = { locale };
           class="h-full"
         />
       </div>
-      <HeroScene client:idle enabled={sceneEnabled} />
+      {
+        sceneEnabled && (
+          <div
+            data-hero-scene
+            aria-hidden="true"
+            class="absolute inset-0 animate-in duration-1000 fade-in"
+            hidden
+          />
+        )
+      }
     </div>
   </div>
 </section>
+
+<script>
+  /*
+   * Progressive pollen layer. A plain script rather than a React island, so the home page ships no
+   * framework runtime: after the page is idle, and unless the visitor prefers reduced motion, is
+   * saving data or lacks WebGL 2, the Three.js chunk is fetched and mounted. Any failure leaves the
+   * poster in place. The host only exists when the `hero-scene` flag is on.
+   */
+  const host = document.querySelector<HTMLElement>("[data-hero-scene]");
+
+  const supportsWebGl = (): boolean => {
+    try {
+      return document.createElement("canvas").getContext("webgl2") !== null;
+    } catch {
+      return false;
+    }
+  };
+
+  const saveData = (): boolean =>
+    (navigator as Navigator & { connection?: { saveData?: boolean } })
+      .connection?.saveData === true;
+
+  /** Safari lacks `requestIdleCallback`; a short timeout is a fine stand-in after load. */
+  // oxlint-disable-next-line promise/prefer-await-to-callbacks
+  const whenIdle = (callback: () => void): void => {
+    if ("requestIdleCallback" in globalThis) {
+      requestIdleCallback(callback, { timeout: 4000 });
+    } else {
+      setTimeout(callback, 1500);
+    }
+  };
+
+  if (
+    host &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+    !saveData() &&
+    supportsWebGl()
+  ) {
+    whenIdle(async () => {
+      try {
+        const { mountPollenScene } = await import("./pollen-scene.ts");
+        host.hidden = false;
+        mountPollenScene(host);
+      } catch {
+        host.hidden = true;
+      }
+    });
+  }
+</script>
