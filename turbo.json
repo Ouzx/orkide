@@ -1,6 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "agentGuidance": false,
   "globalDependencies": [".node-version", "packages/config/tsconfig/*.json"],
   "globalPassThroughEnv": ["CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN"],
   "tasks": {

@@ -1,53 +1,11 @@
 {
   "version": 1,
   "skills": {
-    "astro": {
-      "source": "astrolicious/agent-skills",
-      "sourceType": "github",
-      "skillPath": "skills/astro/SKILL.md",
-      "computedHash": "ebefe26b231d32379c14e41a46c2de7b4b0184543bedab7febdabe4fb21fba4e"
-    },
-    "better-auth-best-practices": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/best-practices/SKILL.md",
-      "computedHash": "0c30be0e118c2b7a0c4c57bd9e63bf110c7e420a79ec6ce7997153f3b1e066ee"
-    },
-    "hono": {
-      "source": "honojs/skills",
-      "sourceType": "github",
-      "skillPath": "skills/hono/SKILL.md",
-      "computedHash": "e3f141a41800df815000216a53510fe6f888629471c214706cc05adff27297fb"
-    },
-    "shadcn": {
-      "source": "shadcn-ui/ui",
-      "sourceType": "github",
-      "skillPath": "skills/shadcn/SKILL.md",
-      "computedHash": "f615de216e085a84e31593ad0fa9062232adc40cd87b7c7ab2b8e49abf6500be"
-    },
     "turborepo": {
       "source": "vercel/turborepo",
       "sourceType": "github",
       "skillPath": "skills/turborepo/SKILL.md",
       "computedHash": "9681d8dfeb5e6cdff767f1bcaba5d7ac55732a9d6c02ee120f44229f8ec25e7e"
-    },
-    "ultracite": {
-      "source": "haydenbleasel/ultracite",
-      "sourceType": "github",
-      "skillPath": "skills/ultracite/SKILL.md",
-      "computedHash": "766088d57ab81b713d5997575c9f15cfc01817b1c850e94d8dca31c5e21c5a85"
-    },
-    "vercel-react-best-practices": {
-      "source": "vercel-labs/agent-skills",
-      "sourceType": "github",
-      "skillPath": "skills/react-best-practices/SKILL.md",
-      "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
-    },
-    "vitest": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "skillPath": "skills/vitest/SKILL.md",
-      "computedHash": "21af2b13d47d31f3094b61c0f41abc8d6a7eed0df3c9a4029ea671f6978b7209"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
