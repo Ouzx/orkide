@@ -20,7 +20,7 @@ Network: the default **Trusted** list covers npm, GitHub and nodejs.org. Use **C
 
 ## Pending production setup
 
-1. **Enable Analytics Engine** once: dashboard -> Workers & Pages -> Analytics Engine -> Enable. Until then the API Worker cannot bind `ANALYTICS` and Workers Builds cannot deploy it. The first deploy was made with that one binding removed (`/api/track` returns 500 meanwhile).
+1. **Analytics Engine**: enabled (done); `/api/track` returns 204.
 2. **GitHub OAuth app** (done; needed to sign in): GitHub -> Settings -> Developer settings -> OAuth Apps -> New. Homepage `https://orkide-web.ouzx.workers.dev`, callback `https://orkide-web.ouzx.workers.dev/api/auth/callback/github`. Then:
    ```bash
    cd apps/api
