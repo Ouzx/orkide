@@ -8,6 +8,16 @@ Production runs on workers.dev: web `https://orkide-web.ouzx.workers.dev`, api `
 2. `pnpm dev` for the live stack. For the production build: `pnpm build`, `pnpm e2e:prepare` (migrates and seeds the local D1), then `pnpm test:e2e` / `pnpm lighthouse`.
 3. The file is copied into the API build output, so a missing or incomplete `.dev.vars` makes the Worker fail at boot with a ZodError. `pnpm dev` and `pnpm preview` in `apps/api` check it first and say what is missing; builds themselves never need secrets (production secrets live in Cloudflare).
 
+## Claude Code on the web
+
+A cloud session clones the repo and reads only what is committed: `CLAUDE.md`/`AGENTS.md`, `.claude/settings.json` hooks, `.claude/skills` (the project skills, plus `dive-mode`, `flight-mode` and `sloth`) and `.mcp.json` ([what carries over](https://code.claude.com/docs/en/cloud-environments#what-carries-over-from-your-setup)). Plugins declared in `enabledPlugins` do **not** load in the cloud, and neither do `~/.claude` skills, hooks or MCP servers. The Cloudflare, Vercel, Playwright, TypeScript LSP and frontend-design plugins therefore stay local-only; Context7 and GitHub come from the claude.ai connectors. `transitions-dev` is not committed (its licence forbids redistributing the collection); install it per machine with `npx skills add Jakubantalik/transitions.dev`.
+
+`.claude/hooks/cloud-bootstrap.sh` (SessionStart, a no-op unless `CLAUDE_CODE_REMOTE=true`) installs Node 24 from nodejs.org (the VM ships 20 to 22), enables the pinned pnpm, runs `pnpm install` when `node_modules` is missing, and writes `apps/api/.dev.vars` when absent. It uses CI's throwaway placeholders, so **no environment variable is required** for `pnpm dev`, `pnpm test` or `pnpm check`.
+
+Optional variables for the cloud environment (names only; values there are visible to everyone who uses the environment): `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `ANALYTICS_API_TOKEN` (override the placeholders in `.dev.vars`), and `CLOUDFLARE_API_TOKEN` plus `CLOUDFLARE_ACCOUNT_ID` for deploys and remote D1.
+
+Network: the default **Trusted** list covers npm, GitHub and nodejs.org. Use **Custom** with "include default list" and add `api.cloudflare.com`, `*.workers.dev` (smoke-testing production), `api.resend.com` and Playwright's browser CDN (`cdn.playwright.dev`) if you need them; none is in the default list. Wrangler OAuth login (`wrangler login`) cannot run in a cloud session, so remote operations need `CLOUDFLARE_API_TOKEN`.
+
 ## Pending production setup
 
 1. **Enable Analytics Engine** once: dashboard -> Workers & Pages -> Analytics Engine -> Enable. Until then the API Worker cannot bind `ANALYTICS` and Workers Builds cannot deploy it. The first deploy was made with that one binding removed (`/api/track` returns 500 meanwhile).
