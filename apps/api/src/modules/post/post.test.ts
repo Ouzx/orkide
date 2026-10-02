@@ -215,6 +215,41 @@ describe("posts", () => {
     ]);
   });
 
+  it("rejects node types the editor cannot produce as a validation failure", async () => {
+    const { cookie } = await signInAs("owner");
+    const input = postInput({
+      translations: [
+        {
+          content: {
+            content: [
+              { attrs: { src: "https://example.com" }, type: "iframe" },
+            ],
+            type: "doc",
+          },
+          locale: "en",
+          slug: "unknown-node",
+          summary: "S",
+          title: "T",
+        },
+      ],
+    });
+
+    const response = await jsonRequest("/api/admin/posts", "POST", input, {
+      cookie,
+    });
+    const problem = await response.json<{
+      code: string;
+      issues: { path: unknown[] }[];
+    }>();
+
+    expect(response.status).toBe(422);
+    expect(problem.issues[0]?.path).toStrictEqual([
+      "translations",
+      0,
+      "content",
+    ]);
+  });
+
   it("paginates with an opaque keyset cursor", async () => {
     const { cookie } = await signInAs("owner");
     for (const index of [1, 2, 3]) {

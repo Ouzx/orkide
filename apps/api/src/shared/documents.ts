@@ -4,13 +4,38 @@ import type { DocumentTranslationInput } from "@orkide/validators/content";
 import type { Media } from "@orkide/validators/media";
 import type { Term } from "@orkide/validators/taxonomy";
 
+import { ApiError } from "../core/errors.ts";
+
+/**
+ * The wire schema accepts any node shape; the renderer knows the editor's node and mark types and
+ * throws on anything else. That is a client error, so it becomes a 422 rather than a 500.
+ */
+const renderContent = (
+  content: DocumentTranslationInput["content"],
+  index: number
+) => {
+  try {
+    return renderDocument(content);
+  } catch (error) {
+    throw new ApiError("validation_failed", {
+      cause: error,
+      issues: [
+        {
+          message: error instanceof Error ? error.message : String(error),
+          path: ["translations", index, "content"],
+        },
+      ],
+    });
+  }
+};
+
 /** Adds the derived representations (HTML, Markdown, reading time) to translation inputs. */
 export const renderTranslations = (
   translations: readonly DocumentTranslationInput[]
 ) =>
-  translations.map((translation) => ({
+  translations.map((translation, index) => ({
     ...translation,
-    ...renderDocument(translation.content),
+    ...renderContent(translation.content, index),
     seoDescription: translation.seoDescription ?? null,
     seoTitle: translation.seoTitle ?? null,
   }));
