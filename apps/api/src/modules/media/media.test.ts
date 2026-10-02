@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { env } from "cloudflare:workers";
+import { describe, expect, it, vi } from "vitest";
 
 import { ORIGIN, request, signInAs } from "../../../test/helpers.ts";
 
@@ -114,6 +115,32 @@ describe("media delivery", () => {
     );
     expect(partial.headers.get("cache-control")).toContain("immutable");
     await expect(partial.text()).resolves.toBe("%PDF-1.4");
+  });
+
+  it("serves image variants with a deterministic ETag and revalidates without a transform", async () => {
+    const { cookie } = await signInAs("owner");
+    const uploaded = await uploadFile(cookie, PNG, "image/png", "etag.png");
+    const { url } = await uploaded.json<{ url: string }>();
+    const sha256 = url.split("/").at(-1)?.split(".")[0];
+    const accept = { accept: "image/webp" };
+
+    const first = await request(`${url}?w=320`, { headers: accept });
+    const etag = first.headers.get("etag");
+    const revalidated = await request(`${url}?w=320`, {
+      headers: { ...accept, "if-none-match": `W/${etag}` },
+    });
+
+    expect(first.status).toBe(200);
+    expect(first.headers.get("content-type")).toBe("image/webp");
+    expect(etag).toBe(`"${sha256}-320.webp"`);
+    await first.arrayBuffer();
+    expect(revalidated.status).toBe(304);
+    expect(revalidated.headers.get("etag")).toBe(etag);
+    await vi.waitFor(async () => {
+      await expect(
+        env.MEDIA.head(`variants/${sha256}/320.webp`)
+      ).resolves.not.toBeNull();
+    });
   });
 
   it("rejects anything that is not a content-addressed object name", async () => {
