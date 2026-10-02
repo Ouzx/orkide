@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Hero scene (lazy Three.js chunk)",
+    "path": "dist/client/_astro/hero-canvas.*.js",
+    "limit": "115 kB"
+  },
+  {
+    "name": "React runtime (shared by every island)",
+    "path": "dist/client/_astro/client.*.js",
+    "limit": "60 kB"
+  },
+  {
+    "name": "Admin editor (Tiptap, admin only)",
+    "path": "dist/client/_astro/document-form.*.js",
+    "limit": "125 kB"
+  },
+  {
+    "name": "Admin app shell",
+    "path": "dist/client/_astro/admin-app.*.js",
+    "limit": "55 kB"
+  },
+  {
+    "name": "All client JavaScript",
+    "path": "dist/client/_astro/*.js",
+    "limit": "480 kB"
+  }
+]

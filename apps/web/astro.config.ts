@@ -20,6 +20,9 @@ export default defineConfig({
     // Media is optimized by the API's Images pipeline; local assets need no runtime transforms.
     imageService: "passthrough",
   }),
+  // The whole stylesheet is ~17 KB compressed: inlining it (Astro hashes it into the CSP) removes
+  // the render-blocking request that otherwise delays first paint.
+  build: { inlineStylesheets: "always" },
   // Rendered HTML is cached in the Worker's own cache (Workers Cache) and purged by tag.
   cache: { provider: cacheCloudflare() },
   fonts: [
@@ -72,8 +75,9 @@ export default defineConfig({
   trailingSlash: "never",
   vite: {
     build: {
-      // Budget: the largest chunk is the lazy hero scene (Three.js renderer core, ~130 KB gzip),
-      // fetched only after idle and never on the critical path. Anything bigger is a regression.
+      // Warn threshold only; the enforced per-bundle budgets live in `.size-limit.json`.
+      // The largest chunk is the lazy hero scene (Three.js renderer core, ~130 KB gzip),
+      // fetched only after idle and never on the critical path.
       chunkSizeWarningLimit: 560,
     },
     plugins: [tailwindcss()],
