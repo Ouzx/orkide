@@ -110,6 +110,23 @@ describe("contact submissions", () => {
     );
   });
 
+  it("throttles before it validates the body", async () => {
+    vi.spyOn(env.RATE_LIMIT_STRICT, "limit").mockResolvedValue({
+      success: false,
+    });
+
+    const response = await jsonRequest(
+      "/api/contact",
+      "POST",
+      {},
+      {
+        "cf-connecting-ip": "203.0.113.7",
+      }
+    );
+
+    expect(response.status).toBe(429);
+  });
+
   it("does not throttle internal calls that carry no client IP", async () => {
     mockProviders();
     const limit = vi.spyOn(env.RATE_LIMIT_STRICT, "limit");
