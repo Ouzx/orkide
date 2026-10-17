@@ -13,7 +13,8 @@
     "test": "vitest run",
     "media": "node scripts/media.ts",
     "size": "size-limit",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --grep-invert \"axe violations\"",
+    "test:a11y": "playwright test e2e/accessibility.test.ts",
     "preview:stack": "node scripts/preview-stack.ts",
     "lighthouse": "lhci autorun"
   },

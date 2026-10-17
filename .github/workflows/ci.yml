@@ -60,11 +60,11 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm build
 
-  # The browser jobs below serve the production build locally (Miniflare, same Service Binding as
+  # The e2e job below serves the production build locally (Miniflare, same Service Binding as
   # in production) against a throwaway D1 database. `ENVIRONMENT=development` switches the API's
   # per-IP rate limits off: every request here shares one IP.
   e2e:
-    name: E2E and accessibility
+    name: E2E
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -82,29 +82,6 @@ jobs:
           path: |
             apps/web/playwright-report
             apps/web/test-results
-          retention-days: 7
-
-  lighthouse:
-    name: Lighthouse
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/local-stack
-      - run: pnpm exec playwright install --with-deps chromium
-        working-directory: apps/web
-      - name: Lighthouse CI
-        run: |
-          export CHROME_PATH="$(node -e "process.stdout.write(require('@playwright/test').chromium.executablePath())")"
-          pnpm lighthouse
-        working-directory: apps/web
-      - uses: actions/upload-artifact@v7.0.1
-        if: always()
-        with:
-          name: lighthouse-reports
-          path: apps/web/.lighthouseci
           retention-days: 7
 
   size:

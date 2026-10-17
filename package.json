@@ -13,6 +13,7 @@
     "prepare": "lefthook install",
     "e2e:prepare": "pnpm --filter @orkide/api db:migrate:local && pnpm --filter @orkide/api db:seed:e2e",
     "test:e2e": "pnpm --filter @orkide/web test:e2e",
+    "test:a11y": "pnpm --filter @orkide/web test:a11y",
     "size": "pnpm --filter @orkide/web size",
     "lighthouse": "pnpm --filter @orkide/web lighthouse"
   },

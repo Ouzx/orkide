@@ -1,6 +1,6 @@
 # Orkide — Agent Guide
 
-Orkide is a blog/portfolio that doubles as a production-grade template for future products. Technical excellence is the product: every change must be typed end-to-end, tested, accessible and fast.
+Orkide is a blog/portfolio that doubles as a production-grade template for future products. Technical excellence is the product: every change must be typed end-to-end and tested. Accessibility and speed are analysed when the user asks (rule 18).
 
 ## Stack
 
@@ -17,8 +17,8 @@ Orkide is a blog/portfolio that doubles as a production-grade template for futur
 apps/api        Hono Worker      — src/{core,shared,modules/<name>}, queue.ts, scheduled.ts
 apps/web        Astro Worker     — src/{modules/<name>,shared,pages}
 packages/*      config, ui, db, auth, i18n, logger, validators, content, email, api-client
-docs/           decisions (ADR log), roadmap, operations runbook, media prompts
-.github/        CI workflow (lint, typecheck, test, build, e2e + axe, Lighthouse, size-limit), local-stack and setup actions, issue/PR templates
+docs/           decisions (ADR log), roadmap, operations runbook, analysis log, media prompts
+.github/        CI workflow (lint, typecheck, test, build, e2e, size-limit), local-stack and setup actions, issue/PR templates
 .agents/skills  project skills, vendor ones (`turborepo`, `web-design-guidelines`) and the `dive-mode`, `flight-mode`, `sloth` orchestration skills (`.claude/skills` symlinks here)
 ```
 
@@ -41,6 +41,7 @@ docs/           decisions (ADR log), roadmap, operations runbook, media prompts
 15. **Repeated workflows become skills** in `.agents/skills/` (see existing ones before adding). Project skills: `add-locale`, `add-api-module`, `add-db-table`, `add-admin-resource`, `add-media-asset`.
 16. **Pages are a pure function of their URL** (they are edge-cached and tag-purged): no cookies or per-visitor data in rendered HTML; preferences live client-side; call `cachePage(Astro, ...tags)` on every public page.
 17. **The CSP is hashed (`security.csp`).** No inline `style` attributes, no `define:vars` scripts, no server-rendered React `<form action>`; islands get translated strings as props so Paraglide stays off the client.
+18. **Lighthouse and accessibility are analysis, not autopilot.** No rule, CI job, budget or score is a reason to start optimising on your own. After building a feature, you may ask the user whether to run an analysis (`pnpm test:a11y`, `pnpm lighthouse`). Save every run to `docs/analysis.md` (date, commit, scores, findings, context), then ask before fixing anything. A fix that changes what visitors see (layout, colour, type, motion, copy, imagery) needs the user's approval for that specific change.
 
 ## Commands
 
@@ -49,8 +50,9 @@ pnpm dev            # all apps (Miniflare, local bindings)
 pnpm check | fix    # ultracite (oxlint + oxfmt)
 pnpm typecheck      # tsc 7 across the workspace
 pnpm test           # vitest
-pnpm test:e2e       # Playwright + axe at 375/768/1440/2560 px (after `pnpm build` and `pnpm e2e:prepare`)
-pnpm lighthouse     # Lighthouse CI against the local build (after the same two steps)
+pnpm test:e2e       # Playwright at 375/768/1440/2560 px (after `pnpm build` and `pnpm e2e:prepare`)
+pnpm test:a11y      # analysis, on request (rule 18): axe and horizontal scroll at the same widths, same prerequisites
+pnpm lighthouse     # analysis, on request (rule 18): Lighthouse CI against the local build, same prerequisites
 pnpm size           # size-limit budgets for the web client bundles (after `pnpm build`)
 pnpm commit         # conventional commit prompt (cz-git); commitlint runs on commit-msg
 ```

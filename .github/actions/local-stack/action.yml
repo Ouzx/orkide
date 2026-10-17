@@ -1,5 +1,5 @@
 name: Local stack
-description: Build both Workers and prepare the local D1 database that the e2e and Lighthouse jobs serve.
+description: Build both Workers and prepare the local D1 database that the e2e job serves.
 runs:
   using: composite
   steps:
