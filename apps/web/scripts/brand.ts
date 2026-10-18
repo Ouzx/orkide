@@ -8,7 +8,7 @@
  * Run: `pnpm --filter @orkide/web brand` (renders with Playwright's Chromium; fonts come from
  * Google Fonts, so it needs the network).
  */
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { tokens } from "@orkide/ui/tokens/tokens";
@@ -101,6 +101,7 @@ const shoot = async (
   await tab.close();
 };
 
+await mkdir(incoming, { recursive: true });
 await writeFile(path.join(incoming, "favicon.svg"), favicon(64));
 await shoot(
   "favicon.png",

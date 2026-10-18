@@ -114,6 +114,7 @@
   "admin_saved": "Kaydedildi",
   "admin_read_only": "Salt okunur",
   "admin_cancel": "Vazgeç",
+  "admin_close": "Kapat",
   "admin_delete": "Sil",
   "admin_deleted": "Silindi",
   "admin_delete_confirm_title": "“{name}” silinsin mi?",

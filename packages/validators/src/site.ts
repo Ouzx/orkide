@@ -31,7 +31,7 @@ export const siteSchemas = {
       )
       .length(3),
     title: line(160),
-    url: z.url(),
+    url: z.url({ protocol: /^https$/u }),
   }),
   hero: z.object({
     contactCta: line(40),

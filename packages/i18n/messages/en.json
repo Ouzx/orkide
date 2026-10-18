@@ -114,6 +114,7 @@
   "admin_saved": "Saved",
   "admin_read_only": "Read-only",
   "admin_cancel": "Cancel",
+  "admin_close": "Close",
   "admin_delete": "Delete",
   "admin_deleted": "Deleted",
   "admin_delete_confirm_title": "Delete “{name}”?",

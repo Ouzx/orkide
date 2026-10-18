@@ -133,7 +133,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
           name,
         })}
         {error ? (
-          <p id={`${id}-error`} className="o-error">
+          <p id={`${id}-error`} role="alert" className="o-error">
             {error}
           </p>
         ) : null}

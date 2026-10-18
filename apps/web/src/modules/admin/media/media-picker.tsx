@@ -49,7 +49,10 @@ export const useMediaPicker = (): readonly [
       open
       onOpenChange={(open) => (open ? undefined : settle(undefined))}
     >
-      <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-4xl">
+      <DialogContent
+        closeLabel={m.admin_close({}, options)}
+        className="max-h-[85dvh] overflow-y-auto sm:max-w-4xl"
+      >
         <DialogHeader>
           <DialogTitle>{m.admin_choose_media({}, options)}</DialogTitle>
         </DialogHeader>

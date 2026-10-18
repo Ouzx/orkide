@@ -33,11 +33,12 @@ const SheetContent = ({
   className,
   children,
   side = "right",
-  showCloseButton = true,
+  closeLabel,
   ...props
 }: SheetPrimitive.Popup.Props & {
   side?: "top" | "right" | "bottom" | "left";
-  showCloseButton?: boolean;
+  /** The translated label of the corner close button; without it there is none. */
+  closeLabel?: string;
 }) => (
   <SheetPortal>
     <SheetOverlay />
@@ -54,7 +55,7 @@ const SheetContent = ({
       {...props}
     >
       {children}
-      {showCloseButton && (
+      {closeLabel && (
         <SheetPrimitive.Close
           data-slot="sheet-close"
           render={
@@ -66,7 +67,7 @@ const SheetContent = ({
           }
         >
           <XIcon />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{closeLabel}</span>
         </SheetPrimitive.Close>
       )}
     </SheetPrimitive.Popup>

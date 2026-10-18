@@ -16,4 +16,6 @@ export const knob = {
   tickStep: 10,
   /** Tick radii in the 132-unit dial: minor ticks start further out than detent ticks. */
   ticks: { inner: 58, innerMajor: 54, outer: 63 },
+  /** Vertical wheel travel, in px, per detent: a mouse notch is one step, a trackpad scales. */
+  wheelStep: 48,
 } as const;

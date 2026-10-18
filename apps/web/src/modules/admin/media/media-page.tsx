@@ -176,7 +176,10 @@ const DetailsDialog = ({
 
   return (
     <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent
+        closeLabel={m.admin_close({}, options)}
+        className="sm:max-w-2xl"
+      >
         <form onSubmit={submit} className="space-y-5">
           <DialogHeader>
             <DialogTitle>{m.admin_media_details({}, options)}</DialogTitle>

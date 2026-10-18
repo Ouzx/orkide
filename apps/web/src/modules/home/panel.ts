@@ -114,10 +114,14 @@ for (const [order, element] of knobs.entries()) {
   element.setAttribute("aria-valuenow", "1");
   element.setAttribute("aria-valuetext", items[0]?.title ?? "");
 
+  let wheel = 0;
   let drag:
     | { cx: number; cy: number; moved: number; x: number; y: number }
     | undefined;
   element.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) {
+      return;
+    }
     element.setPointerCapture(event.pointerId);
     const box = element.getBoundingClientRect();
     drag = {
@@ -189,8 +193,24 @@ for (const [order, element] of knobs.entries()) {
   element.addEventListener(
     "wheel",
     (event) => {
+      // Only vertical travel turns the knob, and only while it can turn: at either end the page
+      // scrolls on. Travel adds up, so a trackpad doesn't spin through every item at once.
+      const step = Math.sign(event.deltaY);
+      const next = index + step;
+      if (step === 0 || next < 0 || next >= items.length) {
+        wheel = 0;
+        return;
+      }
       event.preventDefault();
-      select(index + (event.deltaY > 0 ? 1 : -1));
+      wheel = Math.sign(wheel) === step ? wheel : 0;
+      wheel +=
+        event.deltaMode === WheelEvent.DOM_DELTA_PIXEL
+          ? event.deltaY
+          : step * preset.wheelStep;
+      if (Math.abs(wheel) >= preset.wheelStep) {
+        wheel = 0;
+        select(next);
+      }
     },
     { passive: false }
   );

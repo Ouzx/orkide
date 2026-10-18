@@ -124,7 +124,7 @@ const LinkDialog = ({
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent closeLabel={m.admin_close({}, options)}>
         <form onSubmit={submit} className="space-y-4">
           <DialogHeader>
             <DialogTitle>{m.admin_editor_link({}, options)}</DialogTitle>

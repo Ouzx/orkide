@@ -244,7 +244,7 @@ export const Shell = () => {
       </aside>
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent side="left" showCloseButton={false} className="lg:hidden">
+        <SheetContent side="left" className="lg:hidden">
           <div className="o-bay flex h-full min-h-0 flex-col">
             <SheetTitle className="sr-only">
               {m.nav_menu({}, options)}

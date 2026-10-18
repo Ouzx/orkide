@@ -32,9 +32,12 @@ const DialogOverlay = ({
 const DialogContent = ({
   className,
   children,
-  showCloseButton = true,
+  closeLabel,
   ...props
-}: DialogPrimitive.Popup.Props & { showCloseButton?: boolean }) => (
+}: DialogPrimitive.Popup.Props & {
+  /** The translated label of the corner close button; without it there is none. */
+  closeLabel?: string;
+}) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Popup
@@ -46,7 +49,7 @@ const DialogContent = ({
       {...props}
     >
       {children}
-      {showCloseButton && (
+      {closeLabel && (
         <DialogPrimitive.Close
           data-slot="dialog-close"
           render={
@@ -58,7 +61,7 @@ const DialogContent = ({
           }
         >
           <XIcon />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{closeLabel}</span>
         </DialogPrimitive.Close>
       )}
     </DialogPrimitive.Popup>
@@ -73,12 +76,7 @@ const DialogHeader = ({ className, ...props }: ComponentProps<"div">) => (
   />
 );
 
-const DialogFooter = ({
-  className,
-  showCloseButton = false,
-  children,
-  ...props
-}: ComponentProps<"div"> & { showCloseButton?: boolean }) => (
+const DialogFooter = ({ className, ...props }: ComponentProps<"div">) => (
   <div
     data-slot="dialog-footer"
     className={cn(
@@ -86,14 +84,7 @@ const DialogFooter = ({
       className
     )}
     {...props}
-  >
-    {children}
-    {showCloseButton && (
-      <DialogPrimitive.Close render={<Button variant="outline" />}>
-        Close
-      </DialogPrimitive.Close>
-    )}
-  </div>
+  />
 );
 
 const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => (

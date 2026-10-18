@@ -197,7 +197,10 @@ const TermDialog = ({
 
   return (
     <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent
+        closeLabel={m.admin_close({}, options)}
+        className="sm:max-w-xl"
+      >
         <form onSubmit={submit} className="space-y-5">
           <DialogHeader>
             <DialogTitle>
