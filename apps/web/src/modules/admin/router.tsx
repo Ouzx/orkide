@@ -112,6 +112,16 @@ const projectEditor = createRoute({
   path: "projects/$id",
 });
 
+const site = createRoute({
+  beforeLoad: requirePermission({ site: ["read"] }),
+  component: lazyRouteComponent(
+    () => import("./site/site-page.tsx"),
+    "SitePage"
+  ),
+  getParentRoute: () => root,
+  path: "site",
+});
+
 const taxonomy = createRoute({
   beforeLoad: requirePermission({ taxonomy: ["read"] }),
   component: lazyRouteComponent(
@@ -172,6 +182,7 @@ const account = createRoute({
 
 const routeTree = root.addChildren([
   dashboard,
+  site,
   posts,
   postEditor,
   projects,

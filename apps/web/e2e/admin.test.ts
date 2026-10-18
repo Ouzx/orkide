@@ -30,3 +30,36 @@ test("the admin console runs without console errors or CSP violations", async ({
 
   expect(problems).toEqual([]);
 });
+
+test("the owner edits the hero, and the home page shows it", async ({
+  context,
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== "1440px",
+    "The content is shared by every project: one run edits it."
+  );
+  await signInAsOwner(context);
+  await page.goto("/en/admin/site");
+  await page.getByLabel("Title").fill("Edited from the admin.");
+  await page.getByRole("button", { exact: true, name: "Save" }).click();
+  await expect(page.getByText("Saved ·")).toBeVisible();
+
+  await page.goto("/en");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Edited from the admin." })
+  ).toBeVisible();
+
+  // Back to the shipped content, so other runs see the site as it ships.
+  await page.goto("/en/admin/site");
+  await page
+    .getByRole("button", { name: "Back to the shipped content" })
+    .click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Back to the shipped content" })
+    .click();
+  await expect(
+    page.getByText("Shipped content", { exact: true })
+  ).toBeVisible();
+});

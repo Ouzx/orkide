@@ -31,6 +31,7 @@ import {
   Images,
   Inbox,
   LayoutDashboard,
+  LayoutTemplate,
   LogOut,
   Menu,
   Tags,
@@ -47,6 +48,7 @@ import { QueryBoundary } from "./page.tsx";
 interface NavItem {
   readonly to:
     | "/"
+    | "/site"
     | "/posts"
     | "/projects"
     | "/taxonomy"
@@ -63,6 +65,12 @@ const NAV: readonly NavItem[] = [
     icon: LayoutDashboard,
     label: (o) => m.admin_nav_dashboard({}, o),
     to: "/",
+  },
+  {
+    icon: LayoutTemplate,
+    label: (o) => m.admin_nav_site({}, o),
+    requires: { site: ["read"] },
+    to: "/site",
   },
   {
     icon: FileText,

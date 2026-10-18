@@ -1,18 +1,21 @@
 ---
-import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 import { buttonVariants } from "@orkide/ui/components/button";
 import { cn } from "@orkide/ui/lib/utils";
 import { ArrowRight } from "lucide-react";
 
+import type { SiteContent } from "@orkide/validators/site";
+
 import MediaSlot from "@/shared/media/MediaSlot.astro";
 
 interface Props {
+  /** The hero's words: the admin's saved section, else the shipped one. */
+  content: SiteContent["hero"];
   /** The `hero-scene` feature flag. */
   sceneEnabled: boolean;
 }
 
-const { sceneEnabled } = Astro.props;
+const { content, sceneEnabled } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
 ---
@@ -44,23 +47,23 @@ const options = { locale };
         <span
           class="size-1.5 animate-pulse rounded-full bg-primary"
           aria-hidden="true"></span>
-        {m.home_hero_eyebrow({}, options)}
+        {content.eyebrow}
       </p>
       <h1
         id="hero-title"
         class="text-gradient text-display font-semibold text-balance"
       >
-        {m.home_hero_title({}, options)}
+        {content.title}
       </h1>
       <p class="mt-6 max-w-xl text-lead text-pretty text-muted-foreground">
-        {m.home_hero_lead({}, options)}
+        {content.lead}
       </p>
       <div class="mt-10 flex flex-wrap gap-3">
         <a
           href={localizeHref("/portfolio", options)}
           class={cn(buttonVariants({ size: "pill" }), "group shine")}
         >
-          {m.home_hero_cta_work({}, options)}
+          {content.workCta}
           <ArrowRight
             aria-hidden="true"
             className="transition-transform group-hover:translate-x-0.5"
@@ -73,7 +76,7 @@ const options = { locale };
             "live-border glass-subtle"
           )}
         >
-          {m.home_hero_cta_contact({}, options)}
+          {content.contactCta}
         </a>
       </div>
     </div>

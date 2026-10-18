@@ -60,6 +60,12 @@ export const queries = {
       queryFn: () => parseResponse(api.api.admin.projects.$get()),
       queryKey: ["projects"],
     }),
+  site: (locale: Locale) =>
+    queryOptions({
+      queryFn: () =>
+        parseResponse(api.api.admin.site.$get({ query: { locale } })),
+      queryKey: ["site", locale],
+    }),
   stats: (days: number) =>
     queryOptions({
       queryFn: () =>

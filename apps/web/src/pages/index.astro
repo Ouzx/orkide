@@ -5,6 +5,7 @@ import { localizeHref } from "@orkide/i18n/runtime";
 import PostCard from "@/modules/blog/PostCard.astro";
 import { listPosts } from "@/modules/blog/blog.data.ts";
 import Hero from "@/modules/home/Hero.astro";
+import { loadSite } from "@/modules/home/site.server.ts";
 import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
 import { listProjects } from "@/modules/portfolio/portfolio.data.ts";
 import SectionHeading from "@/shared/components/SectionHeading.astro";
@@ -18,14 +19,15 @@ import { graph } from "@/shared/seo/json-ld.ts";
 const { locale } = Astro.locals;
 const options = { locale };
 
-const [posts, projects, flags] = await Promise.all([
+const [posts, projects, flags, site] = await Promise.all([
   listPosts({ limit: 3, locale }),
   listProjects(locale),
   getFlags(),
+  loadSite(locale),
 ]);
 const selectedWork = projects.slice(0, 4);
 
-cachePage(Astro, "posts", "projects");
+cachePage(Astro, "posts", "projects", "site");
 ---
 
 <BaseLayout
@@ -34,7 +36,7 @@ cachePage(Astro, "posts", "projects");
   alternates={pageAlternates("/")}
   jsonLd={graph(locale)}
 >
-  <Hero sceneEnabled={flags["hero-scene"]} />
+  <Hero content={site.hero} sceneEnabled={flags["hero-scene"]} />
 
   {
     posts.items.length > 0 && (
