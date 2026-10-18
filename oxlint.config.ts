@@ -10,7 +10,6 @@ const jsPlugins = selectJsPlugins(["react-doctor"]);
 
 /** Generated sources are owned by their generators and must not be hand-edited to satisfy lint. */
 const generated = [
-  ".agents/skills/**",
   "packages/db/src/schema/auth.ts",
   "packages/i18n/src/paraglide/**",
   "**/worker-configuration.d.ts",

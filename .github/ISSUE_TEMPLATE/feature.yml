@@ -17,4 +17,4 @@ body:
     id: done
     attributes:
       label: Definition of done
-      description: Typed end-to-end and tested (accessibility and speed are analysed on request, AGENTS.md rule 18).
+      description: Typed end-to-end and tested (accessibility and speed are analysed on request).

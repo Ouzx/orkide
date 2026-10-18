@@ -1,4 +1,0 @@
-interface:
-  display_name: "Flight Mode"
-  short_description: "Lightweight execution orchestration"
-  default_prompt: "Use $flight-mode for lightweight, execution-first orchestration through Workers."
