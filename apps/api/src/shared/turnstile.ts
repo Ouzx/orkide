@@ -14,7 +14,7 @@ const siteverifySchema = z.object({
  * Cloudflare's dummy secret keys (always pass, always fail, already spent) used in development and
  * CI. Their tokens report `hostname: "example.com"`, so the hostname cannot be checked for them.
  */
-const TEST_SECRET_KEY = /^[123]x0{33}AA$/u;
+const TEST_SECRET_KEY = /^[123]x0{31}AA$/u;
 
 /**
  * Validates a Turnstile token server-side: the challenge was passed, and on this site's hostname.

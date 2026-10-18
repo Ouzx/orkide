@@ -81,6 +81,14 @@ describe("contact submissions", () => {
     expect(response.status).toBe(403);
   });
 
+  it("accepts tokens of Cloudflare's test keys, which report example.com", async () => {
+    mockProviders({ hostname: "example.com" });
+
+    const response = await jsonRequest("/api/contact", "POST", submission);
+
+    expect(response.status).toBe(202);
+  });
+
   describe("with a production Turnstile secret", () => {
     const testSecret = env.TURNSTILE_SECRET_KEY;
 
