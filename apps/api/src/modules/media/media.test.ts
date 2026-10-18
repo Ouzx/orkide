@@ -152,6 +152,31 @@ describe("media delivery", () => {
   });
 });
 
+describe("media deletion", () => {
+  it("purges the documents that embed it and every cached copy of the file", async () => {
+    const { cookie } = await signInAs("owner");
+    const uploaded = await uploadFile(
+      cookie,
+      PDF,
+      "application/pdf",
+      "gone.pdf"
+    );
+    const media = await uploaded.json<{ id: string; url: string }>();
+
+    const response = await request(`/api/admin/media/${media.id}`, {
+      headers: { cookie, origin: ORIGIN },
+      method: "DELETE",
+    });
+    const served = await request(media.url);
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("orkide-purge-tags")).toBe(
+      `posts,projects,${media.url}`
+    );
+    expect(served.status).toBe(404);
+  });
+});
+
 describe("media RBAC", () => {
   it("forbids viewers from updating media", async () => {
     const { cookie } = await signInAs("viewer");

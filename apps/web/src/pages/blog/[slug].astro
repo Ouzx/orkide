@@ -7,6 +7,7 @@ import ReadingDial from "@/shared/components/ReadingDial.astro";
 import TagList from "@/modules/blog/TagList.astro";
 import { getPost } from "@/modules/blog/blog.data.ts";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
@@ -22,7 +23,7 @@ import {
 const { locale } = Astro.locals;
 const options = { locale };
 const { slug, markdown } = parseDocumentParam(Astro.params.slug);
-const post = await getPost(slug, locale);
+const post = await getPost(slug, locale, asVisitor(Astro.request));
 if (!post) {
   return notFound(Astro, locale);
 }

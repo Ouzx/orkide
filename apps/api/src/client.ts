@@ -16,11 +16,22 @@ export type Client = typeof client;
 export type CacheTag = "posts" | "projects" | "site" | "taxonomy";
 
 /**
- * Response header listing the cache tags a write invalidated. Workers Cache is scoped per Worker,
- * so the web Worker (which forwards `/api/*`) reads it to purge its own rendered pages, then
- * strips it before the response reaches the browser.
+ * Response header listing what a write invalidated: cache tags, and path prefixes (starting with
+ * `/`) for responses that carry no tag. Workers Cache is scoped per Worker, so the web Worker
+ * (which forwards `/api/*`) reads it to purge its own cache, then strips it before the response
+ * reaches the browser.
  */
 export const PURGE_TAGS_HEADER = "orkide-purge-tags";
+
+/** `cache.purge()` options for purge targets: entries starting with `/` are path prefixes. */
+export const purgeOptions = (targets: readonly string[]) => {
+  const pathPrefixes = targets.filter((target) => target.startsWith("/"));
+  const tags = targets.filter((target) => !target.startsWith("/"));
+  return {
+    ...(pathPrefixes.length > 0 ? { pathPrefixes } : {}),
+    ...(tags.length > 0 ? { tags } : {}),
+  };
+};
 
 export const hcWithType = (...args: Parameters<typeof hc>): Client =>
   hc<AppType>(...args);

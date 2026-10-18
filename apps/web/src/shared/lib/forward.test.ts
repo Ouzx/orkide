@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { forwardToApi } from "./forward.ts";
+import { asVisitor, forwardToApi } from "./forward.ts";
 
 describe(forwardToApi, () => {
   it("keeps the client IP on the forwarded request", async () => {
@@ -25,5 +25,23 @@ describe(forwardToApi, () => {
     const original = new Request("https://orkide.dev/api/posts");
 
     expect(forwardToApi(original).headers.has("cf-connecting-ip")).toBeFalsy();
+  });
+});
+
+describe(asVisitor, () => {
+  it("passes the visitor's IP to the API call", () => {
+    const visit = new Request("https://orkide.dev/en/blog/x", {
+      headers: { "cf-connecting-ip": "203.0.113.7" },
+    });
+
+    expect(asVisitor(visit)).toStrictEqual({
+      headers: { "cf-connecting-ip": "203.0.113.7" },
+    });
+  });
+
+  it("adds nothing without a visitor IP", () => {
+    expect(
+      asVisitor(new Request("https://orkide.dev/en/blog/x"))
+    ).toBeUndefined();
   });
 });

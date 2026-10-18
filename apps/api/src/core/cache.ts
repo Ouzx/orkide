@@ -1,7 +1,7 @@
 import { cache } from "cloudflare:workers";
 import { tryGetContext } from "hono/context-storage";
 
-import { PURGE_TAGS_HEADER } from "../client.ts";
+import { PURGE_TAGS_HEADER, purgeOptions } from "../client.ts";
 import type { CacheTag } from "../client.ts";
 import { factory } from "./factory.ts";
 
@@ -47,19 +47,24 @@ export const shareable = (...tags: CacheTag[]) =>
     c.header("cache-tag", tags.join(","));
   });
 
+/** A cache tag, or the path prefix of responses that carry no tag (a media file). */
+export type PurgeTarget = CacheTag | `/${string}`;
+
 /**
- * Invalidates every shared response carrying one of `tags`, in every data center, and reports the
- * tags on the current response so the web Worker can purge the pages rendered from them.
+ * Invalidates every shared response carrying one of the tags or under one of the paths, in every
+ * data center, and reports them on the current response so the web Worker purges its copies too.
  * The local runtime (Miniflare) does not emulate Workers Cache, so there is nothing to purge there.
  */
-export const purge = async (...tags: CacheTag[]): Promise<void> => {
-  tryGetContext()?.header(PURGE_TAGS_HEADER, tags.join(","), { append: true });
+export const purge = async (...targets: PurgeTarget[]): Promise<void> => {
+  tryGetContext()?.header(PURGE_TAGS_HEADER, targets.join(","), {
+    append: true,
+  });
   if (typeof cache?.purge !== "function") {
     return;
   }
-  const result = await cache.purge({ tags });
+  const result = await cache.purge(purgeOptions(targets));
   if (!result.success) {
-    throw new Error(`Cache purge failed for ${tags.join(", ")}`, {
+    throw new Error(`Cache purge failed for ${targets.join(", ")}`, {
       cause: result.errors,
     });
   }

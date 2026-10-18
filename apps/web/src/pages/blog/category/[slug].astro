@@ -3,6 +3,7 @@ import { m } from "@orkide/i18n/messages";
 
 import PostIndex from "@/modules/blog/PostIndex.astro";
 import { findTerm, getTaxonomy, listPosts } from "@/modules/blog/blog.data.ts";
+import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
 
@@ -17,7 +18,10 @@ const [found, taxonomy] = await Promise.all([
 if (!found) {
   return notFound(Astro, locale);
 }
-const posts = await listPosts({ category: slug, cursor, locale });
+const posts = await listPosts(
+  { category: slug, cursor, locale },
+  asVisitor(Astro.request)
+);
 
 cachePage(Astro, "posts", "taxonomy");
 ---

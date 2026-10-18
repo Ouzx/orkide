@@ -3,6 +3,7 @@ import { IMAGE_WIDTHS } from "@orkide/validators/limits";
 import type { Media, MediaUpdate } from "@orkide/validators/media";
 import { env } from "cloudflare:workers";
 
+import { purge } from "../../core/cache.ts";
 import { ApiError } from "../../core/errors.ts";
 import type { UploadedFile } from "../../core/middleware/upload.ts";
 import { toMedia } from "../../shared/documents.ts";
@@ -122,9 +123,14 @@ export const updateTranslations = async (id: string, input: MediaUpdate) => {
     throw new ApiError("not_found");
   }
   await repository.updateTranslations(id, input);
+  // Posts and projects embed their media's alt text and captions.
+  await purge("posts", "projects");
 };
 
-/** Deletes the database row first (so the item disappears immediately), then the object and variants. */
+/**
+ * Deletes the database row first (so the item disappears immediately), then the object and
+ * variants, then every cached copy: the file is served `immutable`, so caches would keep it.
+ */
 export const remove = async (id: string) => {
   const deleted = await repository.remove(id);
   if (!deleted) {
@@ -137,6 +143,7 @@ export const remove = async (id: string) => {
     deleted.key,
     ...variants.objects.map((object) => object.key),
   ]);
+  await purge("posts", "projects", `/api/${deleted.key}`);
 };
 
 const snapWidth = (requested: number | undefined): number =>

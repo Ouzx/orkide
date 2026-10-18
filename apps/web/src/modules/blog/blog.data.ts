@@ -1,6 +1,7 @@
 import type { Locale } from "@orkide/i18n";
 import { locales } from "@orkide/i18n";
 import { localizeHref } from "@orkide/i18n/runtime";
+import type { ClientRequestOptions } from "hono/client";
 
 import { api, orNotFound, parseResponse } from "@/shared/lib/api.ts";
 import type { Alternates } from "@/shared/lib/i18n.ts";
@@ -13,18 +14,29 @@ export interface PostListQuery {
   readonly limit?: number;
 }
 
-export const listPosts = ({ limit, ...query }: PostListQuery) =>
+export const listPosts = (
+  { limit, ...query }: PostListQuery,
+  options?: ClientRequestOptions
+) =>
   parseResponse(
-    api.api.posts.$get({
-      query: { ...query, limit: limit?.toString() },
-    })
+    api.api.posts.$get(
+      { query: { ...query, limit: limit?.toString() } },
+      options
+    )
   );
 
 /** `undefined` when no published post has this slug in this locale. */
-export const getPost = (slug: string, locale: Locale) =>
+export const getPost = (
+  slug: string,
+  locale: Locale,
+  options?: ClientRequestOptions
+) =>
   orNotFound(
     parseResponse(
-      api.api.posts[":slug"].$get({ param: { slug }, query: { locale } })
+      api.api.posts[":slug"].$get(
+        { param: { slug }, query: { locale } },
+        options
+      )
     )
   );
 

@@ -14,7 +14,9 @@ type RateLimiterBinding = "RATE_LIMIT_API" | "RATE_LIMIT_STRICT";
  * visitor cannot omit it. The web Worker also forwards it explicitly (`forwardToApi`). A request without it never came
  * from a visitor: it is the web Worker's server-side render calling over the Service Binding.
  * Counting those would pool every page render under one shared key and throttle all visitors
- * together, so they are not limited. Local development is not limited either: the dev server,
+ * together, so they are not limited — except renders whose URL comes from the visitor (a slug, a
+ * cursor), which pass the visitor's IP along (`asVisitor` in the web app) and are counted.
+ * Local development is not limited either: the dev server,
  * the end-to-end suite and Lighthouse all share one IP and would only throttle themselves.
  */
 export const rateLimit = (binding: RateLimiterBinding, scope: string) =>

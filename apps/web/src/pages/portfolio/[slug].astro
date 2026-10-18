@@ -6,6 +6,7 @@ import TagList from "@/modules/blog/TagList.astro";
 import { getProject } from "@/modules/portfolio/portfolio.data.ts";
 import ReadingDial from "@/shared/components/ReadingDial.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
@@ -17,7 +18,7 @@ import { breadcrumbNode, graph, projectNode } from "@/shared/seo/json-ld.ts";
 const { locale } = Astro.locals;
 const options = { locale };
 const { slug, markdown } = parseDocumentParam(Astro.params.slug);
-const project = await getProject(slug, locale);
+const project = await getProject(slug, locale, asVisitor(Astro.request));
 if (!project) {
   return notFound(Astro, locale);
 }

@@ -1,5 +1,5 @@
 import { cf } from "@astrojs/cloudflare/hono";
-import { PURGE_TAGS_HEADER } from "@orkide/api-client";
+import { PURGE_TAGS_HEADER, purgeOptions } from "@orkide/api-client";
 import { astro } from "astro/hono";
 import { cache } from "cloudflare:workers";
 import { Hono } from "hono";
@@ -28,7 +28,7 @@ app.all("/api/*", async (c) => {
   const headers = new Headers(response.headers);
   headers.delete(PURGE_TAGS_HEADER);
   if (typeof cache?.purge === "function") {
-    c.executionCtx.waitUntil(cache.purge({ tags: tags.split(",") }));
+    c.executionCtx.waitUntil(cache.purge(purgeOptions(tags.split(","))));
   }
   return new Response(response.body, {
     headers,
