@@ -112,9 +112,11 @@ const options = { locale };
   /*
    * Progressive pollen layer. A plain script rather than a React island, so the home page ships no
    * framework runtime: after the page is idle, and unless the visitor prefers reduced motion, is
-   * saving data or lacks WebGL 2, the Three.js chunk is fetched and mounted. Any failure leaves the
+   * saving data or lacks WebGL 2 (and while the site's motion switch is off), the Three.js chunk is fetched and mounted. Any failure leaves the
    * poster in place. The host only exists when the `hero-scene` flag is on.
    */
+  import { motionAllowed } from "@/shared/motion/motion.ts";
+
   const host = document.querySelector<HTMLElement>("[data-hero-scene]");
 
   const supportsWebGl = (): boolean => {
@@ -139,20 +141,40 @@ const options = { locale };
     }
   };
 
-  if (
-    host &&
-    !matchMedia("(prefers-reduced-motion: reduce)").matches &&
-    !saveData() &&
-    supportsWebGl()
-  ) {
+  const capable = host !== null && !saveData() && supportsWebGl();
+  let dispose: (() => void) | undefined;
+  let loading = false;
+
+  /** Mounts or removes the layer to match the motion choice (`motionchange` from the switch). */
+  const sync = (): void => {
+    if (!(host && capable)) {
+      return;
+    }
+    if (!motionAllowed()) {
+      dispose?.();
+      dispose = undefined;
+      host.hidden = true;
+      return;
+    }
+    if (dispose || loading) {
+      return;
+    }
+    loading = true;
     whenIdle(async () => {
       try {
         const { mountPollenScene } = await import("./pollen-scene.ts");
-        host.hidden = false;
-        mountPollenScene(host);
+        if (motionAllowed()) {
+          host.hidden = false;
+          dispose = mountPollenScene(host);
+        }
       } catch {
         host.hidden = true;
+      } finally {
+        loading = false;
       }
     });
-  }
+  };
+
+  sync();
+  document.addEventListener("motionchange", sync);
 </script>

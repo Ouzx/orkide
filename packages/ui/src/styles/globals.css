@@ -206,6 +206,25 @@
       animation: none !important;
     }
   }
+
+  /* The site's motion switch (html.calm) does what the system setting does. */
+  html.calm {
+    scroll-behavior: auto;
+  }
+
+  .calm *,
+  .calm *::before,
+  .calm *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .calm::view-transition-group(*),
+  .calm::view-transition-old(*),
+  .calm::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 @layer components {
@@ -485,7 +504,8 @@
 /*
  * ─── Reveal on scroll ─────────────────────────────────────────────────────────────────────
  * Scroll-driven (no JavaScript, off the main thread): elements ease in as they enter the
- * viewport. Browsers without scroll timelines, and reduced-motion visitors, see them as is.
+ * viewport. Browsers without scroll timelines, reduced-motion visitors and the motion switch's
+ * `html.calm` see them as is.
  */
 @keyframes orkide-reveal {
   from {
@@ -497,9 +517,11 @@
 @utility reveal {
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      animation: orkide-reveal linear both;
-      animation-range: entry 0% entry 60%;
-      animation-timeline: view();
+      :root:not(.calm) & {
+        animation: orkide-reveal linear both;
+        animation-range: entry 0% entry 60%;
+        animation-timeline: view();
+      }
     }
   }
 }

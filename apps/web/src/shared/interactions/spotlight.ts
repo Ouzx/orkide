@@ -1,7 +1,8 @@
 /**
  * Feeds the `spotlight` utility: one delegated, passive pointer listener writes the pointer
  * position into `--spot-x/--spot-y` on the hovered `[data-spotlight]` element, at most once per
- * frame. Touch and reduced-motion visitors get the static, centered glow.
+ * frame. Touch and reduced-motion visitors, and anyone who switched motion off (`html.calm`), get
+ * the static, centered glow.
  */
 export const startSpotlight = (): void => {
   if (matchMedia("(hover: none), (prefers-reduced-motion: reduce)").matches) {
@@ -27,7 +28,7 @@ export const startSpotlight = (): void => {
       const target = (event.target as Element | null)?.closest<HTMLElement>(
         "[data-spotlight]"
       );
-      if (!target) {
+      if (!target || document.documentElement.classList.contains("calm")) {
         return;
       }
       pending = { target, x: event.clientX, y: event.clientY };

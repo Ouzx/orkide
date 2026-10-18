@@ -2,6 +2,7 @@
 import { m } from "@orkide/i18n/messages";
 
 import Picture from "@/shared/media/Picture.astro";
+import MotionSwitch from "@/shared/motion/MotionSwitch.astro";
 import { owner } from "@/shared/site.ts";
 
 import Logo from "./Logo.astro";
@@ -43,6 +44,7 @@ const agents = [
           <Logo class="size-5" weight={44} />
           {m.footer_built_with({}, options)}
         </p>
+        <MotionSwitch />
       </div>
     </div>
     <nav aria-labelledby="footer-feeds">

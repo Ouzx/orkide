@@ -1,7 +1,9 @@
+import { MOTION_STORAGE_KEY } from "../motion/motion.ts";
 import { THEME_STORAGE_KEY } from "./theme.ts";
 
 /**
- * Pre-paint theme bootstrap, inlined in <head> so the page never flashes the wrong palette. It is
+ * Pre-paint bootstrap of the visitor's theme and motion choice, inlined in <head> so the page never
+ * flashes the wrong palette or starts motion the visitor switched off (`html.calm`). It is
  * a constant string (not `define:vars`): `astro.config.ts` hashes it into the CSP at build time.
  */
 export const themeScript = `(() => {
@@ -10,4 +12,5 @@ export const themeScript = `(() => {
   const root = document.documentElement;
   root.dataset.theme = theme;
   root.classList.toggle("dark", theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches));
+  try { root.classList.toggle("calm", localStorage.getItem(${JSON.stringify(MOTION_STORAGE_KEY)}) === "off"); } catch {}
 })();`;

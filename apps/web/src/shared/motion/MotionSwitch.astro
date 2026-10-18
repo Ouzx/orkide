@@ -1,0 +1,45 @@
+---
+import { m } from "@orkide/i18n/messages";
+
+const { locale } = Astro.locals;
+---
+
+<!--
+  Switches the site's motion off and on for this browser (pressed = reduced). Hidden for visitors
+  whose system already asks for reduced motion: the site follows that setting anyway.
+-->
+<button
+  type="button"
+  class="inline-flex items-center gap-2 rounded-full border glass-subtle px-3 py-1 text-xs transition-colors hover:text-foreground aria-pressed:bg-background aria-pressed:text-foreground motion-reduce:hidden"
+  aria-pressed="false"
+  data-motion-switch
+>
+  <span
+    aria-hidden="true"
+    class="relative h-3 w-5 rounded-full border border-current"
+  >
+    <span
+      class="absolute top-px left-2.5 size-2 rounded-full bg-current transition-[left] in-aria-pressed:left-px"
+    ></span>
+  </span>
+  {m.motion_reduce({}, { locale })}
+</button>
+
+<script>
+  import { storeCalm } from "./motion.ts";
+
+  const html = document.documentElement;
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    "[data-motion-switch]"
+  )) {
+    button.setAttribute(
+      "aria-pressed",
+      String(html.classList.contains("calm"))
+    );
+    button.addEventListener("click", () => {
+      const calm = !html.classList.contains("calm");
+      storeCalm(calm);
+      button.setAttribute("aria-pressed", String(calm));
+    });
+  }
+</script>

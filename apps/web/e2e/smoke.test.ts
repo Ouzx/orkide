@@ -29,6 +29,21 @@ test("a seeded post renders its article", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("the motion switch turns motion off before the next paint", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/en");
+  const toggle = page.getByRole("button", { name: "Reduce motion" });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("html")).toHaveClass(/\bcalm\b/u);
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveClass(/\bcalm\b/u);
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+});
+
 test("the admin sign-in page is reachable without a session", async ({
   page,
 }) => {
