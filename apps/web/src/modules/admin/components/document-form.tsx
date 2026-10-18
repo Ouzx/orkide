@@ -1,4 +1,4 @@
-import { slugify } from "@orkide/content/slug";
+import { SLUG_MAX_LENGTH, slugify } from "@orkide/content/slug";
 import type { Locale } from "@orkide/i18n";
 import { locales } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
@@ -13,16 +13,18 @@ import type {
   DocumentTranslationInput,
   PostRecord,
 } from "@orkide/validators/content";
-import { useQuery } from "@tanstack/react-query";
+import { TEXT_MAX } from "@orkide/validators/limits";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ImagePlus, Plus, X } from "lucide-react";
 import { useId, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 
-import { problemOf, queries } from "../api.ts";
+import { problemOf, queries, translationFor } from "../api.ts";
 import { useAdmin } from "../context.tsx";
 import { RichTextEditor } from "../editor/rich-text-editor.tsx";
 import { useMediaPicker } from "../media/media-picker.tsx";
-import { isImage, mediaUrl, toMedia } from "../media/media-utils.ts";
+import { isImage, toMedia } from "../media/media-utils.ts";
+import { Panel } from "./page.tsx";
 import { useStatusLabel } from "./status-badge.tsx";
 
 type Status = PostRecord["status"];
@@ -66,6 +68,15 @@ const emptyTranslation = (locale: Locale): Translation => ({
   title: "",
 });
 
+/** A new document with one empty translation in `locale`. */
+export const newDraft = (locale: Locale): DocumentDraft => ({
+  coverMediaId: null,
+  scheduledAt: null,
+  status: "draft",
+  tagIds: [],
+  translations: [emptyTranslation(locale)],
+});
+
 /** `datetime-local` value (local time) ⇄ ISO-8601. */
 export const toLocalInput = (iso: string | null): string => {
   if (!iso) {
@@ -79,7 +90,11 @@ export const toLocalInput = (iso: string | null): string => {
 export const fromLocalInput = (value: string): string | null =>
   value ? new Date(value).toISOString() : null;
 
-const FieldError = ({ message }: { readonly message: string | undefined }) =>
+export const FieldError = ({
+  message,
+}: {
+  readonly message: string | undefined;
+}) =>
   message ? (
     <p role="alert" className="text-sm text-destructive">
       {message}
@@ -117,7 +132,7 @@ const TranslationFields = ({
           id={`${id}-title`}
           value={translation.title}
           required
-          maxLength={140}
+          maxLength={TEXT_MAX.title}
           className="h-11"
           aria-invalid={issue("title") ? true : undefined}
           onChange={(event) => {
@@ -137,7 +152,7 @@ const TranslationFields = ({
           id={`${id}-slug`}
           value={translation.slug}
           required
-          maxLength={96}
+          maxLength={SLUG_MAX_LENGTH}
           aria-invalid={issue("slug") ? true : undefined}
           onChange={(event) => {
             slugEdited.current = true;
@@ -154,7 +169,7 @@ const TranslationFields = ({
           id={`${id}-summary`}
           value={translation.summary}
           required
-          maxLength={300}
+          maxLength={TEXT_MAX.summary}
           rows={3}
           aria-invalid={issue("summary") ? true : undefined}
           onChange={(event) =>
@@ -187,7 +202,7 @@ const TranslationFields = ({
           <Input
             id={`${id}-seo-title`}
             value={translation.seoTitle ?? ""}
-            maxLength={70}
+            maxLength={TEXT_MAX.seoTitle}
             placeholder={translation.title}
             onChange={(event) =>
               onChange({
@@ -204,7 +219,7 @@ const TranslationFields = ({
           <Textarea
             id={`${id}-seo-description`}
             value={translation.seoDescription ?? ""}
-            maxLength={160}
+            maxLength={TEXT_MAX.seoDescription}
             rows={2}
             placeholder={translation.summary}
             onChange={(event) =>
@@ -220,19 +235,6 @@ const TranslationFields = ({
   );
 };
 
-export const SidebarSection = ({
-  title,
-  children,
-}: {
-  readonly title: string;
-  readonly children: ReactNode;
-}) => (
-  <section className="o-unit space-y-4 p-5">
-    <h2 className="o-unit-title">{title}</h2>
-    {children}
-  </section>
-);
-
 const languageName = (locale: Locale) =>
   ({
     en: () => m.locale_name_en({}, { locale: "en" }),
@@ -245,7 +247,6 @@ const languageName = (locale: Locale) =>
  */
 export const DocumentForm = ({
   initial,
-  tags,
   canPublish,
   canSave,
   issues,
@@ -254,7 +255,6 @@ export const DocumentForm = ({
   onSubmit,
 }: {
   readonly initial: DocumentDraft;
-  readonly tags: readonly { id: string; name: string }[];
   readonly canPublish: boolean;
   /** Whether the user may write this document; when false the form is a read-only view. */
   readonly canSave: boolean;
@@ -273,6 +273,11 @@ export const DocumentForm = ({
   );
   const [pickerDialog, pick] = useMediaPicker();
   const { data: library } = useQuery(queries.media());
+  const { data: taxonomy } = useSuspenseQuery(queries.taxonomy());
+  const tags = taxonomy.tags.map((tag) => ({
+    id: tag.id,
+    name: translationFor(tag.translations, locale)?.name ?? "",
+  }));
   const coverRecord = library?.find(
     (record) => record.id === draft.coverMediaId
   );
@@ -387,7 +392,7 @@ export const DocumentForm = ({
 
       <aside className="lg:sticky lg:top-6 lg:self-start">
         <fieldset disabled={!canSave} className="min-w-0 space-y-6">
-          <SidebarSection title={m.admin_section_publishing({}, options)}>
+          <Panel title={m.admin_section_publishing({}, options)}>
             {canSave ? null : (
               <Badge variant="outline" className="w-fit">
                 {m.admin_read_only({}, options)}
@@ -438,14 +443,14 @@ export const DocumentForm = ({
                   : m.admin_save({}, options)}
               </Button>
             ) : null}
-          </SidebarSection>
+          </Panel>
 
-          <SidebarSection title={m.admin_field_cover({}, options)}>
+          <Panel title={m.admin_field_cover({}, options)}>
             {draft.coverMediaId ? (
               <div className="space-y-2">
                 {coverRecord ? (
                   <img
-                    src={`${mediaUrl(coverRecord)}?w=640`}
+                    src={`${coverRecord.url}?w=640`}
                     alt=""
                     className="aspect-video w-full rounded-xl border object-cover"
                   />
@@ -479,9 +484,9 @@ export const DocumentForm = ({
                 {m.admin_choose_media({}, options)}
               </Button>
             ) : null}
-          </SidebarSection>
+          </Panel>
 
-          <SidebarSection title={m.admin_section_organization({}, options)}>
+          <Panel title={m.admin_section_organization({}, options)}>
             {sidebar}
             {tags.length > 0 ? (
               <fieldset className="space-y-2">
@@ -512,7 +517,7 @@ export const DocumentForm = ({
                 })}
               </fieldset>
             ) : null}
-          </SidebarSection>
+          </Panel>
         </fieldset>
       </aside>
       {pickerDialog}

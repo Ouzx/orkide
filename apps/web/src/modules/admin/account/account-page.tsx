@@ -12,8 +12,7 @@ import { toast } from "sonner";
 
 import { authClient } from "../auth-client.ts";
 import { ConfirmDelete } from "../components/confirm-delete.tsx";
-import { SidebarSection } from "../components/document-form.tsx";
-import { PageHeader, QueryBoundary } from "../components/page.tsx";
+import { PageHeader, Panel, QueryBoundary } from "../components/page.tsx";
 import { useAdmin } from "../context.tsx";
 
 const PASSKEYS = ["passkeys"] as const;
@@ -65,7 +64,7 @@ const Passkeys = () => {
   );
 
   return (
-    <SidebarSection title={m.admin_passkeys({}, options)}>
+    <Panel title={m.admin_passkeys({}, options)}>
       <p className="text-sm text-muted-foreground">
         {m.admin_passkeys_lead({}, options)}
       </p>
@@ -93,7 +92,7 @@ const Passkeys = () => {
         <Fingerprint aria-hidden="true" />
         {m.admin_passkey_add({}, options)}
       </Button>
-    </SidebarSection>
+    </Panel>
   );
 };
 
@@ -108,7 +107,7 @@ export const AccountPage = () => {
     <>
       <PageHeader title={m.admin_account_title({}, options)} />
       <div className="grid gap-6 lg:grid-cols-2">
-        <SidebarSection title={user.name}>
+        <Panel title={user.name}>
           <div className="flex items-center gap-4">
             <Avatar className="size-14">
               {user.image ? <AvatarImage src={user.image} alt="" /> : null}
@@ -121,7 +120,7 @@ export const AccountPage = () => {
               <dd className="text-muted-foreground">{role}</dd>
             </dl>
           </div>
-        </SidebarSection>
+        </Panel>
         <QueryBoundary>
           <Passkeys />
         </QueryBoundary>

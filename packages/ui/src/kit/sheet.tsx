@@ -1,16 +1,12 @@
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { cn } from "cn";
 import { XIcon } from "lucide-react";
-import type { ComponentProps } from "react";
 
 import { Button } from "./button.tsx";
 
 /** A panel sliding in from an edge (components.md · Drawer); behaviour from Base UI. */
 const Sheet = (props: SheetPrimitive.Root.Props) => (
   <SheetPrimitive.Root data-slot="sheet" {...props} />
-);
-const SheetTrigger = (props: SheetPrimitive.Trigger.Props) => (
-  <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
 );
 const SheetClose = (props: SheetPrimitive.Close.Props) => (
   <SheetPrimitive.Close data-slot="sheet-close" {...props} />
@@ -74,20 +70,6 @@ const SheetContent = ({
   </SheetPortal>
 );
 
-const SheetHeader = ({ className, ...props }: ComponentProps<"div">) => (
-  <div
-    data-slot="sheet-header"
-    className={cn("grid gap-1 p-4", className)}
-    {...props}
-  />
-);
-const SheetFooter = ({ className, ...props }: ComponentProps<"div">) => (
-  <div
-    data-slot="sheet-footer"
-    className={cn("mt-auto grid gap-2 p-4", className)}
-    {...props}
-  />
-);
 const SheetTitle = ({ className, ...props }: SheetPrimitive.Title.Props) => (
   <SheetPrimitive.Title
     data-slot="sheet-title"
@@ -95,26 +77,4 @@ const SheetTitle = ({ className, ...props }: SheetPrimitive.Title.Props) => (
     {...props}
   />
 );
-const SheetDescription = ({
-  className,
-  ...props
-}: SheetPrimitive.Description.Props) => (
-  <SheetPrimitive.Description
-    data-slot="sheet-description"
-    className={cn("text-md text-ink-2", className)}
-    {...props}
-  />
-);
-
-export {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetOverlay,
-  SheetPortal,
-  SheetTitle,
-  SheetTrigger,
-};
+export { Sheet, SheetClose, SheetContent, SheetTitle };

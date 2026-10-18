@@ -15,6 +15,12 @@ export const slugSchema = z
   .max(SLUG_MAX_LENGTH)
   .regex(SLUG_PATTERN, "Use lowercase letters, digits and single dashes.");
 
+/** Link to the same document or term in another locale, for `hreflang` and the language switcher. */
+export const alternateSchema = z.object({
+  locale: localeSchema,
+  slug: slugSchema,
+});
+
 /** ISO-8601 timestamp on the wire; `Date` in the database. */
 export const isoDateSchema = z.iso.datetime({ offset: true });
 

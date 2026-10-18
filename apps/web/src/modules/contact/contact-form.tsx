@@ -1,5 +1,6 @@
 import { createApiClient } from "@orkide/api-client";
 import type { Locale } from "@orkide/i18n";
+import { CONTACT_BODY_MIN, TEXT_MAX } from "@orkide/validators/limits";
 import type { ReactNode, SubmitEvent } from "react";
 import { startTransition, useActionState } from "react";
 
@@ -146,7 +147,12 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
       {status(pending ? "warn" : "ok", pending ? labels.sending : labels.ready)}
       <div className="grid gap-3.5 sm:grid-cols-2">
         {field("name", labels.name, (props) => (
-          <input {...props} autoComplete="name" required maxLength={120} />
+          <input
+            {...props}
+            autoComplete="name"
+            required
+            maxLength={TEXT_MAX.contactName}
+          />
         ))}
         {field("email", labels.email, (props) => (
           <input
@@ -154,7 +160,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
             type="email"
             autoComplete="email"
             required
-            maxLength={254}
+            maxLength={TEXT_MAX.email}
           />
         ))}
       </div>
@@ -164,15 +170,15 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
           {labels.subject} <small>({labels.optional})</small>
         </>,
         (props) => (
-          <input {...props} maxLength={160} />
+          <input {...props} maxLength={TEXT_MAX.contactSubject} />
         )
       )}
       {field("body", labels.body, (props) => (
         <textarea
           {...props}
           required
-          minLength={10}
-          maxLength={5000}
+          minLength={CONTACT_BODY_MIN}
+          maxLength={TEXT_MAX.contactBody}
           rows={7}
         />
       ))}

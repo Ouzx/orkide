@@ -1,6 +1,16 @@
-import type { z } from "@hono/zod-openapi";
+import { z } from "@hono/zod-openapi";
+import { idSchema, localeSchema, slugSchema } from "@orkide/validators/common";
 
 import { problemSchema } from "./problem.ts";
+
+/** The optional `?locale=` of reader routes (the language middleware reads it). */
+export const localeQuery = z.object({ locale: localeSchema.optional() });
+export const idParams = z.object({
+  id: idSchema.openapi({ param: { in: "path", name: "id" } }),
+});
+export const slugParams = z.object({
+  slug: slugSchema.openapi({ param: { in: "path", name: "slug" } }),
+});
 
 /** OpenAPI response object for a JSON body. */
 export const json = <T extends z.ZodType>(schema: T, description: string) =>

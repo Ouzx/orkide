@@ -12,9 +12,9 @@ export const pageAlternates = (path: string): Alternates =>
     locales.map((locale) => [locale, localizeHref(path, { locale })])
   );
 
-/** Alternates of a document whose slug is translated per locale. */
+/** Alternates of a document or term whose slug is translated per locale. */
 export const documentAlternates = (
-  section: "/blog" | "/portfolio",
+  section: `/${string}`,
   alternates: readonly { locale: Locale; slug: string }[]
 ): Alternates =>
   Object.fromEntries(

@@ -1,11 +1,8 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import {
-  idSchema,
-  isoDateSchema,
-  localeSchema,
-} from "@orkide/validators/common";
+import { idSchema } from "@orkide/validators/common";
 import {
   contactInputSchema,
+  contactMessageSchema,
   contactMessageStatusSchema,
   contactMessageUpdateSchema,
 } from "@orkide/validators/contact";
@@ -14,28 +11,12 @@ import { createRouter } from "../../core/factory.ts";
 import { requireFlag } from "../../core/flags.ts";
 import { requirePermission } from "../../core/middleware/auth.ts";
 import { rateLimit } from "../../core/middleware/rate-limit.ts";
-import { json, problems } from "../../core/responses.ts";
+import { idParams, json, problems } from "../../core/responses.ts";
 import * as service from "./contact.service.ts";
 
 const ContactInput = contactInputSchema.openapi("ContactInput");
-const ContactMessage = z
-  .object({
-    body: z.string(),
-    createdAt: isoDateSchema,
-    email: z.email(),
-    id: idSchema,
-    locale: localeSchema,
-    name: z.string(),
-    status: contactMessageStatusSchema,
-    subject: z.string().nullable(),
-    updatedAt: isoDateSchema,
-    userAgent: z.string().nullable(),
-  })
-  .openapi("ContactMessage");
+const ContactMessage = contactMessageSchema.openapi("ContactMessage");
 
-const idParams = z.object({
-  id: idSchema.openapi({ param: { in: "path", name: "id" } }),
-});
 const admin = { security: [{ session: [] }], tags: ["Admin · Inbox"] };
 
 const submit = createRoute({

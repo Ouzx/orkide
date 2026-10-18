@@ -10,7 +10,6 @@
     "./globals.css": "./src/styles/globals.css",
     "./lib/*": "./src/lib/*.ts",
     "./shadcn/*": "./src/shadcn/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts",
     "./tokens/*": "./src/tokens/*.ts",
     "./motion/*": "./src/motion/*.ts",
     "./effects/*": "./src/effects/*.ts",

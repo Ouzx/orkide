@@ -1,7 +1,7 @@
 import { meters } from "@orkide/ui/effects/meters";
 import { choreography, typeDelay } from "@orkide/ui/motion/motion";
 
-import { onFrame } from "@/shared/motion/frame.ts";
+import { onScroll } from "@/shared/motion/frame.ts";
 import { soundOn } from "@/shared/sound/sound.ts";
 
 /**
@@ -59,11 +59,16 @@ const lamps = [
   ...document.querySelectorAll<HTMLElement>("[data-ledbar] > .o-lamp"),
 ];
 const screen = document.querySelector<HTMLElement>("[data-readout]");
-const sections = [...document.querySelectorAll<HTMLElement>("[data-section]")];
+const sections = [
+  ...document.querySelectorAll<HTMLElement>("[data-section]"),
+].map((section) => ({
+  label: `${section.querySelector(".o-sec-no")?.textContent ?? ""} ${section.querySelector(".o-sec-title")?.textContent ?? ""}`,
+  section,
+}));
 const panel = screen?.textContent?.trim() ?? "";
 let lit = -1;
 let current = "";
-onFrame(() => {
+onScroll(() => {
   const scrolled =
     scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
   const next = Math.round(scrolled * lamps.length);
@@ -80,10 +85,8 @@ onFrame(() => {
   if (screen) {
     let label = panel;
     for (const section of sections) {
-      if (section.getBoundingClientRect().top < innerHeight * 0.45) {
-        const number = section.querySelector(".o-sec-no")?.textContent ?? "";
-        const title = section.querySelector(".o-sec-title")?.textContent ?? "";
-        label = `${number} ${title}`;
+      if (section.section.getBoundingClientRect().top < innerHeight * 0.45) {
+        ({ label } = section);
       }
     }
     if (label !== current) {

@@ -1,5 +1,7 @@
 import { DurableObject } from "cloudflare:workers";
 
+import { sha256Hex } from "../../shared/hash.ts";
+
 const NO_STATUS_CODE = 1005;
 const NORMAL_CLOSE_CODE = 1000;
 
@@ -11,11 +13,8 @@ export const MAX_SOCKETS_PER_VISITOR = 10;
 
 /** Short one-way tag for a client IP, so the IP itself is never kept with the socket. */
 const visitorTag = async (ip: string): Promise<string> => {
-  const digest = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(ip)
-  );
-  return `v:${new Uint8Array(digest).toHex().slice(0, 32)}`;
+  const hex = await sha256Hex(ip);
+  return `v:${hex.slice(0, 32)}`;
 };
 
 /**

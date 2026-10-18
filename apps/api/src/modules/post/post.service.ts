@@ -15,6 +15,8 @@ import {
   toAlternates,
   toIso,
   toMedia,
+  toPublication,
+  toRecordTranslations,
   toTerm,
   toTerms,
 } from "../../shared/documents.ts";
@@ -60,17 +62,7 @@ const toRecord = (row: AdminRow): PostRecord => ({
   scheduledAt: toIso(row.scheduledAt),
   status: row.status,
   tagIds: row.tags.map((tag) => tag.id),
-  translations: row.translations.map(
-    ({ content, locale, seoDescription, seoTitle, slug, summary, title }) => ({
-      content,
-      locale,
-      seoDescription,
-      seoTitle,
-      slug,
-      summary,
-      title,
-    })
-  ),
+  translations: toRecordTranslations(row.translations),
   updatedAt: row.updatedAt.toISOString(),
 });
 
@@ -113,8 +105,8 @@ export const getPublished = async (
     ...summary,
     attachments: row.attachments.map((media) => toMedia(media, locale)),
     author: row.author,
-    html: translation.html,
-    markdown: translation.markdown,
+    html: row.body.html,
+    markdown: row.body.markdown,
     seoDescription: translation.seoDescription,
     seoTitle: translation.seoTitle,
     updatedAt: translation.updatedAt.toISOString(),
@@ -134,25 +126,13 @@ export const getById = async (id: string): Promise<PostRecord> => {
   return toRecord(row);
 };
 
-/**
- * Normalizes publication fields: publishing stamps `publishedAt` once (re-saving keeps the
- * original date), scheduling keeps `scheduledAt`, and other states clear the schedule.
- */
-const toWrite = (input: PostInput, previous?: PostRecord) => {
-  const isPublished = input.status === "published";
-  return {
-    categoryId: input.categoryId ?? null,
-    coverMediaId: input.coverMediaId ?? null,
-    publishedAt: isPublished
-      ? new Date(previous?.publishedAt ?? Date.now())
-      : null,
-    scheduledAt:
-      input.status === "scheduled" ? (input.scheduledAt ?? null) : null,
-    status: input.status ?? "draft",
-    tagIds: input.tagIds,
-    translations: renderTranslations(input.translations),
-  };
-};
+const toWrite = (input: PostInput, previous?: PostRecord) => ({
+  ...toPublication(input, previous),
+  categoryId: input.categoryId ?? null,
+  coverMediaId: input.coverMediaId ?? null,
+  tagIds: input.tagIds,
+  translations: renderTranslations(input.translations),
+});
 
 export const create = async (
   input: PostInput,

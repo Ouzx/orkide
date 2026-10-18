@@ -1,7 +1,7 @@
 import { logger } from "./core/logger.ts";
 import { publishDue as publishDuePosts } from "./modules/post/post.service.ts";
 import { publishDue as publishDueProjects } from "./modules/project/project.service.ts";
-import { rollup } from "./modules/stats/stats.service.ts";
+import { isoDay, rollup } from "./modules/stats/stats.service.ts";
 
 /** Cron expressions, mirrored from `triggers.crons` in `wrangler.jsonc`. */
 export const CRONS = {
@@ -9,8 +9,7 @@ export const CRONS = {
   publishScheduled: "*/5 * * * *",
 } as const;
 
-const yesterday = (now: Date) =>
-  new Date(now.getTime() - 86_400_000).toISOString().slice(0, 10);
+const yesterday = (now: Date) => isoDay(new Date(now.getTime() - 86_400_000));
 
 const tasks: Record<string, (now: Date) => Promise<Record<string, unknown>>> = {
   [CRONS.dailyRollup]: async (now) => ({

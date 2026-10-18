@@ -6,18 +6,14 @@ import { env } from "cloudflare:workers";
 import { ApiError } from "../../core/errors.ts";
 import { enqueue, PermanentJobError } from "../../core/jobs.ts";
 import type { JobOf } from "../../core/jobs.ts";
+import { sha256Hex } from "../../shared/hash.ts";
 import { send } from "../../shared/mailer.ts";
 import { verifyTurnstile } from "../../shared/turnstile.ts";
 import * as repository from "./contact.repository.ts";
 
 /** One-way, secret-salted hash: lets abuse be correlated without ever storing an IP address. */
-const hashIp = async (ip: string): Promise<string> => {
-  const digest = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(`${env.BETTER_AUTH_SECRET}:${ip}`)
-  );
-  return new Uint8Array(digest).toHex();
-};
+const hashIp = (ip: string): Promise<string> =>
+  sha256Hex(`${env.BETTER_AUTH_SECRET}:${ip}`);
 
 export interface SubmissionContext {
   readonly ip: string | undefined;

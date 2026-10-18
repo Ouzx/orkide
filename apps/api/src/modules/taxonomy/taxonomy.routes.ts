@@ -1,26 +1,23 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { idSchema, localeSchema } from "@orkide/validators/common";
+import { idSchema } from "@orkide/validators/common";
 import {
   categoryInputSchema,
   tagInputSchema,
   taxonomyRecordSchema,
-  termSchema,
+  taxonomyTermSchema,
 } from "@orkide/validators/taxonomy";
 
 import { shareable } from "../../core/cache.ts";
 import { createRouter } from "../../core/factory.ts";
 import { requirePermission } from "../../core/middleware/auth.ts";
-import { json, problems } from "../../core/responses.ts";
+import { idParams, localeQuery, json, problems } from "../../core/responses.ts";
 import * as service from "./taxonomy.service.ts";
 
-const Term = termSchema.openapi("Term");
+const TaxonomyTerm = taxonomyTermSchema.openapi("TaxonomyTerm");
 const CategoryInput = categoryInputSchema.openapi("CategoryInput");
 const TagInput = tagInputSchema.openapi("TagInput");
 const TaxonomyRecord = taxonomyRecordSchema.openapi("TaxonomyRecord");
 
-const idParams = z.object({
-  id: idSchema.openapi({ param: { in: "path", name: "id" } }),
-});
 const created = json(z.object({ id: idSchema }), "Created");
 const categoryBody = {
   content: { "application/json": { schema: CategoryInput } },
@@ -36,10 +33,13 @@ const publicList = createRoute({
   method: "get",
   middleware: [shareable("taxonomy")] as const,
   path: "/taxonomy",
-  request: { query: z.object({ locale: localeSchema.optional() }) },
+  request: { query: localeQuery },
   responses: {
     200: json(
-      z.object({ categories: z.array(Term), tags: z.array(Term) }),
+      z.object({
+        categories: z.array(TaxonomyTerm),
+        tags: z.array(TaxonomyTerm),
+      }),
       "Localized categories and tags"
     ),
   },

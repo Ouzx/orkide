@@ -24,7 +24,7 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 
-import { api, errorMessage, parseResponse, queries } from "../api.ts";
+import { api, parseResponse, queries } from "../api.ts";
 import { issuesFrom } from "../components/document-form.tsx";
 import type { FieldIssues } from "../components/document-form.tsx";
 import { PageHeader } from "../components/page.tsx";
@@ -131,10 +131,7 @@ const SectionEditor = ({
           query: { locale },
         })
       ),
-    onError: (error) => {
-      setIssues(issuesFrom(error));
-      toast.error(errorMessage(error));
-    },
+    onError: (error) => setIssues(issuesFrom(error)),
     onSuccess: async () => {
       toast.success(m.admin_saved({}, options));
       await settle();
@@ -148,9 +145,6 @@ const SectionEditor = ({
           query: { locale },
         })
       ),
-    onError: (error) => {
-      toast.error(errorMessage(error));
-    },
     onSuccess: async () => {
       toast.success(m.admin_site_reset_done({}, options));
       await settle();

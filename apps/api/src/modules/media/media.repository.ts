@@ -15,17 +15,9 @@ export const list = () =>
     with: { translations: true },
   });
 
-export interface MediaWrite {
-  readonly key: string;
-  readonly sha256: string;
-  readonly mimeType: string;
-  readonly size: number;
-  readonly width: number | null;
-  readonly height: number | null;
-  readonly placeholder: string | null;
-  readonly uploaderId: string;
-  readonly translations: MediaUpdate["translations"];
-}
+export type MediaWrite = Required<
+  Omit<typeof media.$inferInsert, "id" | "createdAt" | "updatedAt">
+> & { readonly translations: MediaUpdate["translations"] };
 
 export const create = async ({
   translations,

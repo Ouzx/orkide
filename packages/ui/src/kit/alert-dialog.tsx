@@ -63,14 +63,6 @@ const AlertDialogFooter = ({ className, ...props }: ComponentProps<"div">) => (
   />
 );
 
-const AlertDialogMedia = ({ className, ...props }: ComponentProps<"div">) => (
-  <div
-    data-slot="alert-dialog-media"
-    className={cn("o-mini h-10 w-10 min-w-0 justify-center", className)}
-    {...props}
-  />
-);
-
 const AlertDialogTitle = ({
   className,
   ...props
@@ -120,9 +112,6 @@ export {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogOverlay,
-  AlertDialogPortal,
   AlertDialogTitle,
   AlertDialogTrigger,
 };

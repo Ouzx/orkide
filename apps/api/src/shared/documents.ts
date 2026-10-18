@@ -1,6 +1,9 @@
 import { renderDocument } from "@orkide/content/render";
 import type { Locale } from "@orkide/i18n";
-import type { DocumentTranslationInput } from "@orkide/validators/content";
+import type {
+  DocumentTranslationInput,
+  PostInput,
+} from "@orkide/validators/content";
 import type { Media } from "@orkide/validators/media";
 import type { Term } from "@orkide/validators/taxonomy";
 
@@ -39,6 +42,43 @@ export const renderTranslations = (
     seoDescription: translation.seoDescription ?? null,
     seoTitle: translation.seoTitle ?? null,
   }));
+
+/** The editable fields of each translation, as an admin record carries them. */
+export const toRecordTranslations = (
+  translations: readonly DocumentTranslationInput[]
+) =>
+  translations.map(
+    ({ content, locale, seoDescription, seoTitle, slug, summary, title }) => ({
+      content,
+      locale,
+      seoDescription,
+      seoTitle,
+      slug,
+      summary,
+      title,
+    })
+  );
+
+/** Publishing (or scheduling) is a separate permission from editing. */
+export const isPublishing = (status: PostInput["status"]): boolean =>
+  status === "published" || status === "scheduled";
+
+/**
+ * Normalizes publication fields: publishing stamps `publishedAt` once (re-saving keeps the
+ * original date), scheduling keeps `scheduledAt`, and other states clear the schedule.
+ */
+export const toPublication = (
+  input: Pick<PostInput, "scheduledAt" | "status">,
+  previous?: { readonly publishedAt: string | null }
+) => ({
+  publishedAt:
+    input.status === "published"
+      ? new Date(previous?.publishedAt ?? Date.now())
+      : null,
+  scheduledAt:
+    input.status === "scheduled" ? (input.scheduledAt ?? null) : null,
+  status: input.status ?? "draft",
+});
 
 interface Translated {
   readonly locale: Locale;
@@ -91,7 +131,7 @@ interface MediaRow {
 }
 
 /** Public URL of a stored object; served (and transformed for images) by the media module. */
-export const mediaUrl = (key: string): string =>
+export const mediaUrl = (key: string): `/api/media/${string}` =>
   `/api/media/${key.replace(/^media\//u, "")}`;
 
 export const toMedia = (row: MediaRow, locale: Locale): Media => {

@@ -1,10 +1,8 @@
 import type { Locale } from "@orkide/i18n";
-import { locales } from "@orkide/i18n";
-import { localizeHref } from "@orkide/i18n/runtime";
 import type { ClientRequestOptions } from "hono/client";
 
 import { api, orNotFound, parseResponse } from "@/shared/lib/api.ts";
-import type { Alternates } from "@/shared/lib/i18n.ts";
+import { documentAlternates } from "@/shared/lib/i18n.ts";
 
 export interface PostListQuery {
   readonly locale: Locale;
@@ -45,33 +43,19 @@ export const getTaxonomy = (locale: Locale) =>
 
 export type TermKind = "category" | "tag";
 
-/**
- * Finds a term by its localized slug, plus the paths of the same term's page in every locale.
- * Term ids are shared across locales, so the alternates come from matching ids.
- */
-export const findTerm = async (
+/** Finds a term by its localized slug, plus the paths of the same term's page in every locale. */
+export const findTerm = (
+  taxonomy: Awaited<ReturnType<typeof getTaxonomy>>,
   kind: TermKind,
-  slug: string,
-  locale: Locale
+  slug: string
 ) => {
-  const taxonomies = await Promise.all(
-    locales.map(async (each) => [each, await getTaxonomy(each)] as const)
+  const term = (kind === "category" ? taxonomy.categories : taxonomy.tags).find(
+    (each) => each.slug === slug
   );
-  const pick = (taxonomy: Awaited<ReturnType<typeof getTaxonomy>>) =>
-    kind === "category" ? taxonomy.categories : taxonomy.tags;
-  const current = taxonomies.find(([each]) => each === locale)?.[1];
-  const term = current && pick(current).find((each) => each.slug === slug);
-  if (!term) {
-    return;
-  }
-  const alternates: Alternates = {};
-  for (const [each, taxonomy] of taxonomies) {
-    const match = pick(taxonomy).find((other) => other.id === term.id);
-    if (match) {
-      alternates[each] = localizeHref(`/blog/${kind}/${match.slug}`, {
-        locale: each,
-      });
+  return (
+    term && {
+      alternates: documentAlternates(`/blog/${kind}`, term.alternates),
+      term,
     }
-  }
-  return { alternates, term };
+  );
 };

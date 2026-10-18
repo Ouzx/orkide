@@ -1,7 +1,8 @@
 import { auth, hasPermission, isRole } from "@orkide/auth";
 import type { Permissions } from "@orkide/auth";
+import { createMiddleware } from "hono/factory";
 
-import type { AppVariables } from "../env.ts";
+import type { AppEnv, AppVariables } from "../env.ts";
 import { ApiError } from "../errors.ts";
 import { factory } from "../factory.ts";
 
@@ -30,10 +31,11 @@ export const assertPermission: (
 
 /**
  * Guards a route with RBAC. Permissions are checked in-process against the role definitions
- * from `@orkide/auth`, so authorization costs no extra database round-trip.
+ * from `@orkide/auth`, so authorization costs no extra database round-trip. Handlers behind it
+ * see a signed-in `c.var.user`.
  */
 export const requirePermission = (permissions: Permissions) =>
-  factory.createMiddleware(async (c, next) => {
+  createMiddleware<AppEnv & { Variables: { user: User } }>(async (c, next) => {
     assertPermission(c.var.user, permissions);
     await next();
   });

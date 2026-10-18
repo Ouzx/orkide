@@ -1,7 +1,7 @@
 import { db, generateId } from "@orkide/db";
 import { project, projectTag, projectTranslation } from "@orkide/db/schema";
 import type { Locale } from "@orkide/i18n";
-import { eq } from "drizzle-orm";
+import { and, eq, lte, sql } from "drizzle-orm";
 
 import type { renderTranslations } from "../../shared/documents.ts";
 
@@ -29,14 +29,20 @@ export const listPublished = (locale: Locale) =>
     with: publicRelations(locale),
   });
 
-export const findPublishedBySlug = (locale: Locale, slug: string) =>
-  db.query.project.findFirst({
-    where: { status: "published", translations: { locale, slug } },
-    with: {
-      ...publicRelations(locale),
-      translations: { columns: { content: false } },
-    },
-  });
+/** A published project by its localized slug; the body is read for that translation only. */
+export const findPublishedBySlug = async (locale: Locale, slug: string) => {
+  const [row, body] = await db.batch([
+    db.query.project.findFirst({
+      where: { status: "published", translations: { locale, slug } },
+      with: publicRelations(locale),
+    }),
+    db.query.projectTranslation.findFirst({
+      columns: { html: true, markdown: true },
+      where: { locale, slug },
+    }),
+  ]);
+  return row && body ? { ...row, body } : undefined;
+};
 
 const adminRelations = {
   tags: { columns: { id: true } },
@@ -55,20 +61,12 @@ export const listAll = () =>
 export const findById = (id: string) =>
   db.query.project.findFirst({ where: { id }, with: adminRelations });
 
-export interface ProjectWrite {
-  readonly completedAt: Date | null;
-  readonly coverMediaId: string | null;
-  readonly featured: boolean;
-  readonly position: number;
-  readonly publishedAt: Date | null;
-  readonly repositoryUrl: string | null;
-  readonly scheduledAt: Date | null;
-  readonly startedAt: Date | null;
-  readonly status: "draft" | "scheduled" | "published" | "archived";
+export type ProjectWrite = Required<
+  Omit<typeof project.$inferInsert, "id" | "createdAt" | "updatedAt">
+> & {
   readonly tagIds: readonly string[];
   readonly translations: readonly RenderedTranslation[];
-  readonly websiteUrl: string | null;
-}
+};
 
 const split = (
   projectId: string,
@@ -119,18 +117,10 @@ export const remove = async (id: string): Promise<boolean> => {
 
 /** Publishes scheduled projects whose time has come. */
 export const publishDue = async (now: Date): Promise<number> => {
-  const due = await db.query.project.findMany({
-    columns: { id: true, scheduledAt: true },
-    where: { scheduledAt: { lte: now }, status: "scheduled" },
-  });
-  const [first, ...rest] = due.map(({ id, scheduledAt }) =>
-    db
-      .update(project)
-      .set({ publishedAt: scheduledAt ?? now, status: "published" })
-      .where(eq(project.id, id))
-  );
-  if (first) {
-    await db.batch([first, ...rest]);
-  }
-  return due.length;
+  const published = await db
+    .update(project)
+    .set({ publishedAt: sql`${project.scheduledAt}`, status: "published" })
+    .where(and(eq(project.status, "scheduled"), lte(project.scheduledAt, now)))
+    .returning({ id: project.id });
+  return published.length;
 };

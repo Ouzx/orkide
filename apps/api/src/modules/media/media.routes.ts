@@ -1,9 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import {
-  idSchema,
-  isoDateSchema,
-  localeSchema,
-} from "@orkide/validators/common";
+import { idSchema, isoDateSchema } from "@orkide/validators/common";
 import {
   mediaSchema,
   mediaTranslationInputSchema,
@@ -15,13 +11,13 @@ import { createRouter } from "../../core/factory.ts";
 import { requirePermission } from "../../core/middleware/auth.ts";
 import { rateLimit } from "../../core/middleware/rate-limit.ts";
 import { uploadedFile } from "../../core/middleware/upload.ts";
-import { json, problems } from "../../core/responses.ts";
+import { idParams, localeQuery, json, problems } from "../../core/responses.ts";
 import * as service from "./media.service.ts";
 
 const Media = mediaSchema.openapi("Media");
 const MediaUpdate = mediaUpdateSchema.openapi("MediaUpdate");
 const MediaRecord = mediaSchema
-  .omit({ alt: true, caption: true, url: true })
+  .omit({ alt: true, caption: true })
   .extend({
     createdAt: isoDateSchema,
     key: z.string(),
@@ -40,9 +36,6 @@ const fileParam = z
     example: `${"a".repeat(64)}.webp`,
     param: { in: "path", name: "file" },
   });
-const idParams = z.object({
-  id: idSchema.openapi({ param: { in: "path", name: "id" } }),
-});
 const admin = { security: [{ session: [] }], tags: ["Admin · Media"] };
 
 const translationsField = z.array(mediaTranslationInputSchema).default([]);
@@ -73,7 +66,7 @@ const adminList = createRoute({
   method: "get",
   middleware: [requirePermission({ media: ["read"] })] as const,
   path: "/admin/media",
-  request: { query: z.object({ locale: localeSchema.optional() }) },
+  request: { query: localeQuery },
   responses: {
     200: json(z.array(MediaRecord), "Every media item"),
     ...problems(401, 403),
@@ -158,9 +151,6 @@ export const mediaRoutes = createRouter()
   .openapi(adminList, async (c) => c.json(await service.listEditable(), 200))
   .openapi(upload, async (c) => {
     const { upload: file, user } = c.var;
-    if (!user) {
-      throw new ApiError("unauthorized");
-    }
     const result = await service.upload(
       file,
       user.id,

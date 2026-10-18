@@ -9,6 +9,7 @@ import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { createContext, use, useMemo, useState } from "react";
 import type { ComponentType } from "react";
 
+import { FieldError } from "../components/document-form.tsx";
 import type { FieldIssues } from "../components/document-form.tsx";
 import { useAdmin } from "../context.tsx";
 import { fieldLabel, optionLabel } from "./labels.ts";
@@ -110,14 +111,9 @@ export const blankOf = (schema: Schema): Value => {
   }
 };
 
-const Issue = ({ path }: { readonly path: Path }) => {
-  const message = useForm().issues.get(path.join("."));
-  return message ? (
-    <p role="alert" className="text-sm text-destructive">
-      {message}
-    </p>
-  ) : null;
-};
+const Issue = ({ path }: { readonly path: Path }) => (
+  <FieldError message={useForm().issues.get(path.join("."))} />
+);
 
 const TextField = ({ schema, value, onChange, path, label }: FieldProps) => {
   const { section, issues } = useForm();

@@ -2,6 +2,7 @@ import { models } from "@orkide/db/models";
 import { z } from "zod";
 
 import {
+  alternateSchema,
   idSchema,
   isoDateSchema,
   localeSchema,
@@ -9,6 +10,7 @@ import {
   slugSchema,
   uniqueLocales,
 } from "./common.ts";
+import { TEXT_MAX } from "./limits.ts";
 import { mediaSchema } from "./media.ts";
 import { termSchema } from "./taxonomy.ts";
 
@@ -21,11 +23,11 @@ const documentTranslationInputSchema = models.insert.postTranslation
   .extend({
     content: safeRichTextDocumentSchema,
     locale: localeSchema,
-    seoDescription: z.string().trim().max(160).nullish(),
-    seoTitle: z.string().trim().max(70).nullish(),
+    seoDescription: z.string().trim().max(TEXT_MAX.seoDescription).nullish(),
+    seoTitle: z.string().trim().max(TEXT_MAX.seoTitle).nullish(),
     slug: slugSchema,
-    summary: z.string().trim().min(1).max(300),
-    title: z.string().trim().min(1).max(140),
+    summary: z.string().trim().min(1).max(TEXT_MAX.summary),
+    title: z.string().trim().min(1).max(TEXT_MAX.title),
   });
 
 const translationsSchema = z
@@ -106,9 +108,6 @@ export const projectRecordSchema = projectFieldsSchema.extend({
   status: models.select.project.shape.status,
   websiteUrl: z.string().nullable(),
 });
-
-/** Link to the same document in another locale, for `hreflang` and the language switcher. */
-const alternateSchema = z.object({ locale: localeSchema, slug: slugSchema });
 
 /** Reader-facing card shared by post and project listings. */
 export const documentSummarySchema = z.object({

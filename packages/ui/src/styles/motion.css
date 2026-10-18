@@ -61,17 +61,6 @@
   }
 }
 
-/* Parts of an exploded diagram drifting apart and back. */
-@keyframes o-explode {
-  from {
-    transform: translateY(8px);
-  }
-
-  to {
-    transform: translateY(-6px);
-  }
-}
-
 /* Page changes: the old page powers down, the new one powers on. */
 @keyframes o-power-off {
   to {

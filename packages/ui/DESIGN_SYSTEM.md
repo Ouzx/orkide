@@ -13,9 +13,9 @@ The site is a hand-built device. The home page's hero is its front panel (displa
 | `scripts/tokens.ts` | Builds the two files below and the contrast table in this document: `pnpm --filter @orkide/ui tokens`. |
 | `src/styles/tokens.css` | Generated. Custom properties (`--o-*`) for `:root` and `.dark`, and the Tailwind `@theme` blocks. |
 | `src/tokens/tokens.ts` | Generated. The same values, typed, for scripts. |
-| `src/styles/motion.css` | Keyframes (`o-boot`, `o-pulse`, `o-caret`, `o-marquee`, `o-hole`, `o-rise`, `o-segment`, `o-explode`, `o-power-off`, `o-power-on`) and the page-change transition. |
+| `src/styles/motion.css` | Keyframes (`o-boot`, `o-pulse`, `o-caret`, `o-marquee`, `o-hole`, `o-rise`, `o-segment`, `o-power-off`, `o-power-on`) and the page-change transition. |
 | `src/motion/motion.ts` | Easings, durations and staggers (from the tokens), springs, the page-load choreography, stagger helpers. |
-| `src/effects/*.ts` | One typed preset per effect: `tilt`, `glare`, `knob`, `sound`, `display`, `meters`, `magnet`. |
+| `src/effects/*.ts` | One typed preset per effect: `tilt`, `knob`, `sound`, `meters`, `magnet`. |
 | `src/styles/kit.css` | The component classes (`o-key`, `o-panel`, `o-display`, `o-knob`, `o-entry`, `o-cartridge`, `o-unit`…), shared by Astro markup and the React kit. Values come only from tokens. |
 | `src/kit/*.tsx` | The React kit for islands and the admin: the shadcn APIs the admin used, on Base UI behaviour and the kit classes. |
 | `src/styles/globals.css` | Imports the above; maps shadcn's names (`--background`, `--primary`…) onto the skin for the parked components. |

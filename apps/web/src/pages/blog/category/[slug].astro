@@ -11,17 +11,14 @@ const { locale } = Astro.locals;
 const slug = Astro.params.slug ?? "";
 const cursor = Astro.url.searchParams.get("cursor") ?? undefined;
 
-const [found, taxonomy] = await Promise.all([
-  findTerm("category", slug, locale),
+const [taxonomy, posts] = await Promise.all([
   getTaxonomy(locale),
+  listPosts({ category: slug, cursor, locale }, asVisitor(Astro.request)),
 ]);
+const found = findTerm(taxonomy, "category", slug);
 if (!found) {
   return notFound(Astro, locale);
 }
-const posts = await listPosts(
-  { category: slug, cursor, locale },
-  asVisitor(Astro.request)
-);
 
 cachePage(Astro, "posts", "taxonomy");
 ---

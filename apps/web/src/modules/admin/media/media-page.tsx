@@ -11,7 +11,7 @@ import {
 import { Input } from "@orkide/ui/kit/input";
 import { Label } from "@orkide/ui/kit/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@orkide/ui/kit/tabs";
-import { ALLOWED_MEDIA_TYPES } from "@orkide/validators/limits";
+import { TEXT_MAX, ALLOWED_MEDIA_TYPES } from "@orkide/validators/limits";
 import type { MediaUpdate } from "@orkide/validators/media";
 import {
   useMutation,
@@ -27,7 +27,7 @@ import { api, parseResponse, queries } from "../api.ts";
 import { ConfirmDelete } from "../components/confirm-delete.tsx";
 import { EmptyRow, PageHeader } from "../components/page.tsx";
 import { useAdmin } from "../context.tsx";
-import { formatBytes, isImage, mediaUrl } from "./media-utils.ts";
+import { formatBytes, isImage } from "./media-utils.ts";
 import type { MediaRecord } from "./media-utils.ts";
 import { uploadMedia } from "./upload.ts";
 
@@ -37,7 +37,7 @@ const ACCEPT = Object.keys(ALLOWED_MEDIA_TYPES).join(",");
 export const MediaThumb = ({ record }: { readonly record: MediaRecord }) =>
   isImage(record) ? (
     <img
-      src={`${mediaUrl(record)}?w=320`}
+      src={`${record.url}?w=320`}
       alt=""
       loading="lazy"
       className="size-full object-cover"
@@ -169,7 +169,7 @@ const DetailsDialog = ({
 
   const copy = async () => {
     await navigator.clipboard.writeText(
-      new URL(mediaUrl(record), location.href).href
+      new URL(record.url, location.href).href
     );
     toast.success(m.admin_media_copied({}, options));
   };
@@ -231,7 +231,7 @@ const DetailsDialog = ({
                         id={`alt-${locale}`}
                         name={`alt-${locale}`}
                         defaultValue={translation?.alt ?? ""}
-                        maxLength={300}
+                        maxLength={TEXT_MAX.alt}
                         disabled={!editable}
                       />
                     </div>
@@ -243,7 +243,7 @@ const DetailsDialog = ({
                         id={`caption-${locale}`}
                         name={`caption-${locale}`}
                         defaultValue={translation?.caption ?? ""}
-                        maxLength={500}
+                        maxLength={TEXT_MAX.caption}
                         disabled={!editable}
                       />
                     </div>

@@ -1,5 +1,4 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { idSchema, localeSchema, slugSchema } from "@orkide/validators/common";
 import {
   projectDetailSchema,
   projectInputSchema,
@@ -13,7 +12,14 @@ import {
   assertPermission,
   requirePermission,
 } from "../../core/middleware/auth.ts";
-import { json, problems } from "../../core/responses.ts";
+import {
+  idParams,
+  localeQuery,
+  slugParams,
+  json,
+  problems,
+} from "../../core/responses.ts";
+import { isPublishing } from "../../shared/documents.ts";
 import * as service from "./project.service.ts";
 
 const ProjectSummary = projectSummarySchema.openapi("ProjectSummary");
@@ -21,19 +27,11 @@ const ProjectDetail = projectDetailSchema.openapi("ProjectDetail");
 const ProjectRecord = projectRecordSchema.openapi("ProjectRecord");
 const ProjectInput = projectInputSchema.openapi("ProjectInput");
 
-const localeQuery = z.object({ locale: localeSchema.optional() });
-const idParams = z.object({
-  id: idSchema.openapi({ param: { in: "path", name: "id" } }),
-});
-const slugParams = z.object({
-  slug: slugSchema.openapi({ param: { in: "path", name: "slug" } }),
-});
 const admin = { security: [{ session: [] }], tags: ["Admin · Projects"] };
 const body = {
   content: { "application/json": { schema: ProjectInput } },
   required: true,
 };
-const PUBLISHING_STATUSES = new Set(["published", "scheduled"]);
 
 const list = createRoute({
   method: "get",
@@ -132,14 +130,14 @@ export const projectRoutes = createRouter()
   )
   .openapi(create, async (c) => {
     const input = c.req.valid("json");
-    if (PUBLISHING_STATUSES.has(input.status ?? "draft")) {
+    if (isPublishing(input.status)) {
       assertPermission(c.var.user, { project: ["publish"] });
     }
     return c.json(await service.create(input), 201);
   })
   .openapi(update, async (c) => {
     const input = c.req.valid("json");
-    if (PUBLISHING_STATUSES.has(input.status ?? "draft")) {
+    if (isPublishing(input.status)) {
       assertPermission(c.var.user, { project: ["publish"] });
     }
     return c.json(await service.update(c.req.valid("param").id, input), 200);

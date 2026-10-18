@@ -20,17 +20,25 @@ export const registerOpenApi = <S extends Schema>(
     type: "apiKey",
   });
 
-  app.doc31("/openapi.json", (c) => ({
-    info: {
-      description: "Content, media and analytics API for Orkide.",
-      title: "Orkide API",
-      version: "1.0.0",
-    },
-    openapi: "3.1.0",
-    servers: [
-      { description: c.env.ENVIRONMENT, url: new URL(c.req.url).origin },
-    ],
-  }));
+  // Generating walks every route's schema and the result never changes, so it is built once per
+  // isolate; only the server entry depends on the request.
+  let document: ReturnType<typeof app.getOpenAPI31Document> | undefined;
+  app.get("/openapi.json", (c) => {
+    document ??= app.getOpenAPI31Document({
+      info: {
+        description: "Content, media and analytics API for Orkide.",
+        title: "Orkide API",
+        version: "1.0.0",
+      },
+      openapi: "3.1.0",
+    });
+    return c.json({
+      ...document,
+      servers: [
+        { description: c.env.ENVIRONMENT, url: new URL(c.req.url).origin },
+      ],
+    });
+  });
 
   app.get(
     "/docs",

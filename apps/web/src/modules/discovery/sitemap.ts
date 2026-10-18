@@ -1,6 +1,6 @@
-import { locales } from "@orkide/i18n";
 import { localizeHref } from "@orkide/i18n/runtime";
 
+import { pageAlternates } from "@/shared/lib/i18n.ts";
 import { absoluteUrl } from "@/shared/site.ts";
 
 import type { LocaleInventory } from "./discovery.data.ts";
@@ -22,9 +22,7 @@ const STATIC_PAGES = ["/", "/blog", "/portfolio", "/contact"] as const;
 
 const collectEntries = (inventory: readonly LocaleInventory[]): Entry[] => {
   const entries: Entry[] = STATIC_PAGES.map((path) => ({
-    alternates: Object.fromEntries(
-      locales.map((locale) => [locale, localizeHref(path, { locale })])
-    ),
+    alternates: pageAlternates(path),
   }));
 
   // Group translations of the same document by id, so each URL lists its siblings.

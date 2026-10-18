@@ -16,7 +16,6 @@
 | `table` | `Table` with `Lamp` statuses | native `<table>` |
 | `dialog`, `alert-dialog`, `sheet` | `Dialog`, `Confirm`, `Drawer` | Base UI Dialog / AlertDialog |
 | `dropdown-menu`, `select` | `Menu`, `Select` | Base UI Menu / Select |
-| `tooltip` | `Tip` | Base UI Tooltip |
 | `tabs` | `Tabs` | Base UI Tabs |
 | `sonner` | `Toast` on a `MiniScreen` | sonner (already a dependency) |
 | `avatar`, `skeleton`, `separator` | `Avatar`, `Skeleton` (dim LED segments), plain `<hr>` | — |
@@ -81,7 +80,7 @@ A rotary selector with detents (ARIA slider).
 
 ## Panel and Unit
 
-- **Panel:** the front panel and the form panel. Gradient `case` → `panel` at 160°, `shadow-device`, `rounded-device` (28 px; 22 px on phones), screws in the corners, optional tilt + glare (`effects/tilt.panel`, `effects/glare.panel`). Powers on with `o-boot`.
+- **Panel:** the front panel and the form panel. Gradient `case` → `panel` at 160°, `shadow-device`, `rounded-device` (28 px; 22 px on phones), screws in the corners, optional tilt + glare (`effects/tilt.panel`). Powers on with `o-boot`.
 - **Unit:** an admin module (`rounded-2xl`/`rounded-3xl`, `shadow-unit`): header row (engraved title, `Sample` tag when its data is invented), body. **Meter** is a unit with a Lamp and an LCD counter that rolls in (`meters.counter`).
 
 ## Field

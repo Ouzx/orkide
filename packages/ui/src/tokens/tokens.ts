@@ -102,7 +102,6 @@ export const tokens = {
     caret: 900,
     boot: 1100,
     pulse: 2400,
-    explode: 4000,
     marquee: 9000,
   },
   ease: {

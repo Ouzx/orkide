@@ -1,0 +1,122 @@
+---
+import type { PostDetail, ProjectDetail } from "@orkide/validators/content";
+import type { Graph } from "schema-dts";
+
+import TagList from "@/modules/blog/TagList.astro";
+import ReadingDial from "@/shared/components/ReadingDial.astro";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { documentAlternates } from "@/shared/lib/i18n.ts";
+import MediaImage from "@/shared/media/MediaImage.astro";
+import { m } from "@orkide/i18n/messages";
+
+/**
+ * A post or project page: a manual page with a margin column, the title block, cover, body and
+ * tags. Slots add what differs: `runhead` (after the section name), `meta` (the margin, after the
+ * back link), `actions` (under the summary) and `after` (below the body).
+ */
+interface Props {
+  readonly document: PostDetail | ProjectDetail;
+  readonly section: "blog" | "portfolio";
+  /** Localized path of this document and of its section's listing. */
+  readonly path: string;
+  readonly sectionPath: string;
+  readonly runhead: string;
+  readonly backLabel: string;
+  /** Aspect-ratio class of the cover. */
+  readonly coverClass: string;
+  readonly jsonLd: Graph;
+}
+
+const {
+  document,
+  section,
+  path,
+  sectionPath,
+  runhead,
+  backLabel,
+  coverClass,
+  jsonLd,
+} = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+---
+
+<BaseLayout
+  section={section}
+  title={document.seoTitle ?? document.title}
+  description={document.seoDescription ?? document.summary}
+  alternates={documentAlternates(`/${section}`, document.alternates)}
+  type="article"
+  image={document.cover ? `${document.cover.url}?w=1280` : undefined}
+  imageAlt={document.cover?.alt}
+  publishedTime={document.publishedAt}
+  modifiedTime={document.updatedAt}
+  markdown={`${path}.md`}
+  jsonLd={jsonLd}
+>
+  <article class="o-wrap pt-9 pb-24 md:pb-32">
+    <div class="mx-auto max-w-(--o-page)">
+      <div class="o-runhead">
+        <span class="o-eng">{runhead}</span>
+        <slot name="runhead" />
+      </div>
+      <div
+        class="mt-8 grid gap-x-10 gap-y-6 lg:grid-cols-[170px_minmax(0,1fr)]"
+      >
+        <aside
+          class="o-margin flex flex-wrap content-start gap-x-4 gap-y-1 lg:grid"
+        >
+          <a href={sectionPath} class="o-link mb-2 w-full lg:mb-6">
+            <span aria-hidden="true">←</span>
+            {backLabel}
+          </a>
+          <slot name="meta" />
+        </aside>
+
+        <div class="min-w-0">
+          <header class="grid gap-4">
+            <h1 class="o-page-title">{document.title}</h1>
+            <p class="o-summary">{document.summary}</p>
+            <slot name="actions" />
+          </header>
+
+          {
+            document.cover && (
+              <figure class="mt-8 max-w-(--o-measure)">
+                <MediaImage
+                  media={document.cover}
+                  sizes="(min-width: 768px) 680px, 100vw"
+                  priority
+                  class={`${coverClass} overflow-hidden rounded-xl shadow-raised`}
+                />
+                {document.cover.caption && (
+                  <figcaption class="o-margin mt-2">
+                    {document.cover.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
+
+          <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
+          <div class="prose-orkide mt-10" set:html={document.html} />
+
+          <slot name="after" />
+
+          {
+            document.tags.length > 0 && (
+              <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t-2 border-ink pt-5">
+                <span class="o-eng">{m.blog_tags({}, options)}</span>
+                <TagList
+                  tags={document.tags}
+                  label={m.blog_tags({}, options)}
+                />
+              </footer>
+            )
+          }
+        </div>
+      </div>
+    </div>
+    <ReadingDial />
+  </article>
+</BaseLayout>

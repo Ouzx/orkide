@@ -45,7 +45,7 @@ const dashboard = createRoute({
 const posts = createRoute({
   beforeLoad: requirePermission({ post: ["read"] }),
   component: lazyRouteComponent(
-    () => import("./posts/posts-page.tsx"),
+    () => import("./components/documents-page.tsx"),
     "PostsPage"
   ),
   getParentRoute: () => root,
@@ -80,7 +80,7 @@ const postEditor = createRoute({
 const projects = createRoute({
   beforeLoad: requirePermission({ project: ["read"] }),
   component: lazyRouteComponent(
-    () => import("./projects/projects-page.tsx"),
+    () => import("./components/documents-page.tsx"),
     "ProjectsPage"
   ),
   getParentRoute: () => root,

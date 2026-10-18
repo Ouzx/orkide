@@ -2,28 +2,38 @@ import type { Locale } from "@orkide/i18n";
 import type {
   CategoryInput,
   TagInput,
-  Term,
+  TaxonomyTerm,
 } from "@orkide/validators/taxonomy";
 
 import { purge } from "../../core/cache.ts";
 import { ApiError } from "../../core/errors.ts";
-import { toTerms } from "../../shared/documents.ts";
+import { toAlternates, toTerm } from "../../shared/documents.ts";
 import * as repository from "./taxonomy.repository.ts";
 
-/** Taxonomy changes alter post/project payloads too, so every namespace that embeds terms is invalidated. */
 /** Terms are embedded in post and project payloads, so their caches are purged too. */
 const invalidateAll = () => purge("taxonomy", "posts", "projects");
 
+const toTaxonomyTerms = (
+  rows: Awaited<ReturnType<typeof repository.listTags>>,
+  locale: Locale
+): TaxonomyTerm[] =>
+  rows.flatMap((row) => {
+    const term = toTerm(row, locale);
+    return term
+      ? [{ ...term, alternates: toAlternates(row.translations) }]
+      : [];
+  });
+
 export const listPublic = async (
   locale: Locale
-): Promise<{ categories: Term[]; tags: Term[] }> => {
+): Promise<{ categories: TaxonomyTerm[]; tags: TaxonomyTerm[] }> => {
   const [categories, tags] = await Promise.all([
     repository.listCategories(),
     repository.listTags(),
   ]);
   return {
-    categories: toTerms(categories, locale),
-    tags: toTerms(tags, locale),
+    categories: toTaxonomyTerms(categories, locale),
+    tags: toTaxonomyTerms(tags, locale),
   };
 };
 

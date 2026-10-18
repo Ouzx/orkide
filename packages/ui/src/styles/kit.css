@@ -75,17 +75,6 @@
     text-transform: uppercase;
   }
 
-  .o-sample {
-    display: inline-block;
-    padding: 4px 6px;
-    border: 1px dashed var(--o-ink-2);
-    color: var(--o-ink-2);
-    font: var(--font-weight-medium) var(--text-2xs) / 1 var(--o-font-mono);
-    letter-spacing: var(--tracking-snug);
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
   /* ── Lamp ──────────────────────────────────────────────────────────────────────────── */
   .o-lamp {
     --lamp: var(--o-deep);
@@ -1346,15 +1335,6 @@
     box-shadow: var(--o-shadow-unit);
   }
 
-  .o-unit-head {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 18px;
-  }
-
   .o-unit-title {
     margin: 0;
     font: var(--font-weight-extrabold) var(--text-md) / 1 var(--o-font-label);
@@ -1858,17 +1838,6 @@
     box-shadow:
       0 0 0 2px var(--o-deep),
       var(--o-shadow-raised);
-  }
-
-  .o-tip {
-    max-width: 20rem;
-    padding: 7px 10px;
-    border-radius: var(--radius-sm);
-    background: var(--o-screen);
-    color: var(--o-led);
-    font: var(--font-weight-bold) var(--text-sm) / 1.3 var(--o-font-led);
-    letter-spacing: var(--tracking-snug);
-    text-shadow: 0 0 6px var(--o-led-glow);
   }
 }
 

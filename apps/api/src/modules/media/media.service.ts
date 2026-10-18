@@ -1,12 +1,12 @@
 import type { Locale } from "@orkide/i18n";
-import { IMAGE_WIDTHS } from "@orkide/validators/limits";
+import { ALLOWED_MEDIA_TYPES, IMAGE_WIDTHS } from "@orkide/validators/limits";
 import type { Media, MediaUpdate } from "@orkide/validators/media";
 import { env } from "cloudflare:workers";
 
 import { purge } from "../../core/cache.ts";
 import { ApiError } from "../../core/errors.ts";
 import type { UploadedFile } from "../../core/middleware/upload.ts";
-import { toMedia } from "../../shared/documents.ts";
+import { mediaUrl, toMedia } from "../../shared/documents.ts";
 import * as repository from "./media.repository.ts";
 
 /** Content-addressed keys never change, so every response may be cached forever. */
@@ -99,11 +99,6 @@ export const upload = async (
   return { created: true, media: toMedia(row, locale) };
 };
 
-export const list = async (locale: Locale): Promise<Media[]> => {
-  const rows = await repository.list();
-  return rows.map((row) => toMedia(row, locale));
-};
-
 export const listEditable = async () => {
   const rows = await repository.list();
   return rows.map(({ translations, ...row }) => ({
@@ -115,6 +110,7 @@ export const listEditable = async () => {
       locale,
     })),
     updatedAt: row.updatedAt.toISOString(),
+    url: mediaUrl(row.key),
   }));
 };
 
@@ -143,7 +139,7 @@ export const remove = async (id: string) => {
     deleted.key,
     ...variants.objects.map((object) => object.key),
   ]);
-  await purge("posts", "projects", `/api/${deleted.key}`);
+  await purge("posts", "projects", mediaUrl(deleted.key));
 };
 
 const snapWidth = (requested: number | undefined): number =>
@@ -246,7 +242,7 @@ const serveFile = async (key: string, request: Request) => {
   return new Response(object.body, { headers });
 };
 
-export const serve = async (
+export const serve = (
   file: string,
   options: {
     width?: number;
@@ -255,12 +251,13 @@ export const serve = async (
   }
 ): Promise<Response> => {
   const key = `media/${file}`;
-  const [sha256] = file.split(".");
-  const head = await env.MEDIA.head(key);
-  if (!(head && sha256)) {
-    throw new ApiError("not_found");
-  }
-  if (!TRANSFORMABLE.has(head.httpMetadata?.contentType ?? "")) {
+  // Stored names are `<sha256>.<extension>` with the extension of the sniffed type, so the name
+  // alone says whether this is an image; a missing object is a 404 on either path.
+  const [sha256, extension] = file.split(".");
+  const mimeType = Object.entries(ALLOWED_MEDIA_TYPES).find(
+    ([, each]) => each === extension
+  )?.[0];
+  if (!(sha256 && mimeType && TRANSFORMABLE.has(mimeType))) {
     return serveFile(key, options.request);
   }
   return serveImage(

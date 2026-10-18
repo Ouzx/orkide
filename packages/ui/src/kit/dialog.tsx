@@ -9,14 +9,8 @@ import { Button } from "./button.tsx";
 const Dialog = (props: DialogPrimitive.Root.Props) => (
   <DialogPrimitive.Root data-slot="dialog" {...props} />
 );
-const DialogTrigger = (props: DialogPrimitive.Trigger.Props) => (
-  <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
-);
 const DialogPortal = (props: DialogPrimitive.Portal.Props) => (
   <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
-);
-const DialogClose = (props: DialogPrimitive.Close.Props) => (
-  <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 );
 const DialogOverlay = ({
   className,
@@ -95,26 +89,4 @@ const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => (
   />
 );
 
-const DialogDescription = ({
-  className,
-  ...props
-}: DialogPrimitive.Description.Props) => (
-  <DialogPrimitive.Description
-    data-slot="dialog-description"
-    className={cn("text-md text-ink-2", className)}
-    {...props}
-  />
-);
-
-export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-};
+export { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle };

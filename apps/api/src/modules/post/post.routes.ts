@@ -1,11 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import {
-  idSchema,
-  localeSchema,
-  pageQuerySchema,
-  pageSchema,
-  slugSchema,
-} from "@orkide/validators/common";
+import { pageQuerySchema, pageSchema } from "@orkide/validators/common";
 import {
   postDetailSchema,
   postInputSchema,
@@ -20,7 +14,14 @@ import {
   assertPermission,
   requirePermission,
 } from "../../core/middleware/auth.ts";
-import { json, problems } from "../../core/responses.ts";
+import {
+  idParams,
+  localeQuery,
+  slugParams,
+  json,
+  problems,
+} from "../../core/responses.ts";
+import { isPublishing } from "../../shared/documents.ts";
 import * as service from "./post.service.ts";
 
 const PostSummary = postSummarySchema.openapi("PostSummary");
@@ -28,13 +29,6 @@ const PostDetail = postDetailSchema.openapi("PostDetail");
 const PostRecord = postRecordSchema.openapi("PostRecord");
 const PostInput = postInputSchema.openapi("PostInput");
 
-const localeQuery = z.object({ locale: localeSchema.optional() });
-const idParams = z.object({
-  id: idSchema.openapi({ param: { in: "path", name: "id" } }),
-});
-const slugParams = z.object({
-  slug: slugSchema.openapi({ param: { in: "path", name: "slug" } }),
-});
 const admin = { security: [{ session: [] }], tags: ["Admin · Posts"] };
 
 const list = createRoute({
@@ -133,9 +127,6 @@ const remove = createRoute({
   summary: "Delete a post",
 });
 
-/** Publishing (or scheduling) is a separate permission from editing. */
-const PUBLISHING_STATUSES = new Set(["published", "scheduled"]);
-
 export const postRoutes = createRouter()
   .openapi(list, async (c) => {
     const { locale: _locale, ...query } = c.req.valid("query");
@@ -156,21 +147,14 @@ export const postRoutes = createRouter()
   )
   .openapi(create, async (c) => {
     const input = c.req.valid("json");
-    const { user } = c.var;
-    // `create` is already checked by the route middleware; publishing on creation also needs
-    // `publish`. (An empty permission set would be denied, so drafts assert `create` again,
-    // which also narrows `user` for the author id.)
-    assertPermission(
-      user,
-      PUBLISHING_STATUSES.has(input.status ?? "draft")
-        ? { post: ["publish"] }
-        : { post: ["create"] }
-    );
-    return c.json(await service.create(input, user.id), 201);
+    if (isPublishing(input.status)) {
+      assertPermission(c.var.user, { post: ["publish"] });
+    }
+    return c.json(await service.create(input, c.var.user.id), 201);
   })
   .openapi(update, async (c) => {
     const input = c.req.valid("json");
-    if (PUBLISHING_STATUSES.has(input.status ?? "draft")) {
+    if (isPublishing(input.status)) {
       assertPermission(c.var.user, { post: ["publish"] });
     }
     return c.json(await service.update(c.req.valid("param").id, input), 200);

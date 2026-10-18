@@ -1,6 +1,5 @@
 import type { Locale } from "@orkide/i18n";
 import { Toaster } from "@orkide/ui/kit/sonner";
-import { TooltipProvider } from "@orkide/ui/kit/tooltip";
 import {
   MutationCache,
   QueryClient,
@@ -46,10 +45,8 @@ export const AdminApp = (props: AdminAppProps) => {
   return (
     <AdminProvider {...props}>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <RouterProvider router={router} />
-          <Toaster position="bottom-right" />
-        </TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster position="bottom-right" />
       </QueryClientProvider>
     </AdminProvider>
   );

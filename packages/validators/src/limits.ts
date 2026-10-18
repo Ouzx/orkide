@@ -17,6 +17,24 @@ export const ALLOWED_MEDIA_TYPES = {
 
 export type AllowedMediaType = keyof typeof ALLOWED_MEDIA_TYPES;
 
+/** Text lengths the schemas enforce; forms reuse them as `maxLength` so browsers stop at the same place. */
+export const TEXT_MAX = {
+  alt: 300,
+  caption: 500,
+  categoryName: 80,
+  contactBody: 5000,
+  contactName: 120,
+  contactSubject: 160,
+  email: 254,
+  seoDescription: 160,
+  seoTitle: 70,
+  summary: 300,
+  tagName: 48,
+  title: 140,
+} as const;
+
+export const CONTACT_BODY_MIN = 10;
+
 export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 /** Widths an image can be served at (`/api/media/<file>?w=`); requests snap up to the next one. */

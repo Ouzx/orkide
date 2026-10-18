@@ -3,16 +3,13 @@ import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 import { Paperclip } from "lucide-react";
 
-import ReadingDial from "@/shared/components/ReadingDial.astro";
-import TagList from "@/modules/blog/TagList.astro";
 import { getPost } from "@/modules/blog/blog.data.ts";
-import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import DocumentArticle from "@/shared/components/DocumentArticle.astro";
 import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
-import { documentAlternates, formatDate } from "@/shared/lib/i18n.ts";
-import MediaImage from "@/shared/media/MediaImage.astro";
+import { formatDate } from "@/shared/lib/i18n.ts";
 import { absoluteUrl } from "@/shared/site.ts";
 import {
   blogPostingNode,
@@ -39,17 +36,14 @@ const blogPath = localizeHref("/blog", options);
 Astro.response.headers.set("vary", "accept");
 ---
 
-<BaseLayout
+<DocumentArticle
+  document={post}
   section="blog"
-  title={post.seoTitle ?? post.title}
-  description={post.seoDescription ?? post.summary}
-  alternates={documentAlternates("/blog", post.alternates)}
-  type="article"
-  image={post.cover ? `${post.cover.url}?w=1280` : undefined}
-  imageAlt={post.cover?.alt}
-  publishedTime={post.publishedAt}
-  modifiedTime={post.updatedAt}
-  markdown={`${path}.md`}
+  path={path}
+  sectionPath={blogPath}
+  runhead={`${m.skin_manual({ site: m.site_name({}, options) }, options)} · §1 ${m.blog_title({}, options)}`}
+  backLabel={m.blog_back({}, options)}
+  coverClass="aspect-[16/9]"
   jsonLd={graph(
     locale,
     blogPostingNode(post, path),
@@ -59,134 +53,77 @@ Astro.response.headers.set("vary", "accept");
     ])
   )}
 >
-  <article class="o-wrap pt-9 pb-24 md:pb-32">
-    <div class="mx-auto max-w-(--o-page)">
-      <div class="o-runhead">
-        <span class="o-eng">
-          {
-            `${m.skin_manual({ site: m.site_name({}, options) }, options)} · §1 ${m.blog_title({}, options)}`
-          }
-        </span>
-        {post.category && <span class="o-eng">{post.category.name}</span>}
-      </div>
-      <div
-        class="mt-8 grid gap-x-10 gap-y-6 lg:grid-cols-[170px_minmax(0,1fr)]"
-      >
-        <aside
-          class="o-margin flex flex-wrap content-start gap-x-4 gap-y-1 lg:grid"
+  {
+    post.category && (
+      <span slot="runhead" class="o-eng">
+        {post.category.name}
+      </span>
+    )
+  }
+  <Fragment slot="meta">
+    {
+      post.category && (
+        <a
+          href={localizeHref(`/blog/category/${post.category.slug}`, options)}
+          class="text-ink-2 no-underline hover:text-signal-ink"
         >
-          <a href={blogPath} class="o-link mb-2 w-full lg:mb-6">
-            <span aria-hidden="true">←</span>
-            {m.blog_back({}, options)}
-          </a>
-          {
-            post.category && (
-              <a
-                href={localizeHref(
-                  `/blog/category/${post.category.slug}`,
-                  options
-                )}
-                class="text-ink-2 no-underline hover:text-signal-ink"
-              >
-                {post.category.name}
-              </a>
-            )
-          }
-          {
-            post.publishedAt && (
-              <time datetime={post.publishedAt}>
-                {formatDate(post.publishedAt, locale)}
-              </time>
-            )
-          }
+          {post.category.name}
+        </a>
+      )
+    }
+    {
+      post.publishedAt && (
+        <time datetime={post.publishedAt}>
+          {formatDate(post.publishedAt, locale)}
+        </time>
+      )
+    }
+    <span>
+      {
+        m.blog_reading_time(
+          { minutes: post.readingTimeMinutes.toString() },
+          options
+        )
+      }
+    </span>
+    {
+      post.publishedAt &&
+        post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
           <span>
-            {
-              m.blog_reading_time(
-                { minutes: post.readingTimeMinutes.toString() },
-                options
-              )
-            }
+            {m.blog_updated({}, options)}{" "}
+            <time datetime={post.updatedAt}>
+              {formatDate(post.updatedAt, locale)}
+            </time>
           </span>
-          {
-            post.publishedAt &&
-              post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
-                <span>
-                  {m.blog_updated({}, options)}{" "}
-                  <time datetime={post.updatedAt}>
-                    {formatDate(post.updatedAt, locale)}
-                  </time>
+        )
+    }
+  </Fragment>
+  {
+    post.attachments.length > 0 && (
+      <section slot="after" aria-labelledby="attachments" class="mt-14">
+        <h2 id="attachments" class="o-eng m-0">
+          {m.blog_attachments({}, options)}
+        </h2>
+        <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
+          {post.attachments.map((attachment) => (
+            <li>
+              <a
+                href={attachment.url}
+                class="o-key"
+                data-astro-prefetch="false"
+              >
+                <Paperclip aria-hidden="true" />
+                <span class="max-w-60 truncate normal-case">
+                  {attachment.alt}
                 </span>
-              )
-          }
-        </aside>
-
-        <div class="min-w-0">
-          <header class="grid gap-4">
-            <h1 class="o-page-title">{post.title}</h1>
-            <p class="o-summary">{post.summary}</p>
-          </header>
-
-          {
-            post.cover && (
-              <figure class="mt-8 max-w-(--o-measure)">
-                <MediaImage
-                  media={post.cover}
-                  sizes="(min-width: 768px) 680px, 100vw"
-                  priority
-                  class="aspect-[16/9] overflow-hidden rounded-xl shadow-raised"
-                />
-                {post.cover.caption && (
-                  <figcaption class="o-margin mt-2">
-                    {post.cover.caption}
-                  </figcaption>
-                )}
-              </figure>
-            )
-          }
-
-          <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
-          <div class="prose-orkide mt-10" set:html={post.html} />
-
-          {
-            post.attachments.length > 0 && (
-              <section aria-labelledby="attachments" class="mt-14">
-                <h2 id="attachments" class="o-eng m-0">
-                  {m.blog_attachments({}, options)}
-                </h2>
-                <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
-                  {post.attachments.map((attachment) => (
-                    <li>
-                      <a
-                        href={attachment.url}
-                        class="o-key"
-                        data-astro-prefetch="false"
-                      >
-                        <Paperclip aria-hidden="true" />
-                        <span class="max-w-60 truncate normal-case">
-                          {attachment.alt}
-                        </span>
-                        <span class="text-ink-2">
-                          {attachment.mimeType.split("/")[1]?.toUpperCase()}
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )
-          }
-
-          {
-            post.tags.length > 0 && (
-              <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t-2 border-ink pt-5">
-                <span class="o-eng">{m.blog_tags({}, options)}</span>
-                <TagList tags={post.tags} label={m.blog_tags({}, options)} />
-              </footer>
-            )
-          }
-        </div>
-      </div>
-    </div>
-    <ReadingDial />
-  </article>
-</BaseLayout>
+                <span class="text-ink-2">
+                  {attachment.mimeType.split("/")[1]?.toUpperCase()}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</DocumentArticle>

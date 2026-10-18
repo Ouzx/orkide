@@ -6,24 +6,23 @@ import { webVitalNames } from "@orkide/validators/stats";
 import { env } from "cloudflare:workers";
 import { sql } from "drizzle-orm";
 
+import { sha256Hex } from "../../shared/hash.ts";
 import { DATASET, query, writeEvent } from "./analytics.ts";
 
 const BOT_USER_AGENT =
   /bot|crawl|spider|slurp|headless|lighthouse|pagespeed|preview/iu;
 
-const isoDay = (date: Date) => date.toISOString().slice(0, 10);
+export const isoDay = (date: Date) => date.toISOString().slice(0, 10);
 
 /**
  * Anonymous visitor id: a hash of IP + user agent salted with a secret *and the current day*.
  * It counts unique visitors per day without cookies, and cannot be linked across days or reversed.
  */
 const visitorHash = async (ip: string, userAgent: string, day: string) => {
-  const input = new TextEncoder().encode(
+  const hex = await sha256Hex(
     `${env.BETTER_AUTH_SECRET}:${day}:${ip}:${userAgent}`
   );
-  return new Uint8Array(await crypto.subtle.digest("SHA-256", input))
-    .toHex()
-    .slice(0, 16);
+  return hex.slice(0, 16);
 };
 
 export interface TrackContext {

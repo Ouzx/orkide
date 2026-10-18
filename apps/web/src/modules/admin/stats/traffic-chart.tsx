@@ -1,15 +1,12 @@
 import { m } from "@orkide/i18n/messages";
 import { meters } from "@orkide/ui/effects/meters";
+import type { StatsOverview } from "@orkide/validators/stats";
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
 
 import { useAdmin } from "../context.tsx";
 
-interface Day {
-  readonly day: string;
-  readonly views: number;
-  readonly visitors: number;
-}
+type Day = StatsOverview["daily"][number];
 
 /**
  * Daily views as the columns of an LED meter: each day lights segments in proportion to its views,

@@ -1,13 +1,20 @@
 import { models } from "@orkide/db/models";
 import { z } from "zod";
 
-import { idSchema, localeSchema, slugSchema, uniqueLocales } from "./common.ts";
+import {
+  alternateSchema,
+  idSchema,
+  localeSchema,
+  slugSchema,
+  uniqueLocales,
+} from "./common.ts";
+import { TEXT_MAX } from "./limits.ts";
 
 const categoryTranslationInputSchema = models.insert.categoryTranslation
   .pick({ description: true, name: true })
   .extend({
     locale: localeSchema,
-    name: z.string().trim().min(1).max(80),
+    name: z.string().trim().min(1).max(TEXT_MAX.categoryName),
     slug: slugSchema,
   });
 
@@ -25,7 +32,7 @@ const tagTranslationInputSchema = models.insert.tagTranslation
   .pick({ name: true })
   .extend({
     locale: localeSchema,
-    name: z.string().trim().min(1).max(48),
+    name: z.string().trim().min(1).max(TEXT_MAX.tagName),
     slug: slugSchema,
   });
 
@@ -43,6 +50,11 @@ export const termSchema = z.object({
   slug: slugSchema,
 });
 
+/** A term in the public taxonomy listing, with its slug in every locale (for its page's `hreflang`). */
+export const taxonomyTermSchema = termSchema.extend({
+  alternates: z.array(alternateSchema),
+});
+
 /** Editable state of every term, as loaded by the admin taxonomy manager. */
 export const taxonomyRecordSchema = z.object({
   categories: z.array(
@@ -58,3 +70,4 @@ export const taxonomyRecordSchema = z.object({
 export type CategoryInput = z.infer<typeof categoryInputSchema>;
 export type TagInput = z.infer<typeof tagInputSchema>;
 export type Term = z.infer<typeof termSchema>;
+export type TaxonomyTerm = z.infer<typeof taxonomyTermSchema>;

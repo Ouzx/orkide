@@ -34,6 +34,20 @@ export const onFrame = (tick: Tick): (() => void) => {
   return () => ticks.delete(tick);
 };
 
+/** Calls `paint` now, then at most once per frame while the page scrolls or resizes. */
+export const onScroll = (paint: () => void): void => {
+  let frame = 0;
+  const schedule = () => {
+    frame ||= requestAnimationFrame(() => {
+      frame = 0;
+      paint();
+    });
+  };
+  addEventListener("scroll", schedule, { passive: true });
+  addEventListener("resize", schedule, { passive: true });
+  paint();
+};
+
 /** The mouse pointer, in viewport pixels, and when it last moved (touch is ignored). */
 export const pointer = { at: 0, mouse: false, x: 0, y: 0 };
 

@@ -29,8 +29,11 @@ if (tilted.length > 0) {
   }
   onFrame((now) => {
     const idle = !pointer.mouse;
-    for (const part of tilted) {
-      const box = part.element.getBoundingClientRect();
+    // Measure every part before writing any style, so a frame forces at most one layout.
+    const measured = tilted.map(
+      (part) => [part, part.element.getBoundingClientRect()] as const
+    );
+    for (const [part, box] of measured) {
       if (box.bottom < 0 || box.top > innerHeight) {
         continue;
       }

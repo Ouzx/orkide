@@ -2,6 +2,7 @@ import { models } from "@orkide/db/models";
 import { z } from "zod";
 
 import { idSchema, localeSchema } from "./common.ts";
+import { TEXT_MAX } from "./limits.ts";
 
 /** A media item as served to clients, with alt text resolved for the requested locale. */
 export const mediaSchema = models.select.media
@@ -20,8 +21,8 @@ export const mediaSchema = models.select.media
   });
 
 export const mediaTranslationInputSchema = z.object({
-  alt: z.string().trim().min(1).max(300),
-  caption: z.string().trim().max(500).nullish(),
+  alt: z.string().trim().min(1).max(TEXT_MAX.alt),
+  caption: z.string().trim().max(TEXT_MAX.caption).nullish(),
   locale: localeSchema,
 });
 

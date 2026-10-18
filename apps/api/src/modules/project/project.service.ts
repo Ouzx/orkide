@@ -14,6 +14,8 @@ import {
   toAlternates,
   toIso,
   toMedia,
+  toPublication,
+  toRecordTranslations,
   toTerms,
 } from "../../shared/documents.ts";
 import * as repository from "./project.repository.ts";
@@ -62,17 +64,7 @@ const toRecord = (row: AdminRow): ProjectRecord => ({
   startedAt: toIso(row.startedAt),
   status: row.status,
   tagIds: row.tags.map((tag) => tag.id),
-  translations: row.translations.map(
-    ({ content, locale, seoDescription, seoTitle, slug, summary, title }) => ({
-      content,
-      locale,
-      seoDescription,
-      seoTitle,
-      slug,
-      summary,
-      title,
-    })
-  ),
+  translations: toRecordTranslations(row.translations),
   updatedAt: row.updatedAt.toISOString(),
   websiteUrl: row.websiteUrl,
 });
@@ -100,8 +92,8 @@ export const getPublished = async (
   return {
     ...summary,
     completedAt: toIso(row.completedAt),
-    html: translation.html,
-    markdown: translation.markdown,
+    html: row.body.html,
+    markdown: row.body.markdown,
     seoDescription: translation.seoDescription,
     seoTitle: translation.seoTitle,
     startedAt: toIso(row.startedAt),
@@ -130,15 +122,9 @@ const toWrite = (
   coverMediaId: input.coverMediaId ?? null,
   featured: input.featured ?? false,
   position: input.position ?? 0,
-  publishedAt:
-    input.status === "published"
-      ? new Date(previous?.publishedAt ?? Date.now())
-      : null,
+  ...toPublication(input, previous),
   repositoryUrl: input.repositoryUrl ?? null,
-  scheduledAt:
-    input.status === "scheduled" ? (input.scheduledAt ?? null) : null,
   startedAt: input.startedAt ?? null,
-  status: input.status ?? "draft",
   tagIds: input.tagIds,
   translations: renderTranslations(input.translations),
   websiteUrl: input.websiteUrl ?? null,

@@ -1,4 +1,4 @@
-import { onFrame } from "@/shared/motion/frame.ts";
+import { onScroll } from "@/shared/motion/frame.ts";
 import { afterFirstPaint, motionAllowed } from "@/shared/motion/motion.ts";
 
 /**
@@ -65,7 +65,8 @@ afterFirstPaint(() => {
     signal.hidden = false;
   }
   let reached = -1;
-  onFrame(() => {
+  let shown = "";
+  onScroll(() => {
     const box = chain.getBoundingClientRect();
     // 0 when the chain's top reaches 75 % of the viewport, 1 when its bottom reaches 45 %.
     const travel = box.height + innerHeight * 0.3;
@@ -73,7 +74,11 @@ afterFirstPaint(() => {
       1,
       Math.max(0, (innerHeight * 0.75 - box.top) / travel)
     );
-    chain.style.setProperty("--p", progress.toFixed(4));
+    const p = progress.toFixed(4);
+    if (p !== shown) {
+      shown = p;
+      chain.style.setProperty("--p", p);
+    }
     const next = Math.floor(progress * (steps.length - 1) + 0.02);
     while (reached < next) {
       reached += 1;

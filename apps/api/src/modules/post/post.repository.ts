@@ -1,7 +1,7 @@
 import { db, generateId } from "@orkide/db";
 import { post, postTag, postTranslation } from "@orkide/db/schema";
 import type { Locale } from "@orkide/i18n";
-import { eq } from "drizzle-orm";
+import { and, eq, lte, sql } from "drizzle-orm";
 
 import type { Cursor } from "../../shared/cursor.ts";
 import type { renderTranslations } from "../../shared/documents.ts";
@@ -62,17 +62,27 @@ export const listPublished = ({
     with: publicRelations(locale),
   });
 
-/** A published post by its localized slug, with everything a reader page needs. */
-export const findPublishedBySlug = (locale: Locale, slug: string) =>
-  db.query.post.findFirst({
-    where: { status: "published", translations: { locale, slug } },
-    with: {
-      ...publicRelations(locale),
-      attachments: { with: localized(locale) },
-      author: { columns: { image: true, name: true } },
-      translations: { columns: { content: false } },
-    },
-  });
+/**
+ * A published post by its localized slug, with everything a reader page needs. The body (HTML
+ * and Markdown) is read for the requested translation only, in the same round trip.
+ */
+export const findPublishedBySlug = async (locale: Locale, slug: string) => {
+  const [row, body] = await db.batch([
+    db.query.post.findFirst({
+      where: { status: "published", translations: { locale, slug } },
+      with: {
+        ...publicRelations(locale),
+        attachments: { with: localized(locale) },
+        author: { columns: { image: true, name: true } },
+      },
+    }),
+    db.query.postTranslation.findFirst({
+      columns: { html: true, markdown: true },
+      where: { locale, slug },
+    }),
+  ]);
+  return row && body ? { ...row, body } : undefined;
+};
 
 /** Every post regardless of status, for the admin list. */
 export const listAll = () =>
@@ -93,16 +103,13 @@ export const findById = (id: string) =>
     },
   });
 
-export interface PostWrite {
+export type PostWrite = Required<
+  Omit<typeof post.$inferInsert, "id" | "authorId" | "createdAt" | "updatedAt">
+> & {
   readonly authorId?: string | null;
-  readonly categoryId: string | null;
-  readonly coverMediaId: string | null;
-  readonly status: "draft" | "scheduled" | "published" | "archived";
-  readonly scheduledAt: Date | null;
-  readonly publishedAt: Date | null;
   readonly tagIds: readonly string[];
   readonly translations: readonly RenderedTranslation[];
-}
+};
 
 const childRows = (postId: string, input: PostWrite) => ({
   tags: input.tagIds.map((tagId) => ({ postId, tagId })),
@@ -155,21 +162,10 @@ export const remove = async (id: string): Promise<boolean> => {
 
 /** Publishes scheduled posts whose time has come. Returns how many were published. */
 export const publishDue = async (now: Date): Promise<number> => {
-  const due = await db.query.post.findMany({
-    columns: { id: true, scheduledAt: true },
-    where: { scheduledAt: { lte: now }, status: "scheduled" },
-  });
-  if (due.length === 0) {
-    return 0;
-  }
-  const [first, ...rest] = due.map(({ id, scheduledAt }) =>
-    db
-      .update(post)
-      .set({ publishedAt: scheduledAt ?? now, status: "published" })
-      .where(eq(post.id, id))
-  );
-  if (first) {
-    await db.batch([first, ...rest]);
-  }
-  return due.length;
+  const published = await db
+    .update(post)
+    .set({ publishedAt: sql`${post.scheduledAt}`, status: "published" })
+    .where(and(eq(post.status, "scheduled"), lte(post.scheduledAt, now)))
+    .returning({ id: post.id });
+  return published.length;
 };

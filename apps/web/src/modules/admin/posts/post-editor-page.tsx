@@ -16,38 +16,15 @@ import { toast } from "sonner";
 import { api, parseResponse, queries, translationFor } from "../api.ts";
 import {
   DocumentForm,
-  emptyDocument,
   issuesFrom,
+  newDraft,
 } from "../components/document-form.tsx";
-import type {
-  DocumentDraft,
-  FieldIssues,
-} from "../components/document-form.tsx";
+import type { FieldIssues } from "../components/document-form.tsx";
 import { PageHeader } from "../components/page.tsx";
 import { useAdmin } from "../context.tsx";
 
 /** Request body for creating or updating a post (the wire type, inferred from the API). */
 type PostPayload = InferRequestType<typeof api.api.admin.posts.$post>["json"];
-
-const newDraft = (
-  locale: PostRecord["translations"][number]["locale"]
-): DocumentDraft => ({
-  coverMediaId: null,
-  scheduledAt: null,
-  status: "draft",
-  tagIds: [],
-  translations: [
-    {
-      content: emptyDocument(),
-      locale,
-      seoDescription: null,
-      seoTitle: null,
-      slug: "",
-      summary: "",
-      title: "",
-    },
-  ],
-});
 
 const PostEditor = ({ post }: { readonly post: PostRecord | undefined }) => {
   const { can, locale, options } = useAdmin();
@@ -87,10 +64,6 @@ const PostEditor = ({ post }: { readonly post: PostRecord | undefined }) => {
   return (
     <DocumentForm
       initial={post ?? newDraft(locale)}
-      tags={taxonomy.tags.map((tag) => ({
-        id: tag.id,
-        name: named(tag.translations),
-      }))}
       canPublish={can({ post: ["publish"] })}
       canSave={canSave}
       issues={issues}

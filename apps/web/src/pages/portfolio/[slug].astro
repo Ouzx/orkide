@@ -2,16 +2,13 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
-import TagList from "@/modules/blog/TagList.astro";
 import { getProject } from "@/modules/portfolio/portfolio.data.ts";
-import ReadingDial from "@/shared/components/ReadingDial.astro";
-import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import DocumentArticle from "@/shared/components/DocumentArticle.astro";
 import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
-import { documentAlternates, languageTag } from "@/shared/lib/i18n.ts";
-import MediaImage from "@/shared/media/MediaImage.astro";
+import { languageTag } from "@/shared/lib/i18n.ts";
 import { absoluteUrl } from "@/shared/site.ts";
 import { breadcrumbNode, graph, projectNode } from "@/shared/seo/json-ld.ts";
 
@@ -41,17 +38,14 @@ const timeline = project.startedAt
 Astro.response.headers.set("vary", "accept");
 ---
 
-<BaseLayout
+<DocumentArticle
+  document={project}
   section="portfolio"
-  title={project.seoTitle ?? project.title}
-  description={project.seoDescription ?? project.summary}
-  alternates={documentAlternates("/portfolio", project.alternates)}
-  type="article"
-  image={project.cover ? `${project.cover.url}?w=1280` : undefined}
-  imageAlt={project.cover?.alt}
-  publishedTime={project.publishedAt}
-  modifiedTime={project.updatedAt}
-  markdown={`${path}.md`}
+  path={path}
+  sectionPath={portfolioPath}
+  runhead={`${m.skin_manual({ site: m.site_name({}, options) }, options)} · §2 ${m.portfolio_title({}, options)}`}
+  backLabel={m.portfolio_back({}, options)}
+  coverClass="aspect-[16/10]"
   jsonLd={graph(
     locale,
     projectNode(project, path),
@@ -61,100 +55,41 @@ Astro.response.headers.set("vary", "accept");
     ])
   )}
 >
-  <article class="o-wrap pt-9 pb-24 md:pb-32">
-    <div class="mx-auto max-w-(--o-page)">
-      <div class="o-runhead">
-        <span class="o-eng">
-          {
-            `${m.skin_manual({ site: m.site_name({}, options) }, options)} · §2 ${m.portfolio_title({}, options)}`
-          }
-        </span>
-        {
-          project.featured && (
-            <span class="o-eng">{m.portfolio_featured({}, options)}</span>
-          )
-        }
-      </div>
-      <div
-        class="mt-8 grid gap-x-10 gap-y-6 lg:grid-cols-[170px_minmax(0,1fr)]"
-      >
-        <aside
-          class="o-margin flex flex-wrap content-start gap-x-4 gap-y-1 lg:grid"
-        >
-          <a href={portfolioPath} class="o-link mb-2 w-full lg:mb-6">
-            <span aria-hidden="true">←</span>
-            {m.portfolio_back({}, options)}
+  {
+    project.featured && (
+      <span slot="runhead" class="o-eng">
+        {m.portfolio_featured({}, options)}
+      </span>
+    )
+  }
+  {timeline && <span slot="meta">{timeline}</span>}
+  {
+    (project.websiteUrl || project.repositoryUrl) && (
+      <div slot="actions" class="mt-2 flex flex-wrap gap-3">
+        {project.websiteUrl && (
+          <a
+            href={project.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="o-key o-key-lg o-key-signal"
+            data-magnet
+          >
+            {m.portfolio_visit({}, options)}
+            <span aria-hidden="true">↗</span>
           </a>
-          {timeline && <span>{timeline}</span>}
-        </aside>
-
-        <div class="min-w-0">
-          <header class="grid gap-4">
-            <h1 class="o-page-title">{project.title}</h1>
-            <p class="o-summary">{project.summary}</p>
-            {
-              (project.websiteUrl || project.repositoryUrl) && (
-                <div class="mt-2 flex flex-wrap gap-3">
-                  {project.websiteUrl && (
-                    <a
-                      href={project.websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="o-key o-key-lg o-key-signal"
-                      data-magnet
-                    >
-                      {m.portfolio_visit({}, options)}
-                      <span aria-hidden="true">↗</span>
-                    </a>
-                  )}
-                  {project.repositoryUrl && (
-                    <a
-                      href={project.repositoryUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="o-key o-key-lg"
-                      data-magnet
-                    >
-                      {m.portfolio_source({}, options)}
-                    </a>
-                  )}
-                </div>
-              )
-            }
-          </header>
-
-          {
-            project.cover && (
-              <figure class="mt-8 max-w-(--o-measure)">
-                <MediaImage
-                  media={project.cover}
-                  sizes="(min-width: 768px) 680px, 100vw"
-                  priority
-                  class="aspect-[16/10] overflow-hidden rounded-xl shadow-raised"
-                />
-                {project.cover.caption && (
-                  <figcaption class="o-margin mt-2">
-                    {project.cover.caption}
-                  </figcaption>
-                )}
-              </figure>
-            )
-          }
-
-          <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
-          <div class="prose-orkide mt-10" set:html={project.html} />
-
-          {
-            project.tags.length > 0 && (
-              <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t-2 border-ink pt-5">
-                <span class="o-eng">{m.blog_tags({}, options)}</span>
-                <TagList tags={project.tags} label={m.blog_tags({}, options)} />
-              </footer>
-            )
-          }
-        </div>
+        )}
+        {project.repositoryUrl && (
+          <a
+            href={project.repositoryUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="o-key o-key-lg"
+            data-magnet
+          >
+            {m.portfolio_source({}, options)}
+          </a>
+        )}
       </div>
-    </div>
-    <ReadingDial />
-  </article>
-</BaseLayout>
+    )
+  }
+</DocumentArticle>

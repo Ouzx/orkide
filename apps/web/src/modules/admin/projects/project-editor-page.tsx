@@ -15,15 +15,15 @@ import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { api, parseResponse, queries, translationFor } from "../api.ts";
+import { api, parseResponse, queries } from "../api.ts";
 import {
   DocumentForm,
-  emptyDocument,
+  FieldError,
   issuesFrom,
-  SidebarSection,
+  newDraft,
 } from "../components/document-form.tsx";
 import type { FieldIssues } from "../components/document-form.tsx";
-import { PageHeader } from "../components/page.tsx";
+import { PageHeader, Panel } from "../components/page.tsx";
 import { useAdmin } from "../context.tsx";
 
 /** Request body for creating or updating a project (the wire type, inferred from the API). */
@@ -56,7 +56,6 @@ const ProjectEditor = ({
   const queryClient = useQueryClient();
   const canSave = can({ project: [project ? "update" : "create"] });
   const navigate = useNavigate();
-  const { data: taxonomy } = useSuspenseQuery(queries.taxonomy());
   const [issues, setIssues] = useState<FieldIssues>(new Map());
   const [fields, setFields] = useState<ProjectFields>({
     completedAt: project?.completedAt ?? null,
@@ -96,29 +95,7 @@ const ProjectEditor = ({
 
   return (
     <DocumentForm
-      initial={
-        project ?? {
-          coverMediaId: null,
-          scheduledAt: null,
-          status: "draft",
-          tagIds: [],
-          translations: [
-            {
-              content: emptyDocument(),
-              locale,
-              seoDescription: null,
-              seoTitle: null,
-              slug: "",
-              summary: "",
-              title: "",
-            },
-          ],
-        }
-      }
-      tags={taxonomy.tags.map((tag) => ({
-        id: tag.id,
-        name: translationFor(tag.translations, locale)?.name ?? "",
-      }))}
+      initial={project ?? newDraft(locale)}
       canPublish={can({ project: ["publish"] })}
       canSave={canSave}
       issues={issues}
@@ -155,7 +132,7 @@ const ProjectEditor = ({
               }
             />
           </div>
-          <SidebarSection title={m.admin_section_links({}, options)}>
+          <Panel title={m.admin_section_links({}, options)}>
             {(
               [
                 [
@@ -182,14 +159,10 @@ const ProjectEditor = ({
                     patch({ [key]: event.currentTarget.value || null })
                   }
                 />
-                {issue ? (
-                  <p role="alert" className="text-sm text-destructive">
-                    {issue}
-                  </p>
-                ) : null}
+                <FieldError message={issue} />
               </div>
             ))}
-          </SidebarSection>
+          </Panel>
           {(
             [
               ["startedAt", m.admin_field_started({}, options)],

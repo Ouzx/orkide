@@ -13,6 +13,7 @@ import {
 } from "@orkide/ui/kit/dialog";
 import { Input } from "@orkide/ui/kit/input";
 import { Label } from "@orkide/ui/kit/label";
+import { TEXT_MAX } from "@orkide/validators/limits";
 import {
   useMutation,
   useQueryClient,
@@ -25,9 +26,9 @@ import { toast } from "sonner";
 
 import { api, parseResponse, queries, translationFor } from "../api.ts";
 import { ConfirmDelete } from "../components/confirm-delete.tsx";
-import { issuesFrom, SidebarSection } from "../components/document-form.tsx";
+import { FieldError, issuesFrom } from "../components/document-form.tsx";
 import type { FieldIssues } from "../components/document-form.tsx";
-import { EmptyRow, PageHeader } from "../components/page.tsx";
+import { EmptyRow, PageHeader, Panel } from "../components/page.tsx";
 import { useAdmin } from "../context.tsx";
 
 type Taxonomy = Awaited<
@@ -64,9 +65,11 @@ const TermLocaleFields = ({
   initialSlug,
   issues,
   index,
+  nameMax,
 }: {
   readonly locale: (typeof locales)[number];
   readonly name: string;
+  readonly nameMax: number;
   readonly initialSlug: string;
   readonly issues: FieldIssues;
   readonly index: number;
@@ -88,7 +91,7 @@ const TermLocaleFields = ({
           id={`name-${locale}`}
           name={`name-${locale}`}
           defaultValue={name}
-          maxLength={80}
+          maxLength={nameMax}
           aria-invalid={issue("name") ? true : undefined}
           onChange={(event) => {
             if (!slugEdited.current) {
@@ -111,11 +114,7 @@ const TermLocaleFields = ({
             setSlug(event.currentTarget.value);
           }}
         />
-        {issue("slug") ? (
-          <p role="alert" className="text-sm text-destructive">
-            {issue("slug")}
-          </p>
-        ) : null}
+        <FieldError message={issue("slug")} />
       </div>
     </fieldset>
   );
@@ -219,6 +218,9 @@ const TermDialog = ({
                 name={translation?.name ?? ""}
                 initialSlug={translation?.slug ?? ""}
                 issues={issues}
+                nameMax={
+                  kind === "tag" ? TEXT_MAX.tagName : TEXT_MAX.categoryName
+                }
               />
             );
           })}
@@ -366,7 +368,7 @@ export const TaxonomyPage = () => {
     <>
       <PageHeader title={m.admin_taxonomy_title({}, options)} />
       <div className="grid gap-6 lg:grid-cols-2">
-        <SidebarSection title={m.admin_categories({}, options)}>
+        <Panel title={m.admin_categories({}, options)}>
           <TermList
             terms={data.categories}
             canUpdate={permissions.update}
@@ -383,8 +385,8 @@ export const TaxonomyPage = () => {
               {m.admin_category_new({}, options)}
             </Button>
           ) : null}
-        </SidebarSection>
-        <SidebarSection title={m.admin_tags({}, options)}>
+        </Panel>
+        <Panel title={m.admin_tags({}, options)}>
           <TermList
             terms={data.tags}
             canUpdate={permissions.update}
@@ -401,7 +403,7 @@ export const TaxonomyPage = () => {
               {m.admin_tag_new({}, options)}
             </Button>
           ) : null}
-        </SidebarSection>
+        </Panel>
       </div>
       {editing ? (
         <TermDialog
