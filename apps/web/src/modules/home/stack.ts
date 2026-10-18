@@ -67,20 +67,24 @@ afterFirstPaint(() => {
   let reached = -1;
   let shown = "";
   onScroll(() => {
-    const box = chain.getBoundingClientRect();
-    // 0 when the chain's top reaches 75 % of the viewport, 1 when its bottom reaches 45 %.
-    const travel = box.height + innerHeight * 0.3;
-    const progress = Math.min(
-      1,
-      Math.max(0, (innerHeight * 0.75 - box.top) / travel)
-    );
-    const p = progress.toFixed(4);
-    if (p !== shown) {
-      shown = p;
-      chain.style.setProperty("--p", p);
+    // The centre of each stage's socket, in pixels from the chain's top (wrapping moves them).
+    const sockets = steps.map((step) => {
+      const socket = step.querySelector("i");
+      return (
+        step.offsetTop +
+        (socket ? socket.offsetTop + socket.offsetHeight / 2 : 0)
+      );
+    });
+    // The signal sits where a reading line at 45 % of the viewport crosses the cable, from the
+    // first socket to the last; a stage lights when the line reaches its socket.
+    const line = innerHeight * 0.45 - chain.getBoundingClientRect().top;
+    const y = Math.min(sockets.at(-1) ?? 0, Math.max(sockets[0] ?? 0, line));
+    const top = `${y.toFixed(1)}px`;
+    if (top !== shown) {
+      shown = top;
+      chain.style.setProperty("--y", top);
     }
-    const next = Math.floor(progress * (steps.length - 1) + 0.02);
-    while (reached < next) {
+    while ((sockets[reached + 1] ?? Number.POSITIVE_INFINITY) <= line) {
       reached += 1;
       const stage = steps[reached];
       const counter = counters[reached];

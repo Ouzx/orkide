@@ -1344,6 +1344,7 @@
 
   .o-meter {
     display: grid;
+    align-content: start;
     gap: 10px;
     padding: 14px;
     border-radius: var(--radius-2xl);
@@ -1907,10 +1908,10 @@
     box-shadow: var(--o-shadow-recess);
   }
 
-  /* The signal travelling down the cable (motion only; `--p` is 0…1). */
+  /* The signal travelling down the cable (motion only; `--y` is its centre, set by the script). */
   .o-chain-signal {
     position: absolute;
-    top: calc(40px + var(--p, 0) * (100% - 80px) - 6px);
+    top: calc(var(--y, 40px) - 6px);
     left: 11px;
     z-index: 1;
     width: 12px;

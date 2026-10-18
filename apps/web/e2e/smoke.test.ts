@@ -44,6 +44,19 @@ test("the motion switch turns motion off before the next paint", async ({
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
 });
 
+test("the theme switch changes the palette and keeps it", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/en");
+  const dark = page.getByRole("radio", { name: "Dark" });
+  await page.getByTitle("Dark").click();
+  await expect(dark).toBeChecked();
+  await expect(page.locator("html")).toHaveClass(/\bdark\b/u);
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveClass(/\bdark\b/u);
+  await expect(dark).toBeChecked();
+});
+
 test("the admin sign-in page is reachable without a session", async ({
   page,
 }) => {
