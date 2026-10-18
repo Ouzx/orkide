@@ -161,3 +161,21 @@ export const projectTag = defineTable(
     index("project_tag_tag_idx").on(table.tagId),
   ]
 );
+
+/**
+ * Editable site content: one section (`key`) in one locale, as JSON validated by that section's
+ * schema (`@orkide/validators/site`). A section without a row shows the content the site ships.
+ */
+export const siteBlock = defineTable(
+  "site_block",
+  {
+    id: id(),
+    locale: locale(),
+    key: text().notNull(),
+    data: text({ mode: "json" }).$type<unknown>().notNull(),
+    ...timestamps(),
+  },
+  (table) => [
+    uniqueIndex("site_block_locale_key_idx").on(table.locale, table.key),
+  ]
+);

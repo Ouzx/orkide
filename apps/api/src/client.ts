@@ -13,7 +13,7 @@ const client = hc<AppType>("");
 export type Client = typeof client;
 
 /** Shared-cache tags. Readers' responses carry them; writes purge them (API and web Workers). */
-export type CacheTag = "posts" | "projects" | "taxonomy";
+export type CacheTag = "posts" | "projects" | "site" | "taxonomy";
 
 /**
  * Response header listing the cache tags a write invalidated. Workers Cache is scoped per Worker,

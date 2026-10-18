@@ -30,6 +30,15 @@ describe("rbac roles", () => {
   });
 });
 
+describe("site content", () => {
+  it("lets owners and editors edit the site content, viewers only read it", () => {
+    expect(hasPermission("owner", { site: ["read", "update"] })).toBeTruthy();
+    expect(hasPermission("editor", { site: ["read", "update"] })).toBeTruthy();
+    expect(hasPermission("viewer", { site: ["read"] })).toBeTruthy();
+    expect(hasPermission("viewer", { site: ["update"] })).toBeFalsy();
+  });
+});
+
 describe(hasPermission, () => {
   it("grants owners everything, including the inbox", () => {
     expect(hasPermission("owner", { message: ["delete"] })).toBeTruthy();

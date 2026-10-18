@@ -7,6 +7,8 @@ const contentStatements = {
   message: ["read", "update", "delete"],
   post: ["read", "create", "update", "publish", "delete"],
   project: ["read", "create", "update", "publish", "delete"],
+  /** The site's editable content (`@orkide/validators/site`). */
+  site: ["read", "update"],
   stats: ["read"],
   taxonomy: ["read", "create", "update", "delete"],
 } as const;
@@ -33,6 +35,7 @@ export const editor = ac.newRole({
   media: ["read", "upload", "update"],
   post: ["read", "create", "update", "publish"],
   project: ["read", "create", "update", "publish"],
+  site: ["read", "update"],
   stats: ["read"],
   taxonomy: ["read", "create", "update"],
 });
@@ -42,6 +45,7 @@ export const viewer = ac.newRole({
   media: ["read"],
   post: ["read"],
   project: ["read"],
+  site: ["read"],
   stats: ["read"],
   taxonomy: ["read"],
 });
