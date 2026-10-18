@@ -1,6 +1,6 @@
 # Analysis log
 
-Accessibility and performance are analysed on request, not enforced (AGENTS.md rule 18, ADR-028). Each run gets an entry here, newest first: date, code state, how it was run, results, findings, and what is waiting for the owner. Fixes are proposed in the entry and only made once the owner agrees; fixes that change what visitors see are approved one by one.
+Accessibility and performance are analysed on request, not enforced (rule 18 of the workspace `CLAUDE.md`, ADR-028). Each run gets an entry here, newest first: date, code state, how it was run, results, findings, and what is waiting for the owner. Fixes are proposed in the entry and only made once the owner agrees; fixes that change what visitors see are approved one by one.
 
 How to run (after `pnpm build` and `pnpm e2e:prepare`):
 
