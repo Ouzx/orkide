@@ -1,0 +1,53 @@
+---
+import { m } from "@orkide/i18n/messages";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const { locale } = Astro.locals;
+---
+
+<!-- Synthesized clicks and notes (Web Audio). Off until the visitor turns it on. -->
+<button
+  type="button"
+  role="switch"
+  aria-checked="false"
+  class:list={["o-switch", className]}
+  data-sound-switch
+>
+  <span class="o-slot" aria-hidden="true"><span class="o-thumb"></span></span>
+  <span class="o-eng">{m.skin_sound({}, { locale })}</span>
+</button>
+
+<script>
+  import { sound } from "@orkide/ui/effects/sound";
+
+  import { chord, click, soundOn, storeSound } from "./sound.ts";
+
+  const sync = () => {
+    for (const button of document.querySelectorAll("[data-sound-switch]")) {
+      button.setAttribute("aria-checked", String(soundOn()));
+    }
+  };
+  sync();
+  document.addEventListener("soundchange", sync);
+  for (const button of document.querySelectorAll("[data-sound-switch]")) {
+    button.addEventListener("click", () => {
+      storeSound(!soundOn());
+      if (soundOn()) {
+        chord(sound.chord.steps, sound.chord.spacing);
+      }
+    });
+  }
+  // Every key, switch and jack clicks while sound is on.
+  document.addEventListener("pointerdown", (event) => {
+    const part = (event.target as Element).closest(
+      ".o-key, .o-switch, .o-jack, .o-bay-link"
+    );
+    if (part) {
+      click(part.classList.contains("o-key-signal") ? 0.7 : 1);
+    }
+  });
+</script>

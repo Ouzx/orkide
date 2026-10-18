@@ -1,60 +1,33 @@
 ---
-import Picture from "@/shared/media/Picture.astro";
-import type { PictureId } from "@/shared/media/pictures.ts";
+import { m } from "@orkide/i18n/messages";
 
 interface Props {
-  eyebrow?: string | undefined;
+  /** The manual section this page belongs to: 1 Blog, 2 Portfolio, 3 Contact. */
+  section: number;
+  /** The section's name, for the running head. */
+  name: string;
   title: string;
   lead?: string | undefined;
-  /** Decorative wide picture behind the header, fading into the page. */
-  backdrop?: PictureId | undefined;
 }
-const { eyebrow, title, lead, backdrop } = Astro.props;
+const { section, name, title, lead } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
 ---
 
-<header class="relative isolate overflow-hidden border-b">
-  {
-    backdrop && (
-      <Picture
-        id={backdrop}
-        sizes="100vw"
-        priority
-        class="absolute inset-0 -z-20 [mask-image:linear-gradient(to_bottom,black_30%,transparent)] opacity-35 dark:opacity-80"
-      />
-    )
-  }
-  {
-    backdrop && (
-      <div
-        aria-hidden="true"
-        class="absolute inset-0 -z-10 bg-linear-to-r from-background/90 via-background/55 to-transparent"
-      />
-    )
-  }
-  <div
-    class="absolute inset-0 -z-10 bg-grid [mask-image:linear-gradient(to_bottom,black,transparent)] opacity-50"
-  >
+<header class="o-wrap pt-9">
+  <div class="o-runhead">
+    <span class="o-eng">
+      {
+        `${m.skin_manual({ site: m.site_name({}, options) }, options)} · §${section} ${name}`
+      }
+    </span>
+    <span class="o-eng">
+      {m.skin_page({ n: section.toString().padStart(2, "0") }, options)}
+    </span>
   </div>
-  <div
-    class="absolute -top-24 left-1/2 -z-10 h-64 w-2/3 -translate-x-1/2 rounded-full bg-orchid/15 blur-3xl"
-  >
-  </div>
-  <div class="mx-auto max-w-6xl px-4 pt-16 pb-12 sm:px-6 sm:pt-24">
-    {
-      eyebrow && (
-        <p class="mb-5 inline-flex rounded-full border glass-subtle px-3 py-1 font-mono text-xs tracking-widest text-primary uppercase">
-          {eyebrow}
-        </p>
-      )
-    }
-    <h1 class="max-w-3xl text-title font-semibold text-balance">{title}</h1>
-    {
-      lead && (
-        <p class="mt-5 max-w-2xl text-lead text-pretty text-muted-foreground">
-          {lead}
-        </p>
-      )
-    }
+  <div class="mt-8 grid gap-5">
+    <h1 class="o-page-title">{title}</h1>
+    {lead && <p class="o-summary text-ink-2">{lead}</p>}
     <slot />
   </div>
 </header>

@@ -1,7 +1,7 @@
 import type { Locale } from "@orkide/i18n";
 import { locales } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import { Badge } from "@orkide/ui/components/badge";
+import { Badge } from "@orkide/ui/kit/badge";
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@orkide/ui/components/table";
+} from "@orkide/ui/kit/table";
 import type { PostRecord } from "@orkide/validators/content";
 import type { ReactNode } from "react";
 
@@ -46,7 +46,7 @@ export const DocumentTable = ({
     return <EmptyRow>{m.admin_empty({}, options)}</EmptyRow>;
   }
   return (
-    <div className="overflow-hidden rounded-2xl border glass">
+    <div className="o-unit">
       <Table>
         <TableHeader>
           <TableRow>

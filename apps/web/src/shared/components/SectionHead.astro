@@ -1,0 +1,23 @@
+---
+interface Props {
+  /** Its place in the manual: §1, §2, or a sub-section such as §0.1. */
+  number: number | string;
+  id: string;
+  title: string;
+  action?: { href: string; label: string } | undefined;
+}
+const { number, id, title, action } = Astro.props;
+---
+
+<header class="o-sec-head">
+  <span class="o-sec-no" aria-hidden="true">§{number}</span>
+  <h2 id={id} class="o-sec-title">{title}</h2>
+  {
+    action && (
+      <a href={action.href} class="o-link">
+        {action.label}
+        <span aria-hidden="true">→</span>
+      </a>
+    )
+  }
+</header>

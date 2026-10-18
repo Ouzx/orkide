@@ -1,0 +1,56 @@
+---
+import type { SiteContent } from "@orkide/validators/site";
+
+import SectionHead from "@/shared/components/SectionHead.astro";
+
+interface Props {
+  /** The section's words: the admin's saved section, else the shipped one. */
+  content: SiteContent["stack"];
+}
+
+const { content } = Astro.props;
+---
+
+<!--
+  Inside the front panel: the signal chain one request went through, from the edge to the last
+  pixel. Each stage reads how long this very page took to get there, measured in the visitor's
+  browser (`stack.ts`), so the cached HTML stays the same for everyone.
+-->
+<section
+  id="stack"
+  aria-labelledby="stack-title"
+  class="o-wrap py-18"
+  data-section
+>
+  <p class="o-eng m-0 mb-3">{content.kicker}</p>
+  <SectionHead number="0.1" id="stack-title" title={content.title} />
+  <ol class="o-chain mt-2" data-chain>
+    <li class="o-chain-signal" aria-hidden="true" hidden data-signal></li>
+    {
+      content.stages.map((stage, index) => (
+        <li class="o-chain-step">
+          <i aria-hidden="true" />
+          <div class="o-chain-read">
+            <div>
+              <span class="o-lamp" data-tone="ok" aria-hidden="true" />
+              <span class="o-eng">{stage.name}</span>
+            </div>
+            <span class="o-counter" data-timing={index}>
+              —
+            </span>
+            <span class="o-eng">{stage.timing}</span>
+          </div>
+          <div class="min-w-0">
+            <h3>{stage.title}</h3>
+            <p>{stage.text}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="mt-4 mb-0 font-mono text-xs text-ink-2">{content.note}</p>
+</section>
+
+<script>
+  import "./stack.ts";
+</script>

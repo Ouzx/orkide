@@ -2,14 +2,21 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@import "./tokens.css";
+@import "./motion.css";
+@import "./kit.css";
+
 /*
- * Orkide design tokens.
+ * Orkide's skin.
  *
- * - Colors are OKLCH. Every foreground/background pair meets WCAG 2.2 AA (4.5:1 for text).
+ * - The tokens are generated from `src/tokens/tokens.json` into `tokens.css` (`pnpm --filter
+ *   @orkide/ui tokens`); see DESIGN_SYSTEM.md. They become utilities such as `bg-case`,
+ *   `text-ink-2`, `font-label`, `shadow-raised`, `text-display` and `ease-spring`.
  * - `.dark` on <html> selects the dark palette; an inline pre-paint script sets it from the
  *   stored preference (system / light / dark), so the HTML itself stays identical for every
  *   visitor and can be shared-cached.
- * - Fonts are provided by the app (Astro Fonts API) through `--font-geist` / `--font-geist-mono`.
+ * - Fonts are provided by the app (Astro Fonts API) through `--font-saira`, `--font-hanken`,
+ *   `--font-doto` and `--font-martian`.
  */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -18,10 +25,11 @@
 @source "../**/*.{ts,tsx}";
 
 @theme inline {
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-heading: var(--font-sans);
+  --font-sans: var(--o-font-text);
+  --font-mono: var(--o-font-mono);
+  --font-heading: var(--o-font-label);
 
+  /* The parked shadcn components (`src/shadcn`) and pages not yet ported use these names. */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -40,8 +48,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-orchid: var(--orchid);
-  --color-aurora: var(--aurora);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -56,106 +62,46 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-
-  /* Fluid type scale: 320px → 1440px viewport. */
-  --text-display: clamp(2.5rem, 1.6rem + 4.5vw, 5.75rem);
-  --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.04em;
-  --text-title: clamp(1.875rem, 1.45rem + 2.1vw, 3.25rem);
-  --text-title--line-height: 1.08;
-  --text-title--letter-spacing: -0.03em;
-  --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem);
-  --text-lead--line-height: 1.6;
-
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: var(--o-ease-out);
 }
 
+/* shadcn's semantic names, pointed at the skin (they follow `.dark` through the `--o-*` tokens). */
 :root {
-  color-scheme: light;
-  --radius: 0.75rem;
+  --radius: 8px;
 
-  --background: oklch(0.985 0.004 300);
-  --foreground: oklch(0.2 0.03 290);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.03 290);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 290);
-  --primary: oklch(0.5 0.22 320);
-  --primary-foreground: oklch(0.99 0.005 320);
-  --secondary: oklch(0.955 0.012 300);
-  --secondary-foreground: oklch(0.25 0.04 290);
-  --muted: oklch(0.955 0.012 300);
-  --muted-foreground: oklch(0.47 0.03 290);
-  --accent: oklch(0.94 0.03 320);
-  --accent-foreground: oklch(0.3 0.08 320);
-  --destructive: oklch(0.55 0.22 27);
-  --border: oklch(0.2 0.03 290 / 12%);
-  --input: oklch(0.2 0.03 290 / 18%);
-  --ring: oklch(0.5 0.22 320 / 70%);
-  --orchid: oklch(0.58 0.24 325);
-  --aurora: oklch(0.6 0.13 210);
+  --background: var(--o-case);
+  --foreground: var(--o-ink);
+  --card: var(--o-panel);
+  --card-foreground: var(--o-ink);
+  --popover: var(--o-case);
+  --popover-foreground: var(--o-ink);
+  --primary: var(--o-signal);
+  --primary-foreground: var(--o-on-signal);
+  --secondary: var(--o-panel);
+  --secondary-foreground: var(--o-ink);
+  --muted: var(--o-panel);
+  --muted-foreground: var(--o-ink-2);
+  --accent: var(--o-panel);
+  --accent-foreground: var(--o-ink);
+  --destructive: var(--o-danger);
+  --border: var(--o-line);
+  --input: var(--o-line);
+  --ring: var(--o-focus);
 
-  --chart-1: oklch(0.58 0.24 325);
-  --chart-2: oklch(0.6 0.13 210);
-  --chart-3: oklch(0.65 0.16 150);
-  --chart-4: oklch(0.72 0.15 75);
-  --chart-5: oklch(0.55 0.18 280);
+  --chart-1: var(--o-led);
+  --chart-2: var(--o-ok);
+  --chart-3: var(--o-warn);
+  --chart-4: var(--o-hot);
+  --chart-5: var(--o-ink-2);
 
-  --sidebar: oklch(0.97 0.008 300);
-  --sidebar-foreground: oklch(0.2 0.03 290);
-  --sidebar-primary: oklch(0.5 0.22 320);
-  --sidebar-primary-foreground: oklch(0.99 0.005 320);
-  --sidebar-accent: oklch(0.94 0.03 320);
-  --sidebar-accent-foreground: oklch(0.3 0.08 320);
-  --sidebar-border: oklch(0.2 0.03 290 / 10%);
-  --sidebar-ring: oklch(0.5 0.22 320 / 70%);
-}
-
-.dark {
-  color-scheme: dark;
-
-  --background: oklch(0.135 0.02 285);
-  --foreground: oklch(0.96 0.01 300);
-  --card: oklch(0.175 0.024 285);
-  --card-foreground: oklch(0.96 0.01 300);
-  --popover: oklch(0.19 0.026 285);
-  --popover-foreground: oklch(0.96 0.01 300);
-  --primary: oklch(0.78 0.17 328);
-  --primary-foreground: oklch(0.17 0.04 300);
-  --secondary: oklch(0.23 0.03 285);
-  --secondary-foreground: oklch(0.94 0.01 300);
-  --muted: oklch(0.22 0.025 285);
-  --muted-foreground: oklch(0.74 0.025 290);
-  --accent: oklch(0.26 0.05 320);
-  --accent-foreground: oklch(0.95 0.02 320);
-  --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.78 0.17 328 / 70%);
-  --orchid: oklch(0.74 0.2 328);
-  --aurora: oklch(0.82 0.13 200);
-
-  --chart-1: oklch(0.74 0.2 328);
-  --chart-2: oklch(0.82 0.13 200);
-  --chart-3: oklch(0.8 0.15 150);
-  --chart-4: oklch(0.84 0.14 80);
-  --chart-5: oklch(0.7 0.17 280);
-
-  --sidebar: oklch(0.16 0.022 285);
-  --sidebar-foreground: oklch(0.96 0.01 300);
-  --sidebar-primary: oklch(0.78 0.17 328);
-  --sidebar-primary-foreground: oklch(0.17 0.04 300);
-  --sidebar-accent: oklch(0.24 0.04 300);
-  --sidebar-accent-foreground: oklch(0.95 0.02 320);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.78 0.17 328 / 70%);
+  --sidebar: var(--o-panel);
+  --sidebar-foreground: var(--o-ink);
+  --sidebar-primary: var(--o-signal);
+  --sidebar-primary-foreground: var(--o-on-signal);
+  --sidebar-accent: var(--o-case);
+  --sidebar-accent-foreground: var(--o-ink);
+  --sidebar-border: var(--o-line);
+  --sidebar-ring: var(--o-signal);
 }
 
 /* Smooth cross-document navigations; disabled for visitors who prefer reduced motion. */
@@ -176,15 +122,7 @@
   }
 
   body {
-    @apply min-h-dvh bg-background font-sans text-foreground;
-  }
-
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-ring;
-  }
-
-  ::selection {
-    @apply bg-primary text-primary-foreground;
+    min-height: 100dvh;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -200,10 +138,10 @@
       transition-duration: 0.01ms !important;
     }
 
-    ::view-transition-group(*),
-    ::view-transition-old(*),
-    ::view-transition-new(*) {
-      animation: none !important;
+    /* Page changes cross-fade instead of powering off and on. */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: var(--o-reduced-crossfade) linear both o-fade !important;
     }
   }
 
@@ -220,72 +158,135 @@
     transition-duration: 0.01ms !important;
   }
 
-  .calm::view-transition-group(*),
-  .calm::view-transition-old(*),
-  .calm::view-transition-new(*) {
-    animation: none !important;
+  .calm::view-transition-old(root),
+  .calm::view-transition-new(root) {
+    animation: var(--o-reduced-crossfade) linear both o-fade !important;
   }
 }
 
 @layer components {
-  /* Long-form content rendered from Tiptap HTML. */
+  /* Long-form content rendered from Tiptap HTML: a page of the manual. */
   .prose-orkide {
-    @apply text-lg leading-8 text-foreground/90;
+    max-width: var(--o-measure);
+    counter-reset: o-h2;
+    color: var(--o-ink);
+    font-size: 1.1rem;
+    line-height: var(--leading-loose);
 
     & > * + * {
-      @apply mt-6;
+      margin-top: 1.15em;
     }
 
     & h2 {
-      @apply mt-14 scroll-mt-24 text-3xl font-semibold tracking-tight text-foreground;
+      display: flex;
+      gap: 14px;
+      align-items: baseline;
+      margin-top: 2em;
+      font: var(--font-weight-extrabold) var(--text-2xl) / 1 var(--o-font-label);
+      font-stretch: var(--o-stretch-condensed);
+      scroll-margin-top: calc(var(--o-header) + 24px);
+      text-transform: uppercase;
+    }
+
+    /* Sections are numbered like a manual's: 01, 02… */
+    & h2::before {
+      color: var(--o-signal-ink);
+      content: counter(o-h2, decimal-leading-zero);
+      counter-increment: o-h2;
+      font-stretch: var(--o-stretch-compressed);
     }
 
     & h3 {
-      @apply mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground;
+      margin-top: 1.6em;
+      font: var(--font-weight-extrabold) var(--text-xl) / 1.1
+        var(--o-font-label);
+      font-stretch: var(--o-stretch-condensed);
+      scroll-margin-top: calc(var(--o-header) + 24px);
     }
 
     & h4 {
-      @apply mt-8 text-xl font-semibold text-foreground;
+      margin-top: 1.4em;
+      font: var(--font-weight-bold) var(--text-lg) / 1.2 var(--o-font-label);
+      letter-spacing: var(--tracking-snug);
+      text-transform: uppercase;
     }
 
     & a {
-      @apply text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary;
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--o-signal-deep);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+      transition: color var(--o-dur-lamp);
+    }
+
+    & a:hover {
+      color: var(--o-signal-ink);
     }
 
     & strong {
-      @apply font-semibold text-foreground;
+      font-weight: var(--font-weight-bold);
     }
 
     & ul {
-      @apply list-disc space-y-2 pl-6;
+      padding-left: 1.4em;
+      list-style: square;
     }
 
     & ol {
-      @apply list-decimal space-y-2 pl-6;
+      padding-left: 1.6em;
+      list-style: decimal-leading-zero;
+    }
+
+    & li + li {
+      margin-top: 0.4em;
     }
 
     & li::marker {
-      @apply text-primary;
+      color: var(--o-signal-ink);
+      font-family: var(--o-font-mono);
     }
 
     & blockquote {
-      @apply border-l-2 border-primary pl-6 text-muted-foreground italic;
+      margin-inline: 0;
+      padding-left: 20px;
+      border-left: 6px solid var(--o-signal);
+      font: var(--font-weight-bold) 1.5rem / 1.3 var(--o-font-label);
+      font-stretch: var(--o-stretch-semi);
     }
 
     & code:not(pre code) {
-      @apply rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.9em];
+      padding: 2px 6px;
+      border-radius: var(--radius-xs);
+      background: var(--o-panel);
+      box-shadow: var(--o-shadow-recess);
+      font: var(--font-weight-medium) 0.82em var(--o-font-mono);
     }
 
     & pre {
-      @apply overflow-x-auto rounded-xl border bg-card p-5 font-mono text-sm leading-6;
+      margin-inline: 0;
+      padding: 18px 20px;
+      overflow-x: auto;
+      border-radius: var(--radius-xl);
+      background: var(--o-screen);
+      box-shadow:
+        inset 0 3px 8px var(--o-shade),
+        0 0 0 5px var(--o-deep);
+      color: var(--o-led);
+      font: var(--font-weight-medium) var(--text-sm) / 1.75 var(--o-font-mono);
     }
 
     & hr {
-      @apply my-12;
+      margin-block: 3em;
+      border: 0;
+      border-top: 2px solid var(--o-ink);
     }
 
     & img {
-      @apply h-auto max-w-full rounded-xl border;
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--o-shadow-raised);
     }
   }
 }
@@ -303,225 +304,5 @@
   .tiptap img.ProseMirror-selectednode {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-  }
-}
-
-@utility bg-grid {
-  background-image:
-    linear-gradient(to right, var(--border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-  background-size: 3.5rem 3.5rem;
-}
-
-@utility text-gradient {
-  background-image: linear-gradient(
-    100deg,
-    var(--foreground) 10%,
-    var(--orchid) 55%,
-    var(--aurora) 95%
-  );
-  background-clip: text;
-  color: transparent;
-}
-
-/*
- * ─── Ambient light & glass ────────────────────────────────────────────────────────────────
- * A fixed, very faint aurora behind every page gives glass surfaces something to refract.
- * Gradients only (no filters), so it costs one composited layer.
- */
-@layer base {
-  body::before {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    content: "";
-    background:
-      radial-gradient(
-        60rem 40rem at 8% -12%,
-        color-mix(in oklch, var(--orchid) 11%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        48rem 36rem at 100% 35%,
-        color-mix(in oklch, var(--aurora) 8%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        40rem 30rem at 30% 110%,
-        color-mix(in oklch, var(--orchid) 7%, transparent),
-        transparent 70%
-      );
-  }
-}
-
-/* Frosted surface: translucent fill, blur + saturation, a hairline top highlight. */
-@utility glass {
-  background-color: color-mix(in oklch, var(--card) 55%, transparent);
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in oklch, var(--foreground) 7%, transparent),
-    0 1px 2px 0 oklch(0 0 0 / 4%);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  backdrop-filter: blur(18px) saturate(1.5);
-}
-
-/* Lighter variant for small chips and pills. */
-@utility glass-subtle {
-  background-color: color-mix(in oklch, var(--background) 45%, transparent);
-  -webkit-backdrop-filter: blur(10px) saturate(1.3);
-  backdrop-filter: blur(10px) saturate(1.3);
-}
-
-/*
- * ─── Live border ──────────────────────────────────────────────────────────────────────────
- * On hover/focus, an orchid → aurora arc travels around the element's border. `@property`
- * makes the angle animatable; the mask keeps only the 1px ring. Static arc for reduced motion.
- */
-@property --orkide-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes orkide-orbit {
-  to {
-    --orkide-angle: 360deg;
-  }
-}
-
-@utility live-border {
-  position: relative;
-  isolation: isolate;
-
-  &::before {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    padding: 1px;
-    border-radius: inherit;
-    pointer-events: none;
-    content: "";
-    background: conic-gradient(
-      from var(--orkide-angle),
-      transparent 0%,
-      transparent 52%,
-      var(--orchid) 70%,
-      var(--aurora) 82%,
-      transparent 96%
-    );
-    opacity: 0;
-    transition: opacity 400ms var(--ease-out-expo);
-    animation: orkide-orbit 3.2s linear infinite paused;
-    mask:
-      linear-gradient(#000 0 0) content-box exclude,
-      linear-gradient(#000 0 0);
-  }
-
-  &:hover::before,
-  &:focus-within::before {
-    opacity: 1;
-    animation-play-state: running;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &::before {
-      --orkide-angle: 120deg;
-      animation: none;
-    }
-  }
-}
-
-/*
- * ─── Spotlight ────────────────────────────────────────────────────────────────────────────
- * A soft glow that follows the pointer inside the element. `--spot-x/--spot-y` are set by one
- * delegated, rAF-throttled listener (`data-spotlight`); without it the glow sits at the center.
- */
-@utility spotlight {
-  position: relative;
-  isolation: isolate;
-
-  &::after {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    content: "";
-    background: radial-gradient(
-      26rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      color-mix(in oklch, var(--orchid) 13%, transparent),
-      transparent 65%
-    );
-    opacity: 0;
-    transition: opacity 500ms var(--ease-out-expo);
-  }
-
-  &:hover::after {
-    opacity: 1;
-  }
-}
-
-/* A light sweep across a call to action on hover. */
-@utility shine {
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    content: "";
-    background: linear-gradient(
-      110deg,
-      transparent 30%,
-      oklch(1 0 0 / 35%) 50%,
-      transparent 70%
-    );
-    transform: translateX(-120%);
-  }
-
-  &:hover::after {
-    transform: translateX(120%);
-    transition: transform 900ms var(--ease-out-expo);
-  }
-}
-
-/* Link underline that draws in from the left. */
-@utility link-draw {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  background-size: 0% 1px;
-  transition: background-size 350ms var(--ease-out-expo);
-
-  &:hover,
-  &:focus-visible,
-  &[aria-current] {
-    background-size: 100% 1px;
-  }
-}
-
-/*
- * ─── Reveal on scroll ─────────────────────────────────────────────────────────────────────
- * Scroll-driven (no JavaScript, off the main thread): elements ease in as they enter the
- * viewport. Browsers without scroll timelines, reduced-motion visitors and the motion switch's
- * `html.calm` see them as is.
- */
-@keyframes orkide-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(1rem) scale(0.985);
-  }
-}
-
-@utility reveal {
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      :root:not(.calm) & {
-        animation: orkide-reveal linear both;
-        animation-range: entry 0% entry 60%;
-        animation-timeline: view();
-      }
-    }
   }
 }

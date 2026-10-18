@@ -13,6 +13,7 @@ const generated = [
   "packages/db/src/schema/auth.ts",
   "packages/i18n/src/paraglide/**",
   "**/worker-configuration.d.ts",
+  "packages/ui/src/tokens/tokens.ts",
 ];
 
 export default defineConfig({
@@ -37,7 +38,7 @@ export default defineConfig({
     },
     {
       // shadcn registry code keeps its upstream shape, so `shadcn add --diff` stays readable.
-      files: ["packages/ui/src/components/**"],
+      files: ["packages/ui/src/shadcn/**"],
       rules: {
         "eslint/eqeqeq": "off",
         "eslint/func-style": "off",
@@ -48,6 +49,8 @@ export default defineConfig({
         "react/function-component-definition": "off",
         "shadcn/no-arbitrary-values": "off",
         "shadcn/no-restyle": "off",
+        // Parked (components.md): it may name utilities of the previous look that no longer exist.
+        "shadcn/no-unknown-classes": "off",
       },
     },
     {

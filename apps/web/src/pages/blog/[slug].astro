@@ -1,9 +1,9 @@
 ---
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
-import { ArrowLeft, Paperclip } from "lucide-react";
+import { Paperclip } from "lucide-react";
 
-import PostMeta from "@/modules/blog/PostMeta.astro";
+import ReadingDial from "@/shared/components/ReadingDial.astro";
 import TagList from "@/modules/blog/TagList.astro";
 import { getPost } from "@/modules/blog/blog.data.ts";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
@@ -58,104 +58,134 @@ Astro.response.headers.set("vary", "accept");
     ])
   )}
 >
-  <article class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 sm:pt-16">
-    <a
-      href={blogPath}
-      class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-    >
-      <ArrowLeft aria-hidden="true" className="size-4" />
-      {m.blog_back({}, options)}
-    </a>
-
-    <header class="mt-8">
-      {
-        post.category && (
-          <a
-            href={localizeHref(`/blog/category/${post.category.slug}`, options)}
-            class="font-mono text-xs tracking-widest text-primary uppercase hover:underline"
-          >
-            {post.category.name}
-          </a>
-        )
-      }
-      <h1 class="mt-3 text-title font-semibold text-balance">{post.title}</h1>
-      <p class="mt-5 text-lead text-pretty text-muted-foreground">
-        {post.summary}
-      </p>
-      <div
-        class="mt-6 flex flex-wrap items-center justify-between gap-4 border-y py-4"
-      >
-        <PostMeta
-          publishedAt={post.publishedAt}
-          readingTimeMinutes={post.readingTimeMinutes}
-        />
-        {
-          post.publishedAt &&
-            post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
-              <p class="font-mono text-xs tracking-wide text-muted-foreground uppercase">
-                {m.blog_updated({}, options)}{" "}
-                <time datetime={post.updatedAt}>
-                  {formatDate(post.updatedAt, locale)}
-                </time>
-              </p>
-            )
-        }
+  <article class="o-wrap pt-9 pb-24 md:pb-32">
+    <div class="mx-auto max-w-(--o-page)">
+      <div class="o-runhead">
+        <span class="o-eng">
+          {
+            `${m.skin_manual({ site: m.site_name({}, options) }, options)} · §1 ${m.blog_title({}, options)}`
+          }
+        </span>
+        {post.category && <span class="o-eng">{post.category.name}</span>}
       </div>
-    </header>
+      <div
+        class="mt-8 grid gap-x-10 gap-y-6 lg:grid-cols-[170px_minmax(0,1fr)]"
+      >
+        <aside
+          class="o-margin flex flex-wrap content-start gap-x-4 gap-y-1 lg:grid"
+        >
+          <a href={blogPath} class="o-link mb-2 w-full lg:mb-6">
+            <span aria-hidden="true">←</span>
+            {m.blog_back({}, options)}
+          </a>
+          {
+            post.category && (
+              <a
+                href={localizeHref(
+                  `/blog/category/${post.category.slug}`,
+                  options
+                )}
+                class="text-ink-2 no-underline hover:text-signal-ink"
+              >
+                {post.category.name}
+              </a>
+            )
+          }
+          {
+            post.publishedAt && (
+              <time datetime={post.publishedAt}>
+                {formatDate(post.publishedAt, locale)}
+              </time>
+            )
+          }
+          <span>
+            {
+              m.blog_reading_time(
+                { minutes: post.readingTimeMinutes.toString() },
+                options
+              )
+            }
+          </span>
+          {
+            post.publishedAt &&
+              post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
+                <span>
+                  {m.blog_updated({}, options)}{" "}
+                  <time datetime={post.updatedAt}>
+                    {formatDate(post.updatedAt, locale)}
+                  </time>
+                </span>
+              )
+          }
+        </aside>
 
-    {
-      post.cover && (
-        <figure class="mt-10">
-          <MediaImage
-            media={post.cover}
-            sizes="(min-width: 768px) 720px, 100vw"
-            priority
-            class="aspect-[16/9] rounded-2xl border"
-          />
-          {post.cover.caption && (
-            <figcaption class="mt-3 text-center text-sm text-muted-foreground">
-              {post.cover.caption}
-            </figcaption>
-          )}
-        </figure>
-      )
-    }
+        <div class="min-w-0">
+          <header class="grid gap-4">
+            <h1 class="o-page-title">{post.title}</h1>
+            <p class="o-summary">{post.summary}</p>
+          </header>
 
-    <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
-    <div class="prose-orkide mt-12" set:html={post.html} />
+          {
+            post.cover && (
+              <figure class="mt-8 max-w-(--o-measure)">
+                <MediaImage
+                  media={post.cover}
+                  sizes="(min-width: 768px) 680px, 100vw"
+                  priority
+                  class="aspect-[16/9] overflow-hidden rounded-xl shadow-raised"
+                />
+                {post.cover.caption && (
+                  <figcaption class="o-margin mt-2">
+                    {post.cover.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
 
-    {
-      post.attachments.length > 0 && (
-        <section aria-labelledby="attachments" class="mt-16">
-          <h2 id="attachments" class="text-lg font-semibold">
-            {m.blog_attachments({}, options)}
-          </h2>
-          <ul class="mt-4 space-y-2">
-            {post.attachments.map((attachment) => (
-              <li>
-                <a
-                  href={attachment.url}
-                  class="live-border flex items-center gap-3 rounded-xl border glass p-3 text-sm"
-                  data-astro-prefetch="false"
-                >
-                  <Paperclip
-                    aria-hidden="true"
-                    className="text-muted-foreground size-4"
-                  />
-                  <span class="flex-1 truncate">{attachment.alt}</span>
-                  <span class="font-mono text-xs text-muted-foreground">
-                    {attachment.mimeType.split("/")[1]?.toUpperCase()}
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
+          <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
+          <div class="prose-orkide mt-10" set:html={post.html} />
 
-    <footer class="mt-16 border-t pt-8">
-      <TagList tags={post.tags} label={m.blog_tags({}, options)} />
-    </footer>
+          {
+            post.attachments.length > 0 && (
+              <section aria-labelledby="attachments" class="mt-14">
+                <h2 id="attachments" class="o-eng m-0">
+                  {m.blog_attachments({}, options)}
+                </h2>
+                <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
+                  {post.attachments.map((attachment) => (
+                    <li>
+                      <a
+                        href={attachment.url}
+                        class="o-key"
+                        data-astro-prefetch="false"
+                      >
+                        <Paperclip aria-hidden="true" />
+                        <span class="max-w-60 truncate normal-case">
+                          {attachment.alt}
+                        </span>
+                        <span class="text-ink-2">
+                          {attachment.mimeType.split("/")[1]?.toUpperCase()}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
+          {
+            post.tags.length > 0 && (
+              <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t-2 border-ink pt-5">
+                <span class="o-eng">{m.blog_tags({}, options)}</span>
+                <TagList tags={post.tags} label={m.blog_tags({}, options)} />
+              </footer>
+            )
+          }
+        </div>
+      </div>
+    </div>
+    <ReadingDial />
   </article>
 </BaseLayout>

@@ -1,7 +1,7 @@
 import type { InferRequestType } from "@orkide/api-client";
 import { m } from "@orkide/i18n/messages";
-import { buttonVariants } from "@orkide/ui/components/button";
-import { Label } from "@orkide/ui/components/label";
+import { buttonVariants } from "@orkide/ui/kit/button";
+import { Label } from "@orkide/ui/kit/label";
 import type { PostRecord } from "@orkide/validators/content";
 import {
   useMutation,
@@ -114,7 +114,7 @@ const PostEditor = ({ post }: { readonly post: PostRecord | undefined }) => {
             onChange={(event) =>
               setCategoryId(event.currentTarget.value || null)
             }
-            className="h-9 w-full rounded-lg border bg-transparent px-2.5 text-sm"
+            className="o-well"
           >
             <option value="">{m.admin_none({}, options)}</option>
             {taxonomy.categories.map((category) => (

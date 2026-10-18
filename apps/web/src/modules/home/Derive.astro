@@ -1,0 +1,52 @@
+---
+import type { SiteContent } from "@orkide/validators/site";
+
+import SectionHead from "@/shared/components/SectionHead.astro";
+
+interface Props {
+  /** The section's words: the admin's saved section, else the shipped one. */
+  content: SiteContent["derive"];
+}
+
+const { content } = Astro.props;
+---
+
+<!-- How to start a product from the template: three steps, each with its command on a screen. -->
+<section
+  id="derive"
+  aria-labelledby="derive-title"
+  class="o-wrap py-18"
+  data-section
+>
+  <p class="o-eng m-0 mb-3">{content.kicker}</p>
+  <SectionHead number="2.1" id="derive-title" title={content.title} />
+  <p class="o-summary mt-6 text-ink-2">{content.lead}</p>
+  <ol class="m-0 mt-8 grid list-none gap-5 p-0 lg:grid-cols-3">
+    {
+      content.steps.map((step, index) => (
+        <li class="o-panel min-w-0">
+          <div class="flex items-baseline gap-3">
+            <span class="o-sec-no text-3xl" aria-hidden="true">
+              {index + 1}
+            </span>
+            <h3 class="o-entry-title m-0 text-xl">{step.title}</h3>
+          </div>
+          <code class="o-mini mt-4 h-auto py-2 font-mono text-sm wrap-anywhere whitespace-normal normal-case">
+            {step.command}
+          </code>
+          <p class="mt-3 mb-0 text-ink-2">{step.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <a
+    href={content.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="o-key o-key-lg o-key-signal mt-8"
+    data-magnet
+  >
+    {content.cta}
+    <span aria-hidden="true">↗</span>
+  </a>
+</section>

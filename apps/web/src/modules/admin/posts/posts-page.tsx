@@ -1,5 +1,5 @@
 import { m } from "@orkide/i18n/messages";
-import { buttonVariants } from "@orkide/ui/components/button";
+import { buttonVariants } from "@orkide/ui/kit/button";
 import {
   useMutation,
   useQueryClient,

@@ -1,11 +1,10 @@
 ---
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
-import { buttonVariants } from "@orkide/ui/components/button";
-import { ArrowLeft, ArrowUpRight, Code } from "lucide-react";
 
 import TagList from "@/modules/blog/TagList.astro";
 import { getProject } from "@/modules/portfolio/portfolio.data.ts";
+import ReadingDial from "@/shared/components/ReadingDial.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
@@ -61,82 +60,100 @@ Astro.response.headers.set("vary", "accept");
     ])
   )}
 >
-  <article class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 sm:pt-16">
-    <a
-      href={portfolioPath}
-      class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-    >
-      <ArrowLeft aria-hidden="true" className="size-4" />
-      {m.portfolio_back({}, options)}
-    </a>
-
-    <header class="mt-8">
-      {
-        timeline && (
-          <p class="font-mono text-xs tracking-widest text-primary uppercase">
-            {timeline}
-          </p>
-        )
-      }
-      <h1 class="mt-3 text-title font-semibold text-balance">
-        {project.title}
-      </h1>
-      <p class="mt-5 text-lead text-pretty text-muted-foreground">
-        {project.summary}
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
+  <article class="o-wrap pt-9 pb-24 md:pb-32">
+    <div class="mx-auto max-w-(--o-page)">
+      <div class="o-runhead">
+        <span class="o-eng">
+          {
+            `${m.skin_manual({ site: m.site_name({}, options) }, options)} · §2 ${m.portfolio_title({}, options)}`
+          }
+        </span>
         {
-          project.websiteUrl && (
-            <a
-              href={project.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class={buttonVariants({ size: "pill" })}
-            >
-              {m.portfolio_visit({}, options)}
-              <ArrowUpRight aria-hidden="true" />
-            </a>
-          )
-        }
-        {
-          project.repositoryUrl && (
-            <a
-              href={project.repositoryUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class={buttonVariants({ size: "pill", variant: "outline" })}
-            >
-              <Code aria-hidden="true" />
-              {m.portfolio_source({}, options)}
-            </a>
+          project.featured && (
+            <span class="o-eng">{m.portfolio_featured({}, options)}</span>
           )
         }
       </div>
-    </header>
+      <div
+        class="mt-8 grid gap-x-10 gap-y-6 lg:grid-cols-[170px_minmax(0,1fr)]"
+      >
+        <aside
+          class="o-margin flex flex-wrap content-start gap-x-4 gap-y-1 lg:grid"
+        >
+          <a href={portfolioPath} class="o-link mb-2 w-full lg:mb-6">
+            <span aria-hidden="true">←</span>
+            {m.portfolio_back({}, options)}
+          </a>
+          {timeline && <span>{timeline}</span>}
+        </aside>
 
-    {
-      project.cover && (
-        <figure class="mt-10">
-          <MediaImage
-            media={project.cover}
-            sizes="(min-width: 768px) 720px, 100vw"
-            priority
-            class="aspect-[16/10] rounded-2xl border"
-          />
-          {project.cover.caption && (
-            <figcaption class="mt-3 text-center text-sm text-muted-foreground">
-              {project.cover.caption}
-            </figcaption>
-          )}
-        </figure>
-      )
-    }
+        <div class="min-w-0">
+          <header class="grid gap-4">
+            <h1 class="o-page-title">{project.title}</h1>
+            <p class="o-summary">{project.summary}</p>
+            {
+              (project.websiteUrl || project.repositoryUrl) && (
+                <div class="mt-2 flex flex-wrap gap-3">
+                  {project.websiteUrl && (
+                    <a
+                      href={project.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="o-key o-key-lg o-key-signal"
+                      data-magnet
+                    >
+                      {m.portfolio_visit({}, options)}
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                  )}
+                  {project.repositoryUrl && (
+                    <a
+                      href={project.repositoryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="o-key o-key-lg"
+                      data-magnet
+                    >
+                      {m.portfolio_source({}, options)}
+                    </a>
+                  )}
+                </div>
+              )
+            }
+          </header>
 
-    <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
-    <div class="prose-orkide mt-12" set:html={project.html} />
+          {
+            project.cover && (
+              <figure class="mt-8 max-w-(--o-measure)">
+                <MediaImage
+                  media={project.cover}
+                  sizes="(min-width: 768px) 680px, 100vw"
+                  priority
+                  class="aspect-[16/10] overflow-hidden rounded-xl shadow-raised"
+                />
+                {project.cover.caption && (
+                  <figcaption class="o-margin mt-2">
+                    {project.cover.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
 
-    <footer class="mt-16 border-t pt-8">
-      <TagList tags={project.tags} label={m.blog_tags({}, options)} />
-    </footer>
+          <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
+          <div class="prose-orkide mt-10" set:html={project.html} />
+
+          {
+            project.tags.length > 0 && (
+              <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t-2 border-ink pt-5">
+                <span class="o-eng">{m.blog_tags({}, options)}</span>
+                <TagList tags={project.tags} label={m.blog_tags({}, options)} />
+              </footer>
+            )
+          }
+        </div>
+      </div>
+    </div>
+    <ReadingDial />
   </article>
 </BaseLayout>

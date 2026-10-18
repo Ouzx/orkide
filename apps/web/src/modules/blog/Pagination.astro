@@ -1,6 +1,5 @@
 ---
 import { m } from "@orkide/i18n/messages";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface Props {
   /** Path of the first page (localized). */
@@ -12,8 +11,7 @@ interface Props {
 
 const { basePath, hasPrevious, nextCursor } = Astro.props;
 const { locale } = Astro.locals;
-const link =
-  "group glass live-border inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors";
+const link = "o-key";
 ---
 
 {
@@ -24,7 +22,7 @@ const link =
     >
       {hasPrevious ? (
         <a href={basePath} class={link}>
-          <ArrowLeft aria-hidden="true" className="size-4" />
+          <span aria-hidden="true">←</span>
           {m.blog_newer({}, { locale })}
         </a>
       ) : (
@@ -37,7 +35,7 @@ const link =
           class={link}
         >
           {m.blog_older({}, { locale })}
-          <ArrowRight aria-hidden="true" className="size-4" />
+          <span aria-hidden="true">→</span>
         </a>
       )}
     </nav>

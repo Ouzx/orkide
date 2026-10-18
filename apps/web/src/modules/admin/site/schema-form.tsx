@@ -1,9 +1,9 @@
 import { m } from "@orkide/i18n/messages";
-import { Button } from "@orkide/ui/components/button";
-import { Checkbox } from "@orkide/ui/components/checkbox";
-import { Input } from "@orkide/ui/components/input";
-import { Label } from "@orkide/ui/components/label";
-import { Textarea } from "@orkide/ui/components/textarea";
+import { Button } from "@orkide/ui/kit/button";
+import { Checkbox } from "@orkide/ui/kit/checkbox";
+import { Input } from "@orkide/ui/kit/input";
+import { Label } from "@orkide/ui/kit/label";
+import { Textarea } from "@orkide/ui/kit/textarea";
 import type { SiteKey } from "@orkide/validators/site";
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { createContext, use, useMemo, useState } from "react";
@@ -58,9 +58,8 @@ interface Form {
   readonly Field: ComponentType<FieldProps>;
 }
 
-/** Classes that make a native `<select>` match the `Input` primitive. */
-const selectClass =
-  "h-10 w-full min-w-0 rounded-lg border border-input bg-card px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm";
+/** A native `<select>` in the same well as the `Input` primitive. */
+const selectClass = "o-well";
 
 const FormContext = createContext<Form | null>(null);
 
@@ -246,7 +245,7 @@ const ObjectField = ({ schema, value, onChange, path, label }: FieldProps) => {
     body
   ) : (
     <fieldset className="space-y-4 rounded-xl border p-3 sm:p-4">
-      <legend className="px-1 text-sm font-medium">{label}</legend>
+      <legend className="o-eng px-1">{label}</legend>
       {body}
     </fieldset>
   );
@@ -284,7 +283,7 @@ const ListField = ({ schema, value, onChange, path, label }: FieldProps) => {
   };
   return (
     <fieldset className="space-y-3 rounded-xl border p-3 sm:p-4">
-      <legend className="px-1 text-sm font-medium">{label}</legend>
+      <legend className="o-eng px-1">{label}</legend>
       <Issue path={path} />
       {items.map((entry, index) => {
         const name = m.admin_site_item({ label, n: index + 1 }, options);
@@ -371,7 +370,7 @@ const TupleField = ({ schema, value, onChange, path, label }: FieldProps) => {
   const items = Array.isArray(value) ? value : [];
   return (
     <fieldset className="space-y-3 rounded-xl border p-3 sm:p-4">
-      <legend className="px-1 text-sm font-medium">{label}</legend>
+      <legend className="o-eng px-1">{label}</legend>
       {schema.prefixItems?.map((child, index) => {
         // A fixed position is the item itself.
         const position = `${path.join(".")}#${index}`;

@@ -1,9 +1,9 @@
 import type { InferRequestType } from "@orkide/api-client";
 import { m } from "@orkide/i18n/messages";
-import { buttonVariants } from "@orkide/ui/components/button";
-import { Input } from "@orkide/ui/components/input";
-import { Label } from "@orkide/ui/components/label";
-import { Switch } from "@orkide/ui/components/switch";
+import { buttonVariants } from "@orkide/ui/kit/button";
+import { Input } from "@orkide/ui/kit/input";
+import { Label } from "@orkide/ui/kit/label";
+import { Switch } from "@orkide/ui/kit/switch";
 import type { ProjectRecord } from "@orkide/validators/content";
 import {
   useMutation,

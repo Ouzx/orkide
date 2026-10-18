@@ -1,16 +1,6 @@
 import { createApiClient } from "@orkide/api-client";
 import type { Locale } from "@orkide/i18n";
-import { Button } from "@orkide/ui/components/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@orkide/ui/components/field";
-import { Input } from "@orkide/ui/components/input";
-import { Textarea } from "@orkide/ui/components/textarea";
-import { CircleCheck, Send } from "lucide-react";
-import type { SubmitEvent } from "react";
+import type { ReactNode, SubmitEvent } from "react";
 import { startTransition, useActionState } from "react";
 
 import type { ContactLabels } from "./labels.ts";
@@ -40,6 +30,16 @@ const toFieldErrors = (problem: Problem): FormState["fieldErrors"] =>
   Object.fromEntries(
     (problem.issues ?? []).map((issue) => [issue.path.join("."), issue.message])
   );
+
+/** The panel's status row: a lamp and a small screen reading what the form is doing. */
+const status = (tone: "ok" | "warn", text: string) => (
+  <div className="o-status">
+    <span className="o-lamp" data-tone={tone} aria-hidden="true" />
+    <span className="o-mini" aria-hidden="true">
+      {text}
+    </span>
+  </div>
+);
 
 /**
  * Contact form island. Constraint attributes mirror `contactInputSchema`, so the browser validates
@@ -84,13 +84,10 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
 
   if (state.status === "sent") {
     return (
-      <div
-        aria-live="polite"
-        className="flex flex-col items-start gap-3 rounded-2xl border glass p-8"
-      >
-        <CircleCheck aria-hidden="true" className="size-8 text-primary" />
-        <h2 className="text-xl font-semibold">{labels.successTitle}</h2>
-        <p className="text-muted-foreground">{labels.successBody}</p>
+      <div aria-live="polite">
+        {status("ok", labels.sentScreen)}
+        <h2 className="o-sec-title m-0 text-2xl">{labels.successTitle}</h2>
+        <p className="mt-2 mb-0 text-ink-2">{labels.successBody}</p>
       </div>
     );
   }
@@ -110,88 +107,92 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
     startTransition(() => submit(data));
   };
 
-  const errorFor = (name: FieldName) => {
-    const message = state.fieldErrors?.[name];
-    return message ? [{ message }] : undefined;
+  const field = (
+    name: FieldName,
+    label: ReactNode,
+    control: (props: {
+      "aria-describedby"?: string;
+      "aria-invalid"?: true;
+      className: string;
+      id: string;
+      name: FieldName;
+    }) => ReactNode
+  ) => {
+    const error = state.fieldErrors?.[name];
+    const id = `contact-${name}`;
+    return (
+      <div className="o-field">
+        <label htmlFor={id} className="o-label">
+          {label}
+        </label>
+        {control({
+          "aria-describedby": error ? `${id}-error` : undefined,
+          "aria-invalid": error ? true : undefined,
+          className: "o-well",
+          id,
+          name,
+        })}
+        {error ? (
+          <p id={`${id}-error`} className="o-error">
+            {error}
+          </p>
+        ) : null}
+      </div>
+    );
   };
 
   return (
-    <form onSubmit={onSubmit} className="rounded-2xl border glass p-6 sm:p-8">
-      <FieldGroup>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field data-invalid={errorFor("name") ? true : undefined}>
-            <FieldLabel htmlFor="contact-name">{labels.name}</FieldLabel>
-            <Input
-              id="contact-name"
-              name="name"
-              autoComplete="name"
-              required
-              maxLength={120}
-              aria-invalid={errorFor("name") ? true : undefined}
-            />
-            <FieldError errors={errorFor("name")} />
-          </Field>
-          <Field data-invalid={errorFor("email") ? true : undefined}>
-            <FieldLabel htmlFor="contact-email">{labels.email}</FieldLabel>
-            <Input
-              id="contact-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              maxLength={254}
-              aria-invalid={errorFor("email") ? true : undefined}
-            />
-            <FieldError errors={errorFor("email")} />
-          </Field>
-        </div>
-        <Field data-invalid={errorFor("subject") ? true : undefined}>
-          <FieldLabel htmlFor="contact-subject">
-            {labels.subject}{" "}
-            <span className="font-normal text-muted-foreground">
-              ({labels.optional})
-            </span>
-          </FieldLabel>
-          <Input
-            id="contact-subject"
-            name="subject"
-            maxLength={160}
-            aria-invalid={errorFor("subject") ? true : undefined}
-          />
-          <FieldError errors={errorFor("subject")} />
-        </Field>
-        <Field data-invalid={errorFor("body") ? true : undefined}>
-          <FieldLabel htmlFor="contact-body">{labels.body}</FieldLabel>
-          <Textarea
-            id="contact-body"
-            name="body"
+    <form onSubmit={onSubmit} className="grid gap-3.5">
+      {status(pending ? "warn" : "ok", pending ? labels.sending : labels.ready)}
+      <div className="grid gap-3.5 sm:grid-cols-2">
+        {field("name", labels.name, (props) => (
+          <input {...props} autoComplete="name" required maxLength={120} />
+        ))}
+        {field("email", labels.email, (props) => (
+          <input
+            {...props}
+            type="email"
+            autoComplete="email"
             required
-            minLength={10}
-            maxLength={5000}
-            rows={7}
-            aria-invalid={errorFor("body") ? true : undefined}
+            maxLength={254}
           />
-          <FieldError errors={errorFor("body")} />
-        </Field>
+        ))}
+      </div>
+      {field(
+        "subject",
+        <>
+          {labels.subject} <small>({labels.optional})</small>
+        </>,
+        (props) => (
+          <input {...props} maxLength={160} />
+        )
+      )}
+      {field("body", labels.body, (props) => (
+        <textarea
+          {...props}
+          required
+          minLength={10}
+          maxLength={5000}
+          rows={7}
+        />
+      ))}
 
-        <div ref={turnstileContainer} />
+      <div ref={turnstileContainer} />
 
-        {state.status === "failed" && state.message ? (
-          <p role="alert" className="text-sm text-destructive">
-            {state.message}
-          </p>
-        ) : null}
+      {state.status === "failed" && state.message ? (
+        <p role="alert" className="o-error">
+          {state.message}
+        </p>
+      ) : null}
 
-        <Button
-          type="submit"
-          size="pill"
-          disabled={pending || !token}
-          className="w-full sm:w-fit"
-        >
-          <Send aria-hidden="true" />
-          {submitLabel}
-        </Button>
-      </FieldGroup>
+      <button
+        type="submit"
+        disabled={pending || !token}
+        className="o-key o-key-lg o-key-signal justify-self-start"
+      >
+        {submitLabel}
+        <span aria-hidden="true">→</span>
+      </button>
     </form>
   );
 };

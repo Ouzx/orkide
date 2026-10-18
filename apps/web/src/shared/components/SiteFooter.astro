@@ -1,11 +1,8 @@
 ---
 import { m } from "@orkide/i18n/messages";
 
-import Picture from "@/shared/media/Picture.astro";
 import MotionSwitch from "@/shared/motion/MotionSwitch.astro";
 import { owner } from "@/shared/site.ts";
-
-import Logo from "./Logo.astro";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -21,46 +18,43 @@ const agents = [
 ];
 ---
 
-<footer class="mt-24 border-t glass">
+<!-- The device's back panel: serial label, the motion switch, and the ports (feeds, agents). -->
+<footer class="o-back">
   <div
-    class="mx-auto grid max-w-6xl gap-8 px-4 py-12 text-sm text-muted-foreground sm:grid-cols-[1fr_auto_auto] sm:px-6"
+    class="o-wrap grid gap-8 pt-11 pb-16 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr]"
   >
-    <div class="group flex items-start gap-4">
-      <Picture
-        id="portrait"
-        sizes="48px"
-        class="size-12 shrink-0 rounded-full border"
-      />
-      <div class="space-y-2">
-        <p class="font-medium text-foreground">
+    <div class="sm:col-span-2 lg:col-span-1">
+      <p class="o-eng m-0">{m.skin_back_panel({}, options)}</p>
+      <div class="o-serial mt-4">
+        <b>{m.site_name({}, options)} · {m.skin_model({}, options)}</b>
+        <span>
           {
             m.footer_copyright(
               { name: owner.name, year: new Date().getFullYear().toString() },
               options
             )
           }
-        </p>
-        <p class="flex items-center gap-2">
-          <Logo class="size-5" weight={44} />
-          {m.footer_built_with({}, options)}
-        </p>
+        </span>
+        <span>{m.footer_built_with({}, options)}</span>
+        <span>
+          {m.skin_serial({ build: import.meta.env.PUBLIC_BUILD }, options)}
+        </span>
+      </div>
+      <div class="mt-4">
         <MotionSwitch />
       </div>
     </div>
     <nav aria-labelledby="footer-feeds">
-      <h2 id="footer-feeds" class="mb-3 font-medium text-foreground">
+      <h2 id="footer-feeds" class="o-eng m-0">
         {m.footer_feeds({}, options)}
       </h2>
-      <ul class="space-y-2">
+      <ul class="o-jacks">
         {
           feeds.map((feed) => (
             <li>
-              <a
-                class="link-draw transition-colors hover:text-foreground"
-                href={feed.href}
-                data-astro-prefetch="false"
-              >
-                {feed.label}
+              <a class="o-jack" href={feed.href} data-astro-prefetch="false">
+                <i aria-hidden="true" />
+                <span>{feed.label}</span>
               </a>
             </li>
           ))
@@ -68,19 +62,16 @@ const agents = [
       </ul>
     </nav>
     <nav aria-labelledby="footer-agents">
-      <h2 id="footer-agents" class="mb-3 font-medium text-foreground">
+      <h2 id="footer-agents" class="o-eng m-0">
         {m.footer_for_agents({}, options)}
       </h2>
-      <ul class="space-y-2">
+      <ul class="o-jacks">
         {
           agents.map((link) => (
             <li>
-              <a
-                class="link-draw transition-colors hover:text-foreground"
-                href={link.href}
-                data-astro-prefetch="false"
-              >
-                {link.label}
+              <a class="o-jack" href={link.href} data-astro-prefetch="false">
+                <i aria-hidden="true" />
+                <span>{link.label}</span>
               </a>
             </li>
           ))

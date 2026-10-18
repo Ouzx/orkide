@@ -1,8 +1,15 @@
 [
   {
-    "name": "Hero scene (lazy Three.js chunk)",
-    "path": "dist/client/_astro/pollen-scene.*.js",
-    "limit": "115 kB"
+    "name": "Skin motion and front panel (frame, instrument, panel, stack, sound)",
+    "path": [
+      "dist/client/_astro/frame.*.js",
+      "dist/client/_astro/instrument.*.js",
+      "dist/client/_astro/panel-motion.*.js",
+      "dist/client/_astro/Hero.astro_*.js",
+      "dist/client/_astro/sound.*.js",
+      "dist/client/_astro/Stack.astro_*.js"
+    ],
+    "limit": "8 kB"
   },
   {
     "name": "React runtime (shared by every island)",
@@ -22,6 +29,6 @@
   {
     "name": "All client JavaScript",
     "path": "dist/client/_astro/*.js",
-    "limit": "480 kB"
+    "limit": "380 kB"
   }
 ]

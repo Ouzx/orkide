@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 
 import cloudflare from "@astrojs/cloudflare";
@@ -12,6 +13,21 @@ import { themeScript } from "./src/shared/theme/theme-script.ts";
 const themeScriptHash =
   `sha256-${createHash("sha256").update(themeScript).digest("base64")}` as const;
 
+/** Short commit of this build, printed on the back panel as its serial number. */
+const build = (() => {
+  const ci = process.env.WORKERS_CI_COMMIT_SHA;
+  if (ci) {
+    return ci.slice(0, 7);
+  }
+  try {
+    return execFileSync("git", ["rev-parse", "--short", "HEAD"])
+      .toString()
+      .trim();
+  } catch {
+    return "dev";
+  }
+})();
+
 /** Public origin. Canonical URLs, sitemaps, feeds and OpenGraph tags are built from it. */
 const site = "https://orkide-web.ouzx.workers.dev";
 
@@ -25,20 +41,46 @@ export default defineConfig({
   build: { inlineStylesheets: "always" },
   // Rendered HTML is cached in the Worker's own cache (Workers Cache) and purged by tag.
   cache: { provider: cacheCloudflare() },
+  // The skin's four families (packages/ui/DESIGN_SYSTEM.md), with only the axes and styles it
+  // sets: the API adds italics unless `styles` says otherwise.
   fonts: [
     {
-      cssVariable: "--font-geist",
-      fallbacks: ["ui-sans-serif", "system-ui", "sans-serif"],
-      name: "Geist",
-      provider: fontProviders.fontsource(),
+      cssVariable: "--font-saira",
+      fallbacks: ["Arial Narrow", "Arial", "sans-serif"],
+      name: "Saira",
+      options: { experimental: { variableAxis: { wdth: [["75", "125"]] } } },
+      provider: fontProviders.google(),
+      stretch: "75% 125%",
+      styles: ["normal"],
       subsets: ["latin", "latin-ext"],
-      weights: ["100 900"],
+      weights: ["600 900"],
     },
     {
-      cssVariable: "--font-geist-mono",
+      cssVariable: "--font-hanken",
+      fallbacks: ["system-ui", "sans-serif"],
+      name: "Hanken Grotesk",
+      provider: fontProviders.google(),
+      styles: ["normal", "italic"],
+      subsets: ["latin", "latin-ext"],
+      weights: ["400 700"],
+    },
+    {
+      cssVariable: "--font-doto",
+      fallbacks: ["Courier New", "monospace"],
+      name: "Doto",
+      // Round dots only: the roundness axis is pinned at 100.
+      options: { experimental: { variableAxis: { ROND: ["100"] } } },
+      provider: fontProviders.google(),
+      styles: ["normal"],
+      subsets: ["latin", "latin-ext"],
+      weights: ["700 900"],
+    },
+    {
+      cssVariable: "--font-martian",
       fallbacks: ["ui-monospace", "monospace"],
-      name: "Geist Mono",
-      provider: fontProviders.fontsource(),
+      name: "Martian Mono",
+      provider: fontProviders.google(),
+      styles: ["normal"],
       subsets: ["latin", "latin-ext"],
       weights: ["400 600"],
     },
@@ -76,10 +118,10 @@ export default defineConfig({
   vite: {
     build: {
       // Warn threshold only; the enforced per-bundle budgets live in `.size-limit.json`.
-      // The largest chunk is the lazy hero scene (Three.js renderer core, ~130 KB gzip),
-      // fetched only after idle and never on the critical path.
+      // The largest chunk is the admin editor (Tiptap), loaded only in the dashboard.
       chunkSizeWarningLimit: 560,
     },
+    define: { "import.meta.env.PUBLIC_BUILD": JSON.stringify(build) },
     plugins: [tailwindcss()],
   },
 });

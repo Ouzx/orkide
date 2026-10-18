@@ -15,7 +15,7 @@
     "hooks": "@/shared/hooks",
     "lib": "@/shared/lib",
     "utils": "@orkide/ui/lib/utils",
-    "ui": "@orkide/ui/components"
+    "ui": "@orkide/ui/shadcn"
   },
   "rtl": false,
   "menuColor": "default",

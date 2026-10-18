@@ -1,21 +1,16 @@
 import { locales } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import { Button } from "@orkide/ui/components/button";
+import { Button } from "@orkide/ui/kit/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@orkide/ui/components/dialog";
-import { Input } from "@orkide/ui/components/input";
-import { Label } from "@orkide/ui/components/label";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@orkide/ui/components/tabs";
+} from "@orkide/ui/kit/dialog";
+import { Input } from "@orkide/ui/kit/input";
+import { Label } from "@orkide/ui/kit/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@orkide/ui/kit/tabs";
 import { ALLOWED_MEDIA_TYPES } from "@orkide/validators/limits";
 import type { MediaUpdate } from "@orkide/validators/media";
 import {
@@ -112,7 +107,7 @@ const Dropzone = () => {
       data-dragging={dragging}
       className="group mb-8"
     >
-      <label className="live-border flex cursor-pointer flex-col items-center gap-3 rounded-2xl border border-dashed glass p-10 text-center text-muted-foreground transition-colors group-data-[dragging=true]:border-primary group-data-[dragging=true]:text-foreground hover:text-foreground">
+      <label className="flex cursor-pointer flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-ink-2 bg-panel p-10 text-center text-muted-foreground shadow-recess transition-colors group-data-[dragging=true]:border-primary group-data-[dragging=true]:text-foreground hover:text-foreground">
         <UploadCloud aria-hidden="true" className="size-8" />
         <span>{m.admin_media_drop({}, options)}</span>
         <input
@@ -302,7 +297,7 @@ export const MediaGrid = ({
             <button
               type="button"
               onClick={() => onSelect(record)}
-              className="group live-border block w-full overflow-hidden rounded-xl border glass text-left focus-visible:ring-2 focus-visible:ring-ring"
+              className="group block w-full overflow-hidden rounded-xl bg-panel text-left shadow-raised transition-transform duration-(--o-dur-spring) ease-spring hover:-translate-y-0.5"
             >
               <span className="block aspect-square overflow-hidden">
                 <MediaThumb record={record} />

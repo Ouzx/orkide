@@ -1,10 +1,6 @@
 import { m } from "@orkide/i18n/messages";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@orkide/ui/components/avatar";
-import { Button } from "@orkide/ui/components/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@orkide/ui/kit/avatar";
+import { Button } from "@orkide/ui/kit/button";
 import {
   useMutation,
   useQueryClient,

@@ -10,4 +10,4 @@ This repository is **public**. The shared stack, rules and commands are in the w
 - **Motion:** the footer's switch sets `html.calm` (ADR-029); new motion checks `motionAllowed()` (`shared/motion/motion.ts`).
 - **Admin:** `/admin`, signing in with GitHub OAuth (`GITHUB_CLIENT_*` in `apps/api/.dev.vars`) or a passkey.
 - **Languages:** English is the base locale (`baseLocale: en`), Turkish under `/tr` with translated slugs.
-- **Design:** light and dark themes; responsive pictures and videos through the media pipeline (`add-media-asset`).
+- **Design:** the Instrument skin (ADR-031): the site is a hand-built device. Tokens, kit classes, motion and effects live in `packages/ui` (`DESIGN_SYSTEM.md`, `components.md`); edit `src/tokens/tokens.json` and run `pnpm --filter @orkide/ui tokens`, never the generated `tokens.css`/`tokens.ts`. Imagery is drawn in code; brand files come from `pnpm --filter @orkide/web brand` then `media` (`add-media-asset`). Light and dark themes; sound is off until switched on.

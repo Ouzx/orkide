@@ -4,10 +4,10 @@ import { localizeHref } from "@orkide/i18n/runtime";
 import { Menu, X } from "lucide-react";
 
 import type { Alternates } from "@/shared/lib/i18n.ts";
+import SoundSwitch from "@/shared/sound/SoundSwitch.astro";
 import ThemeSwitch from "@/shared/theme/ThemeSwitch.astro";
 
 import LocaleSwitch from "./LocaleSwitch.astro";
-import Logo from "./Logo.astro";
 
 interface Props {
   alternates: Alternates;
@@ -28,32 +28,41 @@ const links = [
   current: path === link.href || path.startsWith(`${link.href}/`),
   localized: localizeHref(link.href, { locale }),
 }));
+// The header's screen names the manual section in view: §1 Blog, §2 Portfolio, §3 Contact.
+const section = links.findIndex((link) => link.current) + 1;
+const readout =
+  section > 0
+    ? `§${section} ${links[section - 1]?.label ?? ""}`
+    : `§0 ${m.skin_panel({}, options)}`;
 ---
 
-<header class="sticky top-0 z-40 border-b glass">
-  <div class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
+<header class="o-head">
+  <div class="o-wrap o-head-row">
     <a
       href={localizeHref("/", { locale })}
-      class="group flex items-center gap-2 text-base font-semibold tracking-tight"
+      class="o-brand"
       aria-label={`${m.site_name({}, options)} — ${m.nav_home({}, options)}`}
     >
-      <Logo class="size-8" weight={42} />
-      <span>{m.site_name({}, options)}</span>
+      <b>{m.site_name({}, options)}</b>
+      <span aria-hidden="true" class="hidden sm:inline">
+        {m.skin_model({}, options)}
+      </span>
     </a>
 
     <nav
       aria-label={m.nav_primary({}, options)}
       class="ml-auto hidden md:block"
     >
-      <ul class="flex items-center gap-6 text-sm">
+      <ul class="flex items-center gap-2">
         {
           links.map((link) => (
             <li>
               <a
                 href={link.localized}
                 aria-current={link.current ? "page" : undefined}
-                class="link-draw py-1 text-muted-foreground transition-colors hover:text-foreground aria-[current]:text-foreground"
+                class="o-key"
               >
+                <span class="o-lamp" aria-hidden="true" />
                 {link.label}
               </a>
             </li>
@@ -62,15 +71,20 @@ const links = [
       </ul>
     </nav>
 
-    <div class="ml-auto flex items-center gap-2 md:ml-0">
-      <LocaleSwitch alternates={alternates} />
+    <div class="o-mini hidden xl:flex" aria-hidden="true" data-readout>
+      {readout}
+    </div>
+
+    <div class="ml-auto flex items-center gap-3.5 md:ml-0">
       <ThemeSwitch />
+      <SoundSwitch class="hidden sm:inline-grid" />
+      <LocaleSwitch alternates={alternates} />
       <button
         type="button"
         popovertarget="mobile-nav"
-        class="grid size-9 place-items-center rounded-full border glass-subtle transition-colors hover:bg-muted md:hidden"
+        class="o-key o-key-icon md:hidden"
       >
-        <Menu aria-hidden="true" className="size-4" />
+        <Menu aria-hidden="true" />
         <span class="sr-only">{m.nav_menu({}, options)}</span>
       </button>
     </div>
@@ -81,35 +95,39 @@ const links = [
     id="mobile-nav"
     popover
     aria-label={m.nav_primary({}, options)}
-    class="inset-0 m-0 h-dvh w-full max-w-none glass md:hidden"
+    class="inset-0 m-0 h-dvh w-full max-w-none bg-case text-ink md:hidden"
   >
-    <div class="flex h-16 items-center justify-end px-4">
+    <div class="o-wrap flex h-16 items-center justify-between">
+      <span class="o-eng">{m.nav_menu({}, options)}</span>
       <button
         type="button"
         popovertarget="mobile-nav"
         popovertargetaction="hide"
-        class="grid size-9 place-items-center rounded-full border hover:bg-muted"
+        class="o-key o-key-icon"
       >
-        <X aria-hidden="true" className="size-4" />
+        <X aria-hidden="true" />
         <span class="sr-only">{m.nav_menu({}, options)}</span>
       </button>
     </div>
-    <ul
-      class="flex flex-col gap-2 px-6 pt-6 text-3xl font-semibold tracking-tight"
-    >
+    <ul class="o-wrap grid gap-3 pt-6">
       {
-        links.map((link) => (
+        links.map((link, index) => (
           <li>
             <a
               href={link.localized}
               aria-current={link.current ? "page" : undefined}
-              class="block py-2 text-muted-foreground hover:text-foreground aria-[current]:text-foreground"
+              class="o-key o-key-lg w-full justify-start"
             >
+              <span class="o-lamp" aria-hidden="true" />
+              <span class="text-ink-2">§{index + 1}</span>
               {link.label}
             </a>
           </li>
         ))
       }
     </ul>
+    <div class="o-wrap mt-8 flex items-center gap-4 sm:hidden">
+      <SoundSwitch />
+    </div>
   </nav>
 </header>

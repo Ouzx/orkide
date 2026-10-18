@@ -1,6 +1,11 @@
 import type { Locale } from "@orkide/i18n";
 
 declare global {
+  interface ImportMetaEnv {
+    /** Short commit of this build (`astro.config.ts`), the back panel's serial number. */
+    readonly PUBLIC_BUILD: string;
+  }
+
   namespace App {
     interface Locals {
       /** Locale of the current request, resolved from the URL by the i18n middleware. */

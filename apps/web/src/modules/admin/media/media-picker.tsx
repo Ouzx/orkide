@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@orkide/ui/components/dialog";
+} from "@orkide/ui/kit/dialog";
 import { useState } from "react";
 import type { ReactNode } from "react";
 

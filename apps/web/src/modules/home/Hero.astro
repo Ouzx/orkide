@@ -1,183 +1,203 @@
 ---
+import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
-import { buttonVariants } from "@orkide/ui/components/button";
-import { cn } from "@orkide/ui/lib/utils";
-import { ArrowRight } from "lucide-react";
-
+import { knob } from "@orkide/ui/effects/knob";
+import { meters } from "@orkide/ui/effects/meters";
+import type { PostSummary, ProjectSummary } from "@orkide/validators/content";
 import type { SiteContent } from "@orkide/validators/site";
-
-import MediaSlot from "@/shared/media/MediaSlot.astro";
 
 interface Props {
   /** The hero's words: the admin's saved section, else the shipped one. */
   content: SiteContent["hero"];
-  /** The `hero-scene` feature flag. */
-  sceneEnabled: boolean;
+  posts: readonly PostSummary[];
+  projects: readonly ProjectSummary[];
 }
 
-const { content, sceneEnabled } = Astro.props;
+const { content, posts, projects } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
+
+/** What a knob selects: its items (title, link) and the label its readout starts with. */
+const dials = [
+  {
+    id: "writing",
+    items: posts.map((post) => ({
+      href: localizeHref(`/blog/${post.slug}`, options),
+      title: post.title,
+    })),
+    label: m.home_knob_writing({}, options),
+  },
+  {
+    id: "work",
+    items: projects.map((project) => ({
+      href: localizeHref(`/portfolio/${project.slug}`, options),
+      title: project.title,
+    })),
+    label: m.home_knob_work({}, options),
+  },
+].filter((dial) => dial.items.length > 0);
+
+const pad = (n: number) => n.toString().padStart(2, "0");
+/** The readout line for item `index` of a dial: "WRITING 01 · TITLE". */
+const readout = (dial: (typeof dials)[number], index: number) =>
+  `${dial.label} ${pad(index + 1)} · ${dial.items[index]?.title ?? ""}`;
+
+/** Tick marks around a dial of `count` detents, lit up to the first one. */
+const ticks = (count: number) => {
+  const { sweep, tickStep, majorTolerance, ticks: radius } = knob;
+  const first = count > 1 ? -sweep / 2 : 0;
+  return Array.from({ length: sweep / tickStep + 1 }, (_, step) => {
+    const degrees = -sweep / 2 + step * tickStep;
+    const detent = ((step * tickStep) / sweep) * (count - 1);
+    const major =
+      count > 1 && Math.abs(detent - Math.round(detent)) < majorTolerance;
+    const angle = (degrees * Math.PI) / 180;
+    const inner = major ? radius.innerMajor : radius.inner;
+    return {
+      degrees,
+      lit: degrees <= first + 0.5,
+      x1: 66 + Math.sin(angle) * inner,
+      x2: 66 + Math.sin(angle) * radius.outer,
+      y1: 66 - Math.cos(angle) * inner,
+      y2: 66 - Math.cos(angle) * radius.outer,
+    };
+  });
+};
+const holes = meters.grille.columns * meters.grille.rows;
 ---
 
-<section
-  aria-labelledby="hero-title"
-  class="relative isolate overflow-hidden border-b"
->
-  <div
-    class="absolute inset-0 -z-20 bg-grid [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)] opacity-40"
-  >
-  </div>
-  <div
-    class="absolute -top-40 -left-40 -z-20 size-[36rem] rounded-full bg-orchid/20 blur-3xl"
-  >
-  </div>
-  <div
-    class="absolute -right-40 -bottom-40 -z-20 size-[30rem] rounded-full bg-aurora/15 blur-3xl"
-  >
-  </div>
+<!--
+  The front panel. At rest it is a complete, static page: the headline is on the display, the
+  readout names the latest post, the knobs point at their first detent. `panel.ts` adds the
+  motion (power-on, typing, tilt) and makes the knobs turn.
+-->
+<section aria-labelledby="hero-title" class="o-stage o-wrap pt-10 pb-16">
+  <div class="o-mount">
+    <div class="o-device" data-tilt="panel">
+      <span class="o-screw o-screw-tl" aria-hidden="true"></span>
+      <span class="o-screw o-screw-tr" aria-hidden="true"></span>
+      <span class="o-screw o-screw-bl" aria-hidden="true"></span>
+      <span class="o-screw o-screw-br" aria-hidden="true"></span>
 
-  <div
-    class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:py-28"
-  >
-    <div class="relative">
-      <p
-        class="mb-6 inline-flex items-center gap-2 rounded-full border glass-subtle px-3 py-1 font-mono text-xs tracking-widest text-muted-foreground uppercase"
-      >
-        <span
-          class="size-1.5 animate-pulse rounded-full bg-primary"
-          aria-hidden="true"></span>
-        {content.eyebrow}
-      </p>
-      <h1
-        id="hero-title"
-        class="text-gradient text-display font-semibold text-balance"
-      >
-        {content.title}
-      </h1>
-      <p class="mt-6 max-w-xl text-lead text-pretty text-muted-foreground">
-        {content.lead}
-      </p>
-      <div class="mt-10 flex flex-wrap gap-3">
-        <a
-          href={localizeHref("/portfolio", options)}
-          class={cn(buttonVariants({ size: "pill" }), "group shine")}
-        >
-          {content.workCta}
-          <ArrowRight
-            aria-hidden="true"
-            className="transition-transform group-hover:translate-x-0.5"
-          />
-        </a>
-        <a
-          href={localizeHref("/contact", options)}
-          class={cn(
-            buttonVariants({ size: "pill", variant: "outline" }),
-            "live-border glass-subtle"
-          )}
-        >
-          {content.contactCta}
-        </a>
+      <div class="mb-4.5 flex items-center justify-between gap-3 px-2">
+        <div class="flex items-center gap-2">
+          <span class="o-lamp o-lamp-pulse" data-tone="ok" aria-hidden="true"
+          ></span>
+          <span class="o-eng" aria-hidden="true"
+            >{m.skin_power({}, options)}</span
+          >
+        </div>
+        {
+          dials.length > 0 && (
+            <span class="o-eng hidden sm:inline" aria-hidden="true">
+              {m.home_panel_note({}, options)}
+            </span>
+          )
+        }
       </div>
-    </div>
 
-    <!--
-      The orchid artwork is static and cacheable; once the page is idle, a WebGL layer of
-      drifting pollen fades in around it (skipped for reduced motion, Save-Data or no WebGL).
-    -->
-    <div
-      class="relative -mt-6 aspect-square w-full max-w-xs justify-self-center sm:max-w-md lg:mt-0 lg:max-w-none"
-    >
-      <div
-        class="absolute inset-0 [mask-image:radial-gradient(circle,black_40%,transparent_70%)]"
-      >
-        <MediaSlot
-          id="home-hero-poster"
-          sizes="(min-width: 1024px) 560px, (min-width: 640px) 448px, 320px"
-          class="h-full"
-        />
+      <div class="grid items-start gap-8.5 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <div class="min-w-0">
+          <div class="o-display">
+            <div class="o-display-top relative">
+              <span>{content.eyebrow}</span>
+              <span aria-hidden="true">{m.home_channel({}, options)}</span>
+            </div>
+            <h1 id="hero-title" class="o-display-title relative">
+              <span data-typed>{content.title}</span><span
+                class="o-caret"
+                aria-hidden="true"></span>
+            </h1>
+            {
+              dials[0] && (
+                <div class="o-readout relative" aria-live="polite">
+                  <span aria-hidden="true">▶</span>
+                  <span class="o-readout-sel" data-readout-line>
+                    <span>{readout(dials[0], 0)}</span>
+                  </span>
+                  <span
+                    class="o-readout-hint"
+                    aria-hidden="true"
+                    hidden
+                    data-hint
+                  >
+                    {m.home_press({}, options)}
+                  </span>
+                </div>
+              )
+            }
+          </div>
+          <p class="mx-1 mt-6 mb-0 max-w-[36em] text-lead">{content.lead}</p>
+          <div class="mx-1 mt-7 flex flex-wrap items-center gap-3.5">
+            <a
+              href={localizeHref("/portfolio", options)}
+              class="o-key o-key-lg o-key-signal"
+              data-magnet
+            >
+              {content.workCta}
+              <span aria-hidden="true">→</span>
+            </a>
+            <a
+              href={localizeHref("/contact", options)}
+              class="o-key o-key-lg"
+              data-magnet
+            >
+              {content.contactCta}
+            </a>
+          </div>
+        </div>
+
+        <div class="o-controls" aria-hidden="true">
+          {
+            dials.map((dial) => (
+              <div class="o-knob-unit">
+                <div class="o-knob-wrap">
+                  <svg viewBox="0 0 132 132">
+                    {ticks(dial.items.length).map((tick) => (
+                      <line
+                        x1={tick.x1.toFixed(2)}
+                        y1={tick.y1.toFixed(2)}
+                        x2={tick.x2.toFixed(2)}
+                        y2={tick.y2.toFixed(2)}
+                        data-degrees={tick.degrees}
+                        data-on={tick.lit ? "" : undefined}
+                      />
+                    ))}
+                  </svg>
+                  <div
+                    class="o-knob"
+                    data-knob={dial.id}
+                    data-label={dial.label}
+                    data-items={JSON.stringify(dial.items)}
+                    data-single={dial.items.length < 2 ? "" : undefined}
+                  />
+                </div>
+                <span class="o-eng">{dial.label}</span>
+                <span class="o-counter" data-counter>
+                  {pad(1)}/{pad(dial.items.length)}
+                </span>
+              </div>
+            ))
+          }
+          <div class="o-grille" data-grille>
+            {Array.from({ length: holes }, () => <i />)}
+          </div>
+          <div class="o-ledbar">
+            <span class="o-eng">{m.home_page_lamps({}, options)}</span>
+            <span data-ledbar>
+              {
+                Array.from({ length: meters.ledBar.count }, () => (
+                  <span class="o-lamp" />
+                ))
+              }
+            </span>
+          </div>
+        </div>
       </div>
-      {
-        sceneEnabled && (
-          <div
-            data-hero-scene
-            aria-hidden="true"
-            class="absolute inset-0 animate-in duration-1000 fade-in"
-            hidden
-          />
-        )
-      }
     </div>
   </div>
 </section>
 
 <script>
-  /*
-   * Progressive pollen layer. A plain script rather than a React island, so the home page ships no
-   * framework runtime: after the page is idle, and unless the visitor prefers reduced motion, is
-   * saving data or lacks WebGL 2 (and while the site's motion switch is off), the Three.js chunk is fetched and mounted. Any failure leaves the
-   * poster in place. The host only exists when the `hero-scene` flag is on.
-   */
-  import { motionAllowed } from "@/shared/motion/motion.ts";
-
-  const host = document.querySelector<HTMLElement>("[data-hero-scene]");
-
-  const supportsWebGl = (): boolean => {
-    try {
-      return document.createElement("canvas").getContext("webgl2") !== null;
-    } catch {
-      return false;
-    }
-  };
-
-  const saveData = (): boolean =>
-    (navigator as Navigator & { connection?: { saveData?: boolean } })
-      .connection?.saveData === true;
-
-  /** Safari lacks `requestIdleCallback`; a short timeout is a fine stand-in after load. */
-  // oxlint-disable-next-line promise/prefer-await-to-callbacks
-  const whenIdle = (callback: () => void): void => {
-    if ("requestIdleCallback" in globalThis) {
-      requestIdleCallback(callback, { timeout: 4000 });
-    } else {
-      setTimeout(callback, 1500);
-    }
-  };
-
-  const capable = host !== null && !saveData() && supportsWebGl();
-  let dispose: (() => void) | undefined;
-  let loading = false;
-
-  /** Mounts or removes the layer to match the motion choice (`motionchange` from the switch). */
-  const sync = (): void => {
-    if (!(host && capable)) {
-      return;
-    }
-    if (!motionAllowed()) {
-      dispose?.();
-      dispose = undefined;
-      host.hidden = true;
-      return;
-    }
-    if (dispose || loading) {
-      return;
-    }
-    loading = true;
-    whenIdle(async () => {
-      try {
-        const { mountPollenScene } = await import("./pollen-scene.ts");
-        if (motionAllowed()) {
-          host.hidden = false;
-          dispose = mountPollenScene(host);
-        }
-      } catch {
-        host.hidden = true;
-      } finally {
-        loading = false;
-      }
-    });
-  };
-
-  sync();
-  document.addEventListener("motionchange", sync);
+  import "./panel.ts";
 </script>

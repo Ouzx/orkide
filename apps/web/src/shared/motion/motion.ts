@@ -22,3 +22,29 @@ export const storeCalm = (calm: boolean): void => {
   document.documentElement.classList.toggle("calm", calm);
   document.dispatchEvent(new Event("motionchange"));
 };
+
+/** Runs `start` once the first contentful paint has happened (or soon after load without it). */
+export const afterFirstPaint = (start: () => void): void => {
+  let started = false;
+  const once = () => {
+    if (!started) {
+      started = true;
+      start();
+    }
+  };
+  if (performance.getEntriesByName("first-contentful-paint").length > 0) {
+    once();
+    return;
+  }
+  try {
+    new PerformanceObserver((list, observer) => {
+      if (list.getEntriesByName("first-contentful-paint").length > 0) {
+        observer.disconnect();
+        once();
+      }
+    }).observe({ buffered: true, type: "paint" });
+  } catch {
+    // Browsers without paint timing: start once the page has loaded.
+  }
+  addEventListener("load", () => setTimeout(once, 300), { once: true });
+};

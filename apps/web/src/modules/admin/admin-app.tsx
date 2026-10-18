@@ -1,6 +1,6 @@
 import type { Locale } from "@orkide/i18n";
-import { Toaster } from "@orkide/ui/components/sonner";
-import { TooltipProvider } from "@orkide/ui/components/tooltip";
+import { Toaster } from "@orkide/ui/kit/sonner";
+import { TooltipProvider } from "@orkide/ui/kit/tooltip";
 import {
   MutationCache,
   QueryClient,

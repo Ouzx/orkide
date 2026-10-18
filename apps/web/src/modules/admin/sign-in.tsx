@@ -1,6 +1,6 @@
 import type { Locale } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import { Button } from "@orkide/ui/components/button";
+import { Button } from "@orkide/ui/kit/button";
 import { Fingerprint } from "lucide-react";
 import { useState } from "react";
 
@@ -64,45 +64,61 @@ export const SignIn = ({
   );
 
   return (
-    <main className="relative z-10 grid min-h-dvh place-items-center px-4">
-      <div className="live-border w-full max-w-sm space-y-8 rounded-3xl border glass p-8 text-center">
-        <img src="/favicon.svg" alt="" className="mx-auto size-14" />
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {m.admin_sign_in_title({}, options)}
-          </h1>
-          <p className="text-sm text-muted-foreground">
+    <main className="o-stage grid min-h-dvh place-items-center px-4 py-10">
+      <div className="o-mount w-full max-w-md">
+        <div className="o-device">
+          <span className="o-screw o-screw-tl" aria-hidden="true" />
+          <span className="o-screw o-screw-tr" aria-hidden="true" />
+          <span className="o-screw o-screw-bl" aria-hidden="true" />
+          <span className="o-screw o-screw-br" aria-hidden="true" />
+          <div className="mb-4 flex items-center justify-between gap-2 px-1">
+            <span className="o-brand">
+              <b>{m.site_name({}, options)}</b>
+              <span>{m.skin_model({}, options)}</span>
+            </span>
+            <span
+              className="o-lamp o-lamp-pulse"
+              data-tone="warn"
+              aria-hidden="true"
+            />
+          </div>
+          <div className="o-display">
+            <p className="o-display-top relative m-0">
+              <span>{m.admin_service_mode({}, options)}</span>
+            </p>
+            <h1 className="o-display-title relative mt-4 mb-2 min-h-0 text-section">
+              {m.admin_sign_in_title({}, options)}
+              <span className="o-caret" aria-hidden="true" />
+            </h1>
+          </div>
+          <p className="mx-1 mt-5 mb-0 text-ink-2">
             {m.admin_sign_in_lead({}, options)}
           </p>
-        </div>
-        <div className="space-y-3">
-          <div className="shine rounded-full">
+          <div className="mt-6 grid gap-3">
             <Button
-              size="pill"
-              className="w-full"
+              className="o-key-lg w-full"
               disabled={pending !== undefined}
               onClick={github}
             >
               <GitHubMark />
               {m.admin_sign_in_github({}, options)}
             </Button>
+            <Button
+              variant="outline"
+              className="o-key-lg w-full"
+              disabled={pending !== undefined}
+              onClick={passkey}
+            >
+              <Fingerprint aria-hidden="true" />
+              {m.admin_sign_in_passkey({}, options)}
+            </Button>
           </div>
-          <Button
-            size="pill"
-            variant="outline"
-            className="w-full"
-            disabled={pending !== undefined}
-            onClick={passkey}
-          >
-            <Fingerprint aria-hidden="true" />
-            {m.admin_sign_in_passkey({}, options)}
-          </Button>
+          {failed || errorFromRedirect ? (
+            <p role="alert" className="o-error mx-1 mt-4 mb-0">
+              {m.admin_sign_in_failed({}, options)}
+            </p>
+          ) : null}
         </div>
-        {failed || errorFromRedirect ? (
-          <p role="alert" className="text-sm text-destructive">
-            {m.admin_sign_in_failed({}, options)}
-          </p>
-        ) : null}
       </div>
     </main>
   );

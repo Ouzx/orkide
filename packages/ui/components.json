@@ -11,11 +11,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@orkide/ui/components",
+    "components": "@orkide/ui/shadcn",
     "utils": "@orkide/ui/lib/utils",
     "hooks": "@orkide/ui/hooks",
     "lib": "@orkide/ui/lib",
-    "ui": "@orkide/ui/components"
+    "ui": "@orkide/ui/shadcn"
   },
   "rtl": false,
   "menuColor": "default",

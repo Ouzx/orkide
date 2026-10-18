@@ -2,61 +2,57 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 import type { ProjectSummary } from "@orkide/validators/content";
-import { Badge } from "@orkide/ui/components/badge";
-
-import TagList from "@/modules/blog/TagList.astro";
-import MediaImage from "@/shared/media/MediaImage.astro";
-import Picture from "@/shared/media/Picture.astro";
 
 interface Props {
   project: ProjectSummary;
   headingLevel?: 2 | 3;
+  /** A picture of the project beside its own copy (home page): no link, hidden from assistive tech. */
+  decorative?: boolean;
 }
 
-const { project, headingLevel = 2 } = Astro.props;
+const { project, headingLevel = 2, decorative = false } = Astro.props;
 const { locale } = Astro.locals;
-const href = localizeHref(`/portfolio/${project.slug}`, { locale });
+const options = { locale };
+const href = localizeHref(`/portfolio/${project.slug}`, options);
 const Heading = `h${headingLevel}` as const;
+const Tag = decorative ? "div" : "a";
 ---
 
-<article
-  data-spotlight
-  class="group live-border spotlight flex reveal flex-col overflow-hidden rounded-2xl border glass transition-transform duration-500 ease-out-expo hover:-translate-y-1 has-focus-visible:ring-2 has-focus-visible:ring-ring"
->
-  {
-    project.cover ? (
-      <MediaImage
-        media={project.cover}
-        sizes="(min-width: 1024px) 576px, 100vw"
-        class="aspect-[16/10] border-b"
-      />
-    ) : (
-      <Picture
-        id="default-project-cover"
-        sizes="(min-width: 1024px) 576px, 100vw"
-        class="aspect-[16/10] border-b"
-        imgClass="transition-transform duration-700 ease-out-expo group-hover:scale-103"
-      />
-    )
-  }
-  <div class="flex flex-1 flex-col gap-3 p-6">
-    {
-      project.featured && (
-        <Badge variant="secondary" className="w-fit">
-          {m.portfolio_featured({}, { locale })}
-        </Badge>
-      )
-    }
-    <Heading class="text-xl font-semibold tracking-tight text-balance">
-      <a href={href} class="outline-none after:absolute after:inset-0">
-        {project.title}
-      </a>
-    </Heading>
-    <p class="line-clamp-3 text-pretty text-muted-foreground">
-      {project.summary}
-    </p>
-    <div class="mt-auto pt-2">
-      <TagList tags={project.tags} label={m.blog_tags({}, { locale })} />
+<!-- A project as a cartridge: a dark module with a signal sticker that tilts toward the pointer. -->
+<div class="o-mount o-mount-module">
+  <Tag
+    class="o-cartridge"
+    href={decorative ? undefined : href}
+    aria-hidden={decorative ? "true" : undefined}
+    data-tilt="cartridge"
+  >
+    <div class="o-cartridge-row">
+      <span>{project.tags.map((tag) => tag.name).join(" · ")}</span>
+      {project.featured && <span>{m.portfolio_featured({}, options)}</span>}
     </div>
-  </div>
-</article>
+    <div class="o-sticker">
+      <span>{m.portfolio_cartridge({}, options)}</span>
+      {
+        decorative ? (
+          <b>{project.title}</b>
+        ) : (
+          <Heading class="m-0">
+            <b>{project.title}</b>
+          </Heading>
+        )
+      }
+    </div>
+    <div class="o-cartridge-row">
+      <div class="o-pins" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      {
+        !decorative && (
+          <span>
+            {m.portfolio_details({}, options)} <span aria-hidden="true">→</span>
+          </span>
+        )
+      }
+    </div>
+  </Tag>
+</div>

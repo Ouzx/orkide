@@ -48,7 +48,17 @@ describe("site content", () => {
         >
       >();
 
-    expect(Object.keys(sections)).toStrictEqual(["hero"]);
+    expect(Object.keys(sections)).toStrictEqual([
+      "hero",
+      "stack",
+      "inside",
+      "derive",
+    ]);
+    expect(sections.stack).toMatchObject({
+      content: { kicker: "Bu sayfa sana nasıl ulaştı" },
+      savedAt: null,
+      schema: { properties: { stages: { maxItems: 5, minItems: 5 } } },
+    });
     expect(sections.hero).toMatchObject({
       content: { workCta: "İşleri gör" },
       savedAt: null,

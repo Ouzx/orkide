@@ -1,5 +1,5 @@
 import { m } from "@orkide/i18n/messages";
-import { buttonVariants } from "@orkide/ui/components/button";
+import { buttonVariants } from "@orkide/ui/kit/button";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { FilePlus2, FolderPlus, Upload } from "lucide-react";

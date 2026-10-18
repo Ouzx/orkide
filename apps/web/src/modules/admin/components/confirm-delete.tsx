@@ -9,8 +9,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@orkide/ui/components/alert-dialog";
-import { Button } from "@orkide/ui/components/button";
+} from "@orkide/ui/kit/alert-dialog";
+import { Button } from "@orkide/ui/kit/button";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 

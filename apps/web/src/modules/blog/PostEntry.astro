@@ -1,0 +1,84 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import type { PostSummary } from "@orkide/validators/content";
+
+import { formatDate } from "@/shared/lib/i18n.ts";
+
+import TagList from "./TagList.astro";
+
+interface Props {
+  post: PostSummary;
+  /** Its position in the list, from 1: printed as the entry's index. */
+  index: number;
+  headingLevel?: 2 | 3;
+}
+
+const { post, index, headingLevel = 2 } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+const href = localizeHref(`/blog/${post.slug}`, options);
+const Heading = `h${headingLevel}` as const;
+---
+
+<!-- A post as an entry of the manual: index, title and summary, and its spec. -->
+<li class="o-entry">
+  <span class="o-lamp" aria-hidden="true"></span>
+  <span class="o-entry-idx" aria-hidden="true">
+    {index.toString().padStart(2, "0")}
+  </span>
+  <div>
+    <Heading class="o-entry-title"><a href={href}>{post.title}</a></Heading>
+    <p>{post.summary}</p>
+  </div>
+  <dl class="o-spec">
+    {
+      post.category && (
+        <>
+          <dt>{m.spec_category({}, options)}</dt>
+          <dd>
+            <a
+              href={localizeHref(
+                `/blog/category/${post.category.slug}`,
+                options
+              )}
+            >
+              {post.category.name}
+            </a>
+          </dd>
+        </>
+      )
+    }
+    {
+      post.tags.length > 0 && (
+        <>
+          <dt>{m.blog_tags({}, options)}</dt>
+          <dd>
+            <TagList tags={post.tags} label={m.blog_tags({}, options)} />
+          </dd>
+        </>
+      )
+    }
+    <dt>{m.spec_reading({}, options)}</dt>
+    <dd>
+      {
+        m.blog_reading_time(
+          { minutes: post.readingTimeMinutes.toString() },
+          options
+        )
+      }
+    </dd>
+    {
+      post.publishedAt && (
+        <>
+          <dt>{m.blog_published({}, options)}</dt>
+          <dd>
+            <time datetime={post.publishedAt}>
+              {formatDate(post.publishedAt, locale)}
+            </time>
+          </dd>
+        </>
+      )
+    }
+  </dl>
+</li>

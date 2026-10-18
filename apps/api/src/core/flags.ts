@@ -10,7 +10,6 @@ import { factory } from "./factory.ts";
  */
 export const flagRegistry = {
   "contact-form": { fallback: true, public: true },
-  "hero-scene": { fallback: true, public: true },
   "live-visitors": { fallback: true, public: true },
 } as const satisfies Record<
   string,

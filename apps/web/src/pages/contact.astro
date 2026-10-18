@@ -10,7 +10,6 @@ import BaseLayout from "@/shared/layouts/BaseLayout.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { getFlags } from "@/shared/lib/flags.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
-import MediaSlot from "@/shared/media/MediaSlot.astro";
 import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
 
 const { locale } = Astro.locals;
@@ -34,32 +33,37 @@ cachePage(Astro);
   )}
 >
   <PageHeader
-    eyebrow={m.contact_title({}, options)}
+    section={3}
+    name={m.contact_title({}, options)}
     title={m.contact_title({}, options)}
     lead={m.contact_description({}, options)}
   />
-  <div
-    class="mx-auto grid max-w-6xl gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[1.4fr_1fr]"
-  >
-    {
-      flags["contact-form"] ? (
-        <ContactForm
-          client:visible
-          locale={locale}
-          siteKey={env.TURNSTILE_SITE_KEY}
-          labels={contactLabels(locale)}
-        />
-      ) : (
-        <p
-          role="status"
-          class="rounded-2xl border glass p-8 text-muted-foreground"
-        >
-          {m.contact_disabled({}, options)}
-        </p>
-      )
-    }
-    <div class="hidden overflow-hidden rounded-2xl border glass lg:block">
-      <MediaSlot id="contact-ambient" sizes="(min-width: 1152px) 440px, 38vw" />
+  <div class="o-wrap pt-10 pb-24 md:pb-32">
+    <div class="o-panel max-w-3xl">
+      <span class="o-screw o-screw-tl" aria-hidden="true"></span>
+      <span class="o-screw o-screw-tr" aria-hidden="true"></span>
+      {
+        flags["contact-form"] ? (
+          <ContactForm
+            client:visible
+            locale={locale}
+            siteKey={env.TURNSTILE_SITE_KEY}
+            labels={contactLabels(locale)}
+          />
+        ) : (
+          <div>
+            <div class="o-status">
+              <span class="o-lamp" data-tone="warn" aria-hidden="true" />
+              <span class="o-mini" aria-hidden="true">
+                {m.contact_offline({}, options)}
+              </span>
+            </div>
+            <p role="status" class="m-0 text-ink-2">
+              {m.contact_disabled({}, options)}
+            </p>
+          </div>
+        )
+      }
     </div>
   </div>
 </BaseLayout>

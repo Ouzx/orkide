@@ -1,0 +1,46 @@
+---
+import { m } from "@orkide/i18n/messages";
+
+interface Props {
+  /** The status code, shown on the display. */
+  code: string;
+  title: string;
+  body: string;
+  action: { href: string; label: string };
+}
+
+const { code, title, body, action } = Astro.props;
+const { locale } = Astro.locals;
+---
+
+<!-- An error page as the front panel with a fault on its display. -->
+<section class="o-stage o-wrap pt-10 pb-24 md:pb-32">
+  <div class="o-mount mx-auto max-w-3xl">
+    <div class="o-device">
+      <span class="o-screw o-screw-tl" aria-hidden="true"></span>
+      <span class="o-screw o-screw-tr" aria-hidden="true"></span>
+      <span class="o-screw o-screw-bl" aria-hidden="true"></span>
+      <span class="o-screw o-screw-br" aria-hidden="true"></span>
+      <div class="mb-4.5 flex items-center gap-2 px-2">
+        <span class="o-lamp o-lamp-pulse" data-tone="hot" aria-hidden="true"
+        ></span>
+        <span class="o-eng" aria-hidden="true"
+          >{m.skin_power({}, { locale })}</span
+        >
+      </div>
+      <div class="o-display">
+        <p class="o-display-title relative m-0" aria-hidden="true">
+          {code}<span class="o-caret"></span>
+        </p>
+        <h1 class="o-readout relative m-0 text-lg">{title}</h1>
+      </div>
+      <p class="mx-1 mt-6 mb-0 max-w-[36em] text-lead">{body}</p>
+      <div class="mx-1 mt-7">
+        <a href={action.href} class="o-key o-key-lg o-key-signal" data-magnet>
+          {action.label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

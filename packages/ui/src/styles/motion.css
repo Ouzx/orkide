@@ -1,0 +1,104 @@
+/*
+ * Keyframes of the skin. Timing lives in the tokens (`--o-dur-*`, `--o-ease-*`, `--o-stagger-*`);
+ * scripts read the same values from `motion/motion.ts`. Visitors who reduce motion (system setting
+ * or `html.calm`) get the resting state: the global rules in globals.css stop every animation.
+ */
+
+/* The front panel powers on. */
+@keyframes o-boot {
+  from {
+    opacity: 0;
+    transform: translateY(40px) rotateX(18deg) scale(0.96);
+  }
+}
+
+/* A lamp breathing (power, inbox, service mode). */
+@keyframes o-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* The display's block caret. */
+@keyframes o-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* A selection wider than its readout. Holds, then scrolls one full width. */
+@keyframes o-marquee {
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* One hole of the speaker grille on a beat. */
+@keyframes o-hole {
+  30% {
+    background: var(--o-signal);
+    transform: scale(1.35);
+  }
+}
+
+/* A manual block rising into view (only for blocks below the fold at load). */
+@keyframes o-rise {
+  to {
+    transform: none;
+  }
+}
+
+/* A meter segment lighting. */
+@keyframes o-segment {
+  from {
+    background: var(--o-led-off);
+    box-shadow: none;
+  }
+}
+
+/* Parts of an exploded diagram drifting apart and back. */
+@keyframes o-explode {
+  from {
+    transform: translateY(8px);
+  }
+
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+/* Page changes: the old page powers down, the new one powers on. */
+@keyframes o-power-off {
+  to {
+    filter: brightness(0.6);
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@keyframes o-power-on {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+}
+
+/* Reduced motion: page changes only cross-fade. */
+@keyframes o-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+::view-transition-old(root) {
+  animation: var(--o-dur-quick) var(--o-ease-out) both o-power-off;
+}
+
+::view-transition-new(root) {
+  animation: var(--o-dur-hole) var(--o-ease-out) both o-power-on;
+}

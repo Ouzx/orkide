@@ -3,5 +3,5 @@
   "compilerOptions": {
     "paths": { "@orkide/ui/*": ["./src/*"] }
   },
-  "include": ["src"]
+  "include": ["src", "scripts"]
 }

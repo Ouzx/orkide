@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  // shadcn is parked for later use (packages/ui/components.md): components nobody imports are kept, not reported.
+  "ignore": ["packages/ui/src/shadcn/**"],
+  "ignoreDependencies": [
+    "cloudflare",
+    "tailwindcss",
+    "auth",
+    "@react-email/ui",
+  ],
+  "rules": {
+    "exports": "off",
+    "types": "off",
+    "duplicates": "off",
+  },
+  "workspaces": {
+    "packages/auth": {
+      "entry": ["auth.cli.ts"],
+    },
+  },
+}

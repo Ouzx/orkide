@@ -1,8 +1,8 @@
 import { m } from "@orkide/i18n/messages";
-import { Button } from "@orkide/ui/components/button";
-import { Skeleton } from "@orkide/ui/components/skeleton";
+import { Button } from "@orkide/ui/kit/button";
+import { Skeleton } from "@orkide/ui/kit/skeleton";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import { RotateCcw, TriangleAlert } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { Suspense } from "react";
 import type { ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -18,14 +18,16 @@ export const PageHeader = ({
   readonly description?: string;
   readonly actions?: ReactNode;
 }) => (
-  <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+  <header className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-4">
+    <div className="min-w-0">
+      <h1 className="o-page-title text-section">{title}</h1>
       {description ? (
-        <p className="mt-1 text-muted-foreground">{description}</p>
+        <p className="mt-2 mb-0 max-w-[40em] text-ink-2">{description}</p>
       ) : null}
     </div>
-    {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+    {actions ? (
+      <div className="flex flex-wrap items-center gap-2.5">{actions}</div>
+    ) : null}
   </header>
 );
 
@@ -36,12 +38,18 @@ const LoadError = ({
 }) => {
   const { options } = useAdmin();
   return (
-    <div
-      role="alert"
-      className="flex flex-col items-center gap-4 rounded-2xl border border-dashed glass p-10 text-center"
-    >
-      <TriangleAlert aria-hidden="true" className="size-6 text-destructive" />
-      <p className="text-muted-foreground">{m.admin_load_error({}, options)}</p>
+    <div role="alert" className="o-panel grid justify-items-start gap-4">
+      <div className="o-status m-0 w-full">
+        <span
+          className="o-lamp o-lamp-pulse"
+          data-tone="hot"
+          aria-hidden="true"
+        />
+        <span className="o-mini" aria-hidden="true">
+          {m.admin_fault({}, options)}
+        </span>
+      </div>
+      <p className="m-0 text-ink-2">{m.admin_load_error({}, options)}</p>
       <Button variant="outline" onClick={resetErrorBoundary}>
         <RotateCcw aria-hidden="true" />
         {m.admin_retry({}, options)}
@@ -81,12 +89,15 @@ export const QueryBoundary = ({
 );
 
 export const EmptyRow = ({ children }: { readonly children: ReactNode }) => (
-  <p className="rounded-2xl border border-dashed glass p-10 text-center text-muted-foreground">
-    {children}
-  </p>
+  <div className="o-display">
+    <p className="o-readout relative m-0 border-0 pt-0">
+      <span aria-hidden="true">▶ ----</span>
+      <span className="o-readout-sel whitespace-normal">{children}</span>
+    </p>
+  </div>
 );
 
-/** Glass surface with an optional heading (plain elements: shadcn `Card` does not take `glass`). */
+/** A unit bolted onto the service panel, with an optional engraved heading. */
 export const Panel = ({
   title,
   children,
@@ -94,13 +105,16 @@ export const Panel = ({
   readonly title?: string;
   readonly children: ReactNode;
 }) => (
-  <section className="space-y-4 rounded-2xl border glass p-5">
-    {title ? <h2 className="font-medium">{title}</h2> : null}
+  <section className="o-unit space-y-4 p-5">
+    {title ? <h2 className="o-unit-title">{title}</h2> : null}
     {children}
   </section>
 );
 
-/** A headline number: label, value and an optional footnote. `rating` tints the value. */
+/** Which lamp a rating lights. */
+const RATING_TONE = { fair: "warn", good: "ok", poor: "hot" } as const;
+
+/** A meter: label, its LCD reading and an optional footnote. `rating` lights its lamp. */
 export const StatTile = ({
   label,
   children,
@@ -112,14 +126,16 @@ export const StatTile = ({
   readonly hint?: string;
   readonly rating?: "good" | "fair" | "poor";
 }) => (
-  <div className="space-y-1 rounded-2xl border glass p-5">
-    <p className="text-sm text-muted-foreground">{label}</p>
-    <p
-      className="text-3xl font-semibold tabular-nums data-[rating=fair]:text-chart-4 data-[rating=good]:text-chart-3 data-[rating=poor]:text-destructive"
-      data-rating={rating}
-    >
-      {children}
-    </p>
-    {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+  <div className="o-meter">
+    <div className="flex items-center justify-between gap-2">
+      <p className="o-eng m-0">{label}</p>
+      <span
+        className="o-lamp"
+        data-tone={rating ? RATING_TONE[rating] : "ok"}
+        aria-hidden="true"
+      />
+    </div>
+    <p className="o-lcd m-0">{children}</p>
+    {hint ? <p className="m-0 font-mono text-xs text-ink-2">{hint}</p> : null}
   </div>
 );

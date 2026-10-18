@@ -33,13 +33,15 @@ export const Layout = ({ locale, preview, siteUrl, children }: LayoutProps) => (
         presets: [pixelBasedPreset],
         theme: {
           extend: {
+            // The skin's light theme (packages/ui/src/tokens/tokens.json): email clients take
+            // no custom properties, so the values are copied here.
             colors: {
-              accent: "#7c3aed",
-              canvas: "#f1f5f9",
-              ink: "#0f172a",
-              muted: "#475569",
-              panel: "#f8fafc",
-              rule: "#e2e8f0",
+              accent: "#725300",
+              canvas: "#e7e3d9",
+              ink: "#1d1d1b",
+              muted: "#5b574f",
+              panel: "#dcd7cb",
+              rule: "#ccc6b8",
             },
           },
         },

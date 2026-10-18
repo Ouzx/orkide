@@ -6,7 +6,6 @@ import AdminLayout from "@/modules/admin/AdminLayout.astro";
 import { AdminApp } from "@/modules/admin/admin-app.tsx";
 import { getAdminSession } from "@/modules/admin/session.server.ts";
 import { SignIn } from "@/modules/admin/sign-in.tsx";
-import Picture from "@/shared/media/Picture.astro";
 
 /*
  * Every dashboard URL lands here. The session is checked on the server (over the Service
@@ -40,21 +39,9 @@ if (user && isSignIn) {
   title={`${isSignIn ? m.admin_sign_in_title({}, options) : m.admin_title({}, options)} · ${m.site_name({}, options)}`}
 >
   {
-    isSignIn ? (
-      <div class="fixed inset-0 z-0" aria-hidden="true">
-        <Picture id="admin-login" sizes="100vw" priority class="size-full" />
-        {/* Dims the artwork with the theme background so the glass card stays AA-readable. */}
-        <div class="absolute inset-0 bg-background/70 dark:bg-background/60" />
-      </div>
-    ) : null
-  }
-  {
     isRateLimited ? (
       <main class="grid min-h-dvh place-items-center p-6">
-        <p
-          role="alert"
-          class="max-w-md rounded-2xl border glass p-6 text-center text-foreground"
-        >
+        <p role="alert" class="o-panel m-0 max-w-md">
           {m.error_rate_limited({}, options)}
         </p>
       </main>

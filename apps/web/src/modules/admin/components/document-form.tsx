@@ -2,18 +2,13 @@ import { slugify } from "@orkide/content/slug";
 import type { Locale } from "@orkide/i18n";
 import { locales } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import { Badge } from "@orkide/ui/components/badge";
-import { Button } from "@orkide/ui/components/button";
-import { Checkbox } from "@orkide/ui/components/checkbox";
-import { Input } from "@orkide/ui/components/input";
-import { Label } from "@orkide/ui/components/label";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@orkide/ui/components/tabs";
-import { Textarea } from "@orkide/ui/components/textarea";
+import { Badge } from "@orkide/ui/kit/badge";
+import { Button } from "@orkide/ui/kit/button";
+import { Checkbox } from "@orkide/ui/kit/checkbox";
+import { Input } from "@orkide/ui/kit/input";
+import { Label } from "@orkide/ui/kit/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@orkide/ui/kit/tabs";
+import { Textarea } from "@orkide/ui/kit/textarea";
 import type {
   DocumentTranslationInput,
   PostRecord,
@@ -169,7 +164,7 @@ const TranslationFields = ({
         <FieldError message={issue("summary")} />
       </div>
       <div className="space-y-1.5">
-        <p id={`${id}-content`} className="text-sm font-medium">
+        <p id={`${id}-content`} className="o-label m-0">
           {m.admin_field_content({}, options)}
         </p>
         <RichTextEditor
@@ -181,8 +176,8 @@ const TranslationFields = ({
         />
         <FieldError message={issue("content")} />
       </div>
-      <fieldset className="space-y-4 rounded-2xl border glass p-5">
-        <legend className="px-1 text-sm font-medium">
+      <fieldset className="o-unit space-y-4 p-5">
+        <legend className="o-eng px-1">
           {m.admin_section_seo({}, options)}
         </legend>
         <div className="space-y-1.5">
@@ -232,8 +227,8 @@ export const SidebarSection = ({
   readonly title: string;
   readonly children: ReactNode;
 }) => (
-  <section className="space-y-4 rounded-2xl border glass p-5">
-    <h2 className="text-sm font-medium">{title}</h2>
+  <section className="o-unit space-y-4 p-5">
+    <h2 className="o-unit-title">{title}</h2>
     {children}
   </section>
 );
@@ -408,7 +403,7 @@ export const DocumentForm = ({
                 onChange={(event) =>
                   patch({ status: event.currentTarget.value as Status })
                 }
-                className="h-9 w-full rounded-lg border bg-transparent px-2.5 text-sm"
+                className="o-well"
               >
                 {statusOptions.map((status) => (
                   <option key={status} value={status}>
@@ -490,7 +485,7 @@ export const DocumentForm = ({
             {sidebar}
             {tags.length > 0 ? (
               <fieldset className="space-y-2">
-                <legend className="mb-1 text-sm font-medium">
+                <legend className="o-label mb-1">
                   {m.admin_field_tags({}, options)}
                 </legend>
                 {tags.map((tag) => {

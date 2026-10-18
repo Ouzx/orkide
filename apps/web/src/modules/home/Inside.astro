@@ -1,0 +1,54 @@
+---
+import type { SiteContent } from "@orkide/validators/site";
+
+import SectionHead from "@/shared/components/SectionHead.astro";
+
+interface Props {
+  /** The section's words: the admin's saved section, else the shipped one. */
+  content: SiteContent["inside"];
+}
+
+const { content } = Astro.props;
+---
+
+<!-- What the site is made of: a row of meters, then its features as modules on the panel. -->
+<section
+  id="inside"
+  aria-labelledby="inside-title"
+  class="o-wrap py-18"
+  data-section
+>
+  <p class="o-eng m-0 mb-3">{content.kicker}</p>
+  <SectionHead number="0.2" id="inside-title" title={content.title} />
+  <p class="o-summary mt-6 text-ink-2">{content.lead}</p>
+  <dl class="m-0 mt-8 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      content.meters.map((meter) => (
+        <div class="o-meter">
+          <dt class="flex items-center justify-between gap-2">
+            <span class="o-eng">{meter.label}</span>
+            <span class="o-lamp" data-tone="ok" aria-hidden="true" />
+          </dt>
+          <dd class="o-lcd m-0">
+            <span data-roll>{meter.value}</span>
+            {meter.unit && <small>{meter.unit}</small>}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  <ul class="m-0 mt-8 grid list-none gap-5 p-0 md:grid-cols-2 lg:grid-cols-3">
+    {
+      content.features.map((feature) => (
+        <li class="o-unit p-5">
+          <div class="flex items-center gap-2">
+            <span class="o-lamp" data-tone="signal" aria-hidden="true" />
+            <span class="o-eng">{feature.name}</span>
+          </div>
+          <h3 class="o-entry-title mt-3 text-xl">{feature.title}</h3>
+          <p class="m-0 text-ink-2">{feature.text}</p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

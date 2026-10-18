@@ -33,15 +33,15 @@ cachePage(Astro, "projects");
   )}
 >
   <PageHeader
-    eyebrow={m.portfolio_title({}, options)}
+    section={2}
+    name={m.portfolio_title({}, options)}
     title={m.portfolio_title({}, options)}
     lead={m.portfolio_description({}, options)}
-    backdrop="portfolio-banner"
   />
-  <div class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
+  <div class="o-wrap pt-10 pb-24 md:pb-32">
     {
       projects.length > 0 ? (
-        <div class="grid gap-6 md:grid-cols-2">
+        <div class="grid gap-8 md:grid-cols-2">
           {projects.map((project) => (
             <ProjectCard project={project} />
           ))}

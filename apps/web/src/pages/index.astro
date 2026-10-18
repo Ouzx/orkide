@@ -2,30 +2,32 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
-import PostCard from "@/modules/blog/PostCard.astro";
+import PostEntry from "@/modules/blog/PostEntry.astro";
 import { listPosts } from "@/modules/blog/blog.data.ts";
+import Derive from "@/modules/home/Derive.astro";
 import Hero from "@/modules/home/Hero.astro";
+import Inside from "@/modules/home/Inside.astro";
+import Stack from "@/modules/home/Stack.astro";
 import { loadSite } from "@/modules/home/site.server.ts";
 import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
 import { listProjects } from "@/modules/portfolio/portfolio.data.ts";
-import SectionHeading from "@/shared/components/SectionHeading.astro";
+import TagList from "@/modules/blog/TagList.astro";
+import SectionHead from "@/shared/components/SectionHead.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
-import { getFlags } from "@/shared/lib/flags.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
-import MediaSlot from "@/shared/media/MediaSlot.astro";
 import { graph } from "@/shared/seo/json-ld.ts";
 
 const { locale } = Astro.locals;
 const options = { locale };
 
-const [posts, projects, flags, site] = await Promise.all([
+const [posts, projects, site] = await Promise.all([
   listPosts({ limit: 3, locale }),
   listProjects(locale),
-  getFlags(),
   loadSite(locale),
 ]);
 const selectedWork = projects.slice(0, 4);
+const [lead, ...rest] = selectedWork;
 
 cachePage(Astro, "posts", "projects", "site");
 ---
@@ -36,15 +38,22 @@ cachePage(Astro, "posts", "projects", "site");
   alternates={pageAlternates("/")}
   jsonLd={graph(locale)}
 >
-  <Hero content={site.hero} sceneEnabled={flags["hero-scene"]} />
+  <Hero content={site.hero} posts={posts.items} projects={selectedWork} />
+
+  <Stack content={site.stack} />
+
+  <Inside content={site.inside} />
 
   {
     posts.items.length > 0 && (
       <section
+        id="writing"
         aria-labelledby="latest-posts"
-        class="mx-auto max-w-6xl px-4 pt-24 sm:px-6"
+        class="o-wrap py-18"
+        data-section
       >
-        <SectionHeading
+        <SectionHead
+          number={1}
           id="latest-posts"
           title={m.home_latest_posts({}, options)}
           action={{
@@ -52,41 +61,139 @@ cachePage(Astro, "posts", "projects", "site");
             label: m.home_view_all_posts({}, options),
           }}
         />
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.items.map((post) => (
-            <PostCard post={post} headingLevel={3} />
+        <ol class="o-entries">
+          {posts.items.map((post, index) => (
+            <PostEntry post={post} index={index + 1} headingLevel={3} />
           ))}
-        </div>
+        </ol>
       </section>
     )
   }
 
-  <section
-    aria-labelledby="selected-work"
-    class="mx-auto max-w-6xl px-4 pt-24 sm:px-6"
-  >
-    <SectionHeading
-      id="selected-work"
-      title={m.home_featured_projects({}, options)}
-      action={{
-        href: localizeHref("/portfolio", options),
-        label: m.home_view_all_projects({}, options),
-      }}
-    />
-    <div class="mb-6 reveal overflow-hidden rounded-2xl border glass">
-      <MediaSlot
-        id="home-work-loop"
-        sizes="(min-width: 1152px) 1104px, 100vw"
-      />
-    </div>
-    {
-      selectedWork.length > 0 && (
-        <div class="grid gap-6 md:grid-cols-2">
-          {selectedWork.map((project) => (
-            <ProjectCard project={project} headingLevel={3} />
-          ))}
+  {
+    lead && (
+      <section
+        id="work"
+        aria-labelledby="selected-work"
+        class="o-wrap py-18"
+        data-section
+      >
+        <SectionHead
+          number={2}
+          id="selected-work"
+          title={m.home_featured_projects({}, options)}
+          action={{
+            href: localizeHref("/portfolio", options),
+            label: m.home_view_all_projects({}, options),
+          }}
+        />
+        <div class="mt-7.5 grid items-center gap-10 lg:grid-cols-2">
+          <ProjectCard project={lead} decorative />
+          <div class="min-w-0">
+            {lead.featured && (
+              <span class="inline-flex items-center gap-2">
+                <span class="o-lamp" data-tone="signal" aria-hidden="true" />
+                <span class="o-eng">{m.portfolio_featured({}, options)}</span>
+              </span>
+            )}
+            <h3 class="o-page-title mt-3 mb-3 normal-case">
+              <a
+                href={localizeHref(`/portfolio/${lead.slug}`, options)}
+                class="text-ink no-underline hover:text-signal-ink"
+              >
+                {lead.title}
+              </a>
+            </h3>
+            <p class="m-0">{lead.summary}</p>
+            {lead.tags.length > 0 && (
+              <dl class="o-spec mt-5">
+                <dt>{m.blog_tags({}, options)}</dt>
+                <dd>
+                  <TagList tags={lead.tags} label={m.blog_tags({}, options)} />
+                </dd>
+              </dl>
+            )}
+            <div class="mt-5.5 flex flex-wrap gap-3">
+              <a
+                href={localizeHref(`/portfolio/${lead.slug}`, options)}
+                class="o-key o-key-lg o-key-signal"
+                data-magnet
+              >
+                {m.portfolio_details({}, options)}
+                <span aria-hidden="true">→</span>
+              </a>
+              {lead.websiteUrl && (
+                <a
+                  href={lead.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="o-key o-key-lg"
+                  data-magnet
+                >
+                  {m.portfolio_visit({}, options)}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              )}
+              {lead.repositoryUrl && (
+                <a
+                  href={lead.repositoryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="o-key o-key-lg"
+                  data-magnet
+                >
+                  {m.portfolio_source({}, options)}
+                </a>
+              )}
+            </div>
+          </div>
         </div>
-      )
-    }
+        {rest.length > 0 && (
+          <div class="mt-12 grid gap-8 md:grid-cols-3">
+            {rest.map((project) => (
+              <ProjectCard project={project} headingLevel={3} />
+            ))}
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  <Derive content={site.derive} />
+
+  <section
+    id="contact"
+    aria-labelledby="contact-teaser"
+    class="o-wrap pt-18 pb-24 md:pb-32"
+    data-section
+  >
+    <SectionHead
+      number={3}
+      id="contact-teaser"
+      title={m.contact_title({}, options)}
+    />
+    <div class="mt-7.5 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+      <p class="m-0 max-w-[30em] text-lg text-ink-2">
+        {m.contact_description({}, options)}
+      </p>
+      <div class="o-panel">
+        <span class="o-screw o-screw-tl" aria-hidden="true"></span>
+        <span class="o-screw o-screw-tr" aria-hidden="true"></span>
+        <div class="o-status">
+          <span class="o-lamp" data-tone="ok" aria-hidden="true"></span>
+          <span class="o-mini" aria-hidden="true">
+            {m.contact_ready({}, options)}
+          </span>
+        </div>
+        <a
+          href={localizeHref("/contact", options)}
+          class="o-key o-key-lg o-key-signal"
+          data-magnet
+        >
+          {site.hero.contactCta}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
   </section>
 </BaseLayout>

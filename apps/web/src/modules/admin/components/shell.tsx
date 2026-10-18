@@ -1,12 +1,8 @@
 import type { Permissions } from "@orkide/auth/permissions";
 import type { Locale } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@orkide/ui/components/avatar";
-import { Button } from "@orkide/ui/components/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@orkide/ui/kit/avatar";
+import { Button } from "@orkide/ui/kit/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +11,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@orkide/ui/components/dropdown-menu";
+} from "@orkide/ui/kit/dropdown-menu";
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetTitle,
-} from "@orkide/ui/components/sheet";
+} from "@orkide/ui/kit/sheet";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
@@ -121,7 +117,7 @@ const Navigation = ({ onNavigate }: { readonly onNavigate?: () => void }) => {
   const { can, options } = useAdmin();
   return (
     <nav aria-label={m.admin_nav_label({}, options)}>
-      <ul className="space-y-1">
+      <ul>
         {NAV.filter((item) => !item.requires || can(item.requires)).map(
           ({ icon: Icon, label, to }) => (
             <li key={to}>
@@ -129,10 +125,11 @@ const Navigation = ({ onNavigate }: { readonly onNavigate?: () => void }) => {
                 to={to}
                 onClick={onNavigate}
                 activeOptions={{ exact: to === "/" }}
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground aria-[current=page]:bg-primary/10 aria-[current=page]:font-medium aria-[current=page]:text-foreground"
+                className="o-bay-link"
               >
-                <Icon className="size-4" />
-                {label(options)}
+                <i aria-hidden="true" />
+                <span className="truncate">{label(options)}</span>
+                <Icon className="size-4 text-ink-2" />
               </Link>
             </li>
           )
@@ -160,7 +157,7 @@ const UserMenu = () => {
           <button
             type="button"
             aria-label={`${user.name}, ${role}`}
-            className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="flex w-full items-center gap-3 rounded-xl bg-case px-2.5 py-2 text-left shadow-raised transition-transform duration-(--o-dur-spring) ease-spring hover:-translate-y-px"
           />
         }
       >
@@ -169,8 +166,8 @@ const UserMenu = () => {
           <AvatarFallback>{initials(user.name)}</AvatarFallback>
         </Avatar>
         <span className="flex min-w-0 flex-col items-start text-left">
-          <span className="truncate text-sm font-medium">{user.name}</span>
-          <span className="text-xs text-muted-foreground">{role}</span>
+          <span className="truncate text-md font-bold">{user.name}</span>
+          <span className="o-eng">{role}</span>
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
@@ -201,17 +198,29 @@ const UserMenu = () => {
 const Brand = () => {
   const { options } = useAdmin();
   return (
-    <Link to="/" className="flex items-center gap-2 px-2 font-semibold">
-      <img src="/favicon.svg" alt="" className="size-7" />
-      <span>{m.site_name({}, options)}</span>
-      <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-        {m.admin_title({}, options)}
-      </span>
+    <Link to="/" className="o-brand px-1">
+      <b>{m.site_name({}, options)}</b>
+      <span>{m.admin_title({}, options)}</span>
     </Link>
   );
 };
 
-/** Dashboard frame: glass sidebar on large screens, a drawer on small ones. */
+/** The service-mode readout under the brand: a breathing amber lamp and a small screen. */
+const Mode = () => {
+  const { options } = useAdmin();
+  return (
+    <div className="o-mode">
+      <span
+        className="o-lamp o-lamp-pulse"
+        data-tone="warn"
+        aria-hidden="true"
+      />
+      {m.admin_service_mode({}, options)}
+    </div>
+  );
+};
+
+/** Service mode: a patch bay on large screens, a drawer on small ones. */
 export const Shell = () => {
   const { options } = useAdmin();
   const pathname = useRouterState({
@@ -225,8 +234,9 @@ export const Shell = () => {
 
   return (
     <div className="flex min-h-dvh">
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r glass p-4 lg:flex">
+      <aside className="o-bay sticky top-0 hidden h-dvh w-(--o-bay) shrink-0 grid-rows-[auto_auto_1fr_auto] lg:grid">
         <Brand />
+        <Mode />
         <div className="flex-1 overflow-y-auto">
           <Navigation />
         </div>
@@ -235,7 +245,7 @@ export const Shell = () => {
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent side="left" showCloseButton={false} className="lg:hidden">
-          <div className="flex h-full min-h-0 flex-col gap-6 border-r p-4">
+          <div className="o-bay flex h-full min-h-0 flex-col">
             <SheetTitle className="sr-only">
               {m.nav_menu({}, options)}
             </SheetTitle>
@@ -253,6 +263,7 @@ export const Shell = () => {
                 <X aria-hidden="true" />
               </SheetClose>
             </div>
+            <Mode />
             <div className="flex-1 overflow-y-auto">
               <Navigation onNavigate={() => setDrawerOpen(false)} />
             </div>
@@ -262,7 +273,7 @@ export const Shell = () => {
       </Sheet>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b glass px-4 lg:hidden">
+        <header className="o-head flex h-14 items-center gap-3 px-4 lg:hidden">
           <Button
             variant="ghost"
             size="icon-sm"
@@ -276,7 +287,7 @@ export const Shell = () => {
         </header>
         <main
           id="main"
-          className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-8"
+          className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-24 sm:px-7"
         >
           <QueryBoundary>
             <Outlet />

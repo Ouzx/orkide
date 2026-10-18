@@ -2,17 +2,17 @@ import type { InferRequestType } from "@orkide/api-client";
 import { slugify } from "@orkide/content/slug";
 import { locales } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import { Badge } from "@orkide/ui/components/badge";
-import { Button } from "@orkide/ui/components/button";
+import { Badge } from "@orkide/ui/kit/badge";
+import { Button } from "@orkide/ui/kit/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@orkide/ui/components/dialog";
-import { Input } from "@orkide/ui/components/input";
-import { Label } from "@orkide/ui/components/label";
+} from "@orkide/ui/kit/dialog";
+import { Input } from "@orkide/ui/kit/input";
+import { Label } from "@orkide/ui/kit/label";
 import {
   useMutation,
   useQueryClient,
@@ -229,7 +229,7 @@ const TermDialog = ({
                   id="parentId"
                   name="parentId"
                   defaultValue={editing.term?.parentId ?? ""}
-                  className="h-9 w-full rounded-lg border bg-transparent px-2.5 text-sm"
+                  className="o-well"
                 >
                   <option value="">{m.admin_none({}, options)}</option>
                   {categories.flatMap((category) =>

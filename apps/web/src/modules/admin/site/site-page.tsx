@@ -11,12 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@orkide/ui/components/alert-dialog";
-import { Button } from "@orkide/ui/components/button";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@orkide/ui/components/toggle-group";
+} from "@orkide/ui/kit/alert-dialog";
+import { Button } from "@orkide/ui/kit/button";
+import { ToggleGroup, ToggleGroupItem } from "@orkide/ui/kit/toggle-group";
 import {
   useMutation,
   useQueryClient,
@@ -166,10 +163,10 @@ const SectionEditor = ({
   return (
     <section
       aria-labelledby="site-section"
-      className="space-y-6 rounded-2xl border glass p-5 sm:p-6"
+      className="o-unit space-y-6 p-5 sm:p-6"
     >
       <header className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="site-section" className="text-xl font-semibold">
+        <h2 id="site-section" className="o-sec-title text-2xl">
           {name}
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -256,12 +253,15 @@ export const SitePage = () => {
                 <button
                   type="button"
                   aria-current={key === section ? "true" : undefined}
-                  className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground aria-[current=true]:bg-primary/10 aria-[current=true]:font-medium aria-[current=true]:text-foreground"
+                  className="o-bay-link w-full text-left"
                   onClick={() => {
                     setSection(key);
                   }}
                 >
-                  {SECTION_LABELS[key]({}, options)}
+                  <i aria-hidden="true" />
+                  <span className="truncate">
+                    {SECTION_LABELS[key]({}, options)}
+                  </span>
                   {sections[key].savedAt ? (
                     <span className="flex items-center">
                       <span

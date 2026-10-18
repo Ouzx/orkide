@@ -11,20 +11,19 @@ interface Props {
 
 const { categories, current } = Astro.props;
 const { locale } = Astro.locals;
-const pill =
-  "glass-subtle rounded-full border px-3.5 py-1.5 text-sm transition-colors hover:border-primary/50 aria-[current]:border-primary aria-[current]:bg-primary aria-[current]:text-primary-foreground";
 ---
 
 {
   categories.length > 0 && (
-    <nav aria-label={m.blog_categories({}, { locale })} class="mt-8">
-      <ul class="flex flex-wrap gap-2">
+    <nav aria-label={m.blog_categories({}, { locale })} class="mt-2">
+      <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
         <li>
           <a
             href={localizeHref("/blog", { locale })}
             aria-current={current ? undefined : "page"}
-            class={pill}
+            class="o-key o-key-sm"
           >
+            <span class="o-lamp" aria-hidden="true" />
             {m.blog_all({}, { locale })}
           </a>
         </li>
@@ -33,8 +32,9 @@ const pill =
             <a
               href={localizeHref(`/blog/category/${category.slug}`, { locale })}
               aria-current={category.slug === current ? "page" : undefined}
-              class={pill}
+              class="o-key o-key-sm"
             >
+              <span class="o-lamp" aria-hidden="true" />
               {category.name}
             </a>
           </li>

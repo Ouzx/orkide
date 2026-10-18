@@ -1,15 +1,15 @@
 import { contentExtensions } from "@orkide/content/extensions";
 import { m } from "@orkide/i18n/messages";
-import { Button } from "@orkide/ui/components/button";
+import { Button } from "@orkide/ui/kit/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@orkide/ui/components/dialog";
-import { Input } from "@orkide/ui/components/input";
-import { Toggle } from "@orkide/ui/components/toggle";
+} from "@orkide/ui/kit/dialog";
+import { Input } from "@orkide/ui/kit/input";
+import { Toggle } from "@orkide/ui/kit/toggle";
 import type { DocumentTranslationInput } from "@orkide/validators/content";
 import type { Media } from "@orkide/validators/media";
 import { Placeholder } from "@tiptap/extensions";
@@ -186,7 +186,7 @@ const Toolbar = ({
     <div
       role="toolbar"
       aria-label={m.admin_editor_toolbar({}, options)}
-      className="sticky top-14 z-10 flex flex-wrap items-center gap-0.5 border-b glass p-1.5 lg:top-0"
+      className="sticky top-14 z-10 flex flex-wrap items-center gap-0.5 border-b border-line bg-panel p-1.5 lg:top-0"
     >
       <ToolButton
         icon={Bold}
@@ -344,7 +344,7 @@ export const RichTextEditor = ({
   }, [editor, editable]);
 
   return (
-    <div className="overflow-hidden rounded-2xl border glass focus-within:ring-2 focus-within:ring-ring">
+    <div className="o-unit focus-within:ring-3 focus-within:ring-focus">
       <Tiptap editor={editor}>
         {editable ? <Toolbar onRequestImage={onRequestImage} /> : null}
         <Tiptap.Content />

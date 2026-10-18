@@ -1,5 +1,5 @@
 import { m } from "@orkide/i18n/messages";
-import { Badge } from "@orkide/ui/components/badge";
+import { Badge } from "@orkide/ui/kit/badge";
 import type { PostRecord } from "@orkide/validators/content";
 
 import { useAdmin } from "../context.tsx";

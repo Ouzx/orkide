@@ -28,12 +28,12 @@ const { locale } = Astro.locals;
     <ThemeScript />
     <meta
       name="theme-color"
-      content="#f9f8fc"
+      content="#e7e3d9"
       media="(prefers-color-scheme: light)"
     />
     <meta
       name="theme-color"
-      content="#0f0d1a"
+      content="#26272a"
       media="(prefers-color-scheme: dark)"
     />
     <meta name="color-scheme" content="light dark" />
@@ -41,15 +41,23 @@ const { locale } = Astro.locals;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <Font cssVariable="--font-geist" preload />
-    <Font cssVariable="--font-geist-mono" />
+    <Font
+      cssVariable="--font-hanken"
+      preload={[{ style: "normal", subset: "latin" }]}
+    />
+    <Font cssVariable="--font-saira" />
+    <Font
+      cssVariable="--font-doto"
+      preload={[{ style: "normal", subset: "latin" }]}
+    />
+    <Font cssVariable="--font-martian" />
     <Seo {...Astro.props} />
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
       href="#main"
-      class="sr-only z-50 rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      class="o-key o-key-signal sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
     >
       {m.a11y_skip_to_content({}, { locale })}
     </a>
@@ -61,10 +69,30 @@ const { locale } = Astro.locals;
     <script>
       import { startBeacon } from "@/shared/analytics/beacon.ts";
       import { joinPresence } from "@/shared/analytics/presence.ts";
-      import { startSpotlight } from "@/shared/interactions/spotlight.ts";
+      import {
+        afterFirstPaint,
+        motionAllowed,
+      } from "@/shared/motion/motion.ts";
 
-      startSpotlight();
       joinPresence();
+
+      // The skin's motion arrives after first paint, and only for visitors who allow it. Turning
+      // it off later reloads the page into its resting state.
+      let moving = false;
+      const move = () => {
+        if (motionAllowed() && !moving) {
+          moving = true;
+          void import("@/shared/motion/instrument.ts");
+        }
+      };
+      afterFirstPaint(move);
+      document.addEventListener("motionchange", () => {
+        if (moving && !motionAllowed()) {
+          location.reload();
+        } else {
+          move();
+        }
+      });
 
       // Rendered by the server from the request locale; the API validates it again.
       const { locale } = document.documentElement.dataset;

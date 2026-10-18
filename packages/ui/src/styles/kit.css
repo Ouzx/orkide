@@ -1,0 +1,2021 @@
+/*
+ * The skin's component classes (packages/ui/components.md). Astro pages and React components share
+ * this class contract, so public pages render without hydration. Every value comes from a token
+ * (`--o-*`); layout around the components uses Tailwind utilities.
+ */
+
+@layer base {
+  html {
+    scroll-padding-top: calc(var(--o-header) + 20px);
+  }
+
+  body {
+    background: var(--o-case);
+    color: var(--o-ink);
+    font: var(--font-weight-regular) var(--text-base) / var(--leading-relaxed)
+      var(--o-font-text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  /* The band above a sticky header on phones with a notch. */
+  body::after {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--o-z-safe-band);
+    height: env(safe-area-inset-top, 0px);
+    content: "";
+    background: var(--o-case);
+    pointer-events: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--o-focus);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--o-signal);
+    color: var(--o-on-signal);
+  }
+
+  ::placeholder {
+    color: var(--o-placeholder);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* ── Frame ─────────────────────────────────────────────────────────────────────────── */
+  .o-wrap {
+    width: 100%;
+    max-width: var(--o-container);
+    margin-inline: auto;
+    padding-left: max(var(--o-gutter), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--o-gutter), env(safe-area-inset-right, 0px));
+  }
+
+  /* Engraved label: condensed caps with a milled highlight under them. */
+  .o-eng {
+    color: var(--o-ink-2);
+    font: var(--font-weight-semibold) var(--text-xs) / var(--leading-snug)
+      var(--o-font-label);
+    font-stretch: var(--o-stretch-condensed);
+    letter-spacing: var(--tracking-widest);
+    text-shadow: 0 1px 0 var(--o-hl);
+    text-transform: uppercase;
+  }
+
+  .o-sample {
+    display: inline-block;
+    padding: 4px 6px;
+    border: 1px dashed var(--o-ink-2);
+    color: var(--o-ink-2);
+    font: var(--font-weight-medium) var(--text-2xs) / 1 var(--o-font-mono);
+    letter-spacing: var(--tracking-snug);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Lamp ──────────────────────────────────────────────────────────────────────────── */
+  .o-lamp {
+    --lamp: var(--o-deep);
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lamp);
+    box-shadow: var(--o-shadow-recess);
+    transition:
+      background var(--o-dur-lamp),
+      box-shadow var(--o-dur-lamp);
+  }
+
+  .o-lamp[data-tone] {
+    box-shadow:
+      0 0 0 1px var(--o-shade-soft),
+      0 0 10px var(--lamp);
+  }
+
+  .o-lamp[data-tone="ok"] {
+    --lamp: var(--o-ok);
+  }
+
+  .o-lamp[data-tone="warn"] {
+    --lamp: var(--o-warn);
+  }
+
+  .o-lamp[data-tone="signal"] {
+    --lamp: var(--o-signal);
+  }
+
+  .o-lamp[data-tone="hot"] {
+    --lamp: var(--o-hot);
+  }
+
+  .o-lamp-pulse {
+    animation: o-pulse var(--o-dur-pulse) var(--o-ease-breathe) infinite;
+  }
+
+  /* ── Screw (decoration) ────────────────────────────────────────────────────────────── */
+  .o-screw {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, var(--o-hl), transparent 60%),
+      var(--o-deep);
+    box-shadow:
+      inset 0 0 0 1px var(--o-line),
+      0 1px 0 var(--o-hl);
+    pointer-events: none;
+  }
+
+  .o-screw::after {
+    position: absolute;
+    inset: 5px 2px;
+    border-radius: 1px;
+    content: "";
+    background: var(--o-ink-2);
+    opacity: 0.6;
+    transform: rotate(30deg);
+  }
+
+  .o-screw:nth-of-type(2)::after {
+    transform: rotate(75deg);
+  }
+
+  .o-screw:nth-of-type(3)::after {
+    transform: rotate(120deg);
+  }
+
+  .o-screw:nth-of-type(4)::after {
+    transform: rotate(10deg);
+  }
+
+  .o-screw-tl {
+    top: 14px;
+    left: 14px;
+  }
+
+  .o-screw-tr {
+    top: 14px;
+    right: 14px;
+  }
+
+  .o-screw-bl {
+    bottom: 14px;
+    left: 14px;
+  }
+
+  .o-screw-br {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  /* ── Key ───────────────────────────────────────────────────────────────────────────── */
+  .o-key {
+    --press: 0px;
+    --side: var(--o-deep);
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, var(--o-case), var(--o-panel));
+    box-shadow:
+      var(--o-shadow-raised),
+      0 calc(4px - var(--press)) 0 var(--side);
+    color: var(--o-ink);
+    cursor: pointer;
+    font: var(--font-weight-bold) var(--text-sm) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-decoration: none;
+    text-transform: uppercase;
+    transform: translate(var(--mx, 0px), calc(var(--my, 0px) + var(--press)));
+    transition:
+      transform var(--o-dur-spring) var(--o-ease-spring),
+      box-shadow var(--o-dur-spring) var(--o-ease-spring);
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .o-key:hover {
+    --press: 1px;
+  }
+
+  .o-key:active,
+  .o-key[data-down] {
+    --press: 4px;
+    transition-duration: var(--o-dur-press);
+  }
+
+  .o-key:disabled,
+  .o-key[aria-disabled="true"] {
+    --press: 0px;
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .o-key[aria-current] .o-lamp,
+  .o-key[aria-pressed="true"] .o-lamp {
+    --lamp: var(--o-signal);
+    box-shadow: 0 0 8px var(--o-signal);
+  }
+
+  .o-key[aria-pressed="true"] {
+    --press: 3px;
+  }
+
+  .o-key svg {
+    flex: none;
+    width: 1.1em;
+    height: 1.1em;
+  }
+
+  .o-key .o-lamp {
+    width: 6px;
+    height: 6px;
+  }
+
+  .o-key-signal {
+    --side: var(--o-signal-deep);
+    background: linear-gradient(180deg, var(--o-signal-hi), var(--o-signal));
+    box-shadow:
+      inset 0 1px 0 var(--o-glint),
+      0 1px 0 var(--o-sh),
+      0 10px 18px -10px var(--o-sh),
+      0 calc(4px - var(--press)) 0 var(--side);
+    color: var(--o-on-signal);
+    text-shadow: 0 1px 0 var(--o-glint);
+  }
+
+  .o-key-danger {
+    color: var(--o-danger);
+  }
+
+  .o-key-sm {
+    min-height: 32px;
+    padding: 0 12px;
+    font-size: var(--text-2xs);
+  }
+
+  .o-key-icon {
+    width: 36px;
+    padding: 0;
+  }
+
+  .o-key-lg {
+    min-height: 58px;
+    padding: 0 24px;
+    border-radius: var(--radius-xl);
+    font-size: var(--text-md);
+  }
+
+  /* A key with no cap: a text link with the key's type, for "All posts →" and back links. */
+  .o-link {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--o-ink);
+    font: var(--font-weight-bold) var(--text-sm) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .o-link:hover {
+    color: var(--o-signal-ink);
+  }
+
+  /* ── Switch ────────────────────────────────────────────────────────────────────────── */
+  .o-switch {
+    display: inline-grid;
+    gap: 5px;
+    justify-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .o-switch-inline {
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .o-slot {
+    position: relative;
+    display: block;
+    width: 44px;
+    height: 20px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--o-ink) 24%, var(--o-deep));
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  .o-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 16px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, var(--o-case), var(--o-panel));
+    box-shadow: var(--o-shadow-raised);
+    transition: left var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  [aria-checked="true"] > .o-slot .o-thumb,
+  [aria-pressed="true"] > .o-slot .o-thumb,
+  [data-position="1"] > .o-slot .o-thumb {
+    left: 20px;
+  }
+
+  [aria-checked="true"] > .o-slot .o-thumb::after,
+  [aria-pressed="true"] > .o-slot .o-thumb::after {
+    position: absolute;
+    inset: 6px 9px;
+    border-radius: 2px;
+    content: "";
+    background: var(--o-signal);
+  }
+
+  .o-switch .o-eng {
+    font-size: var(--text-2xs);
+  }
+
+  /*
+   * The hit area of one position of a two-position switch made of links: half the slot plus 4 px
+   * past its edges, so each target is 26 × 28 px (WCAG 2.2 target size) while the slot stays small.
+   */
+  .o-hit {
+    position: absolute;
+    inset-block: -4px;
+    z-index: 1;
+    width: calc(50% + 4px);
+    border-radius: 12px;
+  }
+
+  .o-hit[data-side="start"] {
+    left: -4px;
+  }
+
+  .o-hit[data-side="end"] {
+    right: -4px;
+  }
+
+  /* Three positions (theme): radios in a wider slot; the thumb follows the checked one. */
+  .o-slot-3 {
+    width: 56px;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Each position is a third of the slot; its radio is visually hidden inside. */
+  .o-slot-3 > label {
+    position: absolute;
+    inset-block: 0;
+    z-index: 1;
+    width: calc(100% / 3);
+    cursor: pointer;
+  }
+
+  .o-slot-3 > label:nth-of-type(2) {
+    left: calc(100% / 3);
+  }
+
+  .o-slot-3 > label:nth-of-type(3) {
+    right: 0;
+  }
+
+  .o-slot-3:has(label:nth-of-type(2) input:checked) .o-thumb {
+    left: 17px;
+  }
+
+  .o-slot-3:has(label:nth-of-type(3) input:checked) .o-thumb {
+    left: 32px;
+  }
+
+  .o-slot-3:has(:focus-visible) {
+    outline: 3px solid var(--o-focus);
+    outline-offset: 3px;
+  }
+
+  /* ── Mini screen ───────────────────────────────────────────────────────────────────── */
+  .o-mini {
+    display: flex;
+    align-items: center;
+    min-width: 150px;
+    height: 30px;
+    padding: 0 10px;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--o-screen);
+    box-shadow: var(--o-shadow-recess);
+    color: var(--o-led);
+    font: var(--font-weight-bold) var(--text-md) / 1 var(--o-font-led);
+    letter-spacing: var(--tracking-wide);
+    text-shadow: 0 0 6px var(--o-led-glow);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Header: the device's top edge ─────────────────────────────────────────────────── */
+  .o-head {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: var(--o-z-header);
+    background: var(--o-case);
+    box-shadow:
+      0 1px 0 var(--o-line),
+      0 2px 0 var(--o-hl);
+  }
+
+  .o-head-row {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    height: var(--o-header);
+  }
+
+  .o-brand {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    color: var(--o-ink);
+    text-decoration: none;
+  }
+
+  .o-brand b {
+    font: var(--font-weight-black) 22px / 1 var(--o-font-label);
+    font-stretch: var(--o-stretch-extra-wide);
+    letter-spacing: var(--tracking-snug);
+    text-transform: uppercase;
+  }
+
+  .o-brand span {
+    color: var(--o-ink-2);
+    font: var(--font-weight-semibold) var(--text-2xs) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Front panel ───────────────────────────────────────────────────────────────────── */
+  .o-stage {
+    perspective: 1400px;
+  }
+
+  /*
+   * A static mount behind a part that tilts. It carries the part's shadow: a crisp edge plus a
+   * soft gradient underneath, never a blur, because software compositing (Firefox on Linux)
+   * re-blurs a box-shadow every time anything above it changes.
+   */
+  .o-mount {
+    --cast: var(--o-shadow-cast);
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--radius-device);
+    perspective: 1400px;
+  }
+
+  .o-mount-module {
+    --cast: var(--o-shadow-cast-module);
+    border-radius: var(--radius-3xl);
+  }
+
+  .o-mount::before {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    content: "";
+    box-shadow: var(--cast);
+    pointer-events: none;
+  }
+
+  .o-mount::after {
+    position: absolute;
+    inset: 40% 6% -34px;
+    z-index: -1;
+    content: "";
+    background: radial-gradient(
+      50% 50% at 50% 60%,
+      var(--o-sh),
+      transparent 100%
+    );
+    pointer-events: none;
+    animation: o-fade var(--o-dur-boot) var(--o-ease-out) 100ms backwards;
+  }
+
+  .o-device {
+    --rx: 0deg;
+    --ry: 0deg;
+    --gx: 30%;
+    --gy: 20%;
+    position: relative;
+    padding: 34px;
+    border-radius: var(--radius-device);
+    background: linear-gradient(160deg, var(--o-case), var(--o-panel));
+    box-shadow: var(--o-shadow-device);
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transform-style: preserve-3d;
+    animation: o-boot var(--o-dur-boot) var(--o-ease-spring) 100ms backwards;
+  }
+
+  .o-device::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    content: "";
+    background: radial-gradient(
+      40% 50% at var(--gx) var(--gy),
+      var(--o-hl),
+      transparent 70%
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  /*
+   * While a panel tilts (`data-live`, set by the motion layer), its milled edges become borders and
+   * its glare blends normally: inset shadows and `soft-light` on a moving layer cost a frame in two
+   * under software compositing. At rest it keeps the exact shadows above.
+   */
+  .o-device[data-live] {
+    border-top: 2px solid var(--o-hl);
+    border-bottom: 3px solid var(--o-deep);
+    box-shadow: none;
+  }
+
+  .o-device[data-live]::after {
+    mix-blend-mode: normal;
+    opacity: 0.4;
+  }
+
+  .o-display {
+    position: relative;
+    padding: 22px 24px 18px;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--o-screen);
+    box-shadow: var(--o-shadow-bezel);
+    color: var(--o-led);
+  }
+
+  .o-display::before,
+  .o-display::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+  }
+
+  .o-display::before {
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0 3px,
+      var(--o-scanline) 3px 4px
+    );
+  }
+
+  .o-display::after {
+    background: linear-gradient(115deg, var(--o-sheen), transparent 40%);
+  }
+
+  .o-display-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font: var(--font-weight-bold) 13px / 1 var(--o-font-led);
+    letter-spacing: var(--tracking-wider);
+    opacity: 0.85;
+  }
+
+  .o-display-title {
+    min-height: 2em;
+    margin: 16px 0 14px;
+    font: var(--font-weight-black) var(--text-display) / 0.98 var(--o-font-led);
+    letter-spacing: var(--tracking-tight);
+    text-shadow: 0 0 14px var(--o-led-glow);
+  }
+
+  .o-ghost {
+    color: var(--o-led-off);
+    text-shadow: none;
+  }
+
+  .o-caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.85em;
+    margin-left: 0.06em;
+    background: var(--o-led);
+    vertical-align: -0.08em;
+    animation: o-caret var(--o-dur-caret) var(--o-ease-blink) infinite;
+  }
+
+  .o-readout {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-height: 2.6em;
+    padding-top: 12px;
+    border-top: 1px dashed var(--o-led-rule);
+    font: var(--font-weight-bold) var(--text-md) / 1.3 var(--o-font-led);
+    letter-spacing: var(--tracking-snug);
+    text-transform: uppercase;
+  }
+
+  .o-readout-sel {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .o-readout-sel > span {
+    display: inline-block;
+  }
+
+  .o-readout-sel > span[data-scroll] {
+    padding-right: 3em;
+    animation: o-marquee var(--o-dur-marquee) linear infinite;
+  }
+
+  .o-readout-hint {
+    font-size: var(--text-sm);
+    opacity: 0.55;
+    white-space: nowrap;
+  }
+
+  .o-controls {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 22px 26px;
+    justify-items: center;
+  }
+
+  .o-knob-unit {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+  }
+
+  .o-knob-wrap {
+    position: relative;
+    display: grid;
+    width: 132px;
+    height: 132px;
+    place-items: center;
+  }
+
+  .o-knob-wrap svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .o-knob-wrap line {
+    stroke: var(--o-ink-2);
+    stroke-linecap: round;
+    stroke-width: 2;
+  }
+
+  .o-knob-wrap line[data-on] {
+    stroke: var(--o-signal);
+  }
+
+  .o-knob {
+    --a: -135deg;
+    position: relative;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      var(--o-panel) 0 4deg,
+      var(--o-case) 4deg 8deg
+    );
+    box-shadow: var(--o-shadow-knob);
+    touch-action: none;
+    transform: rotate(var(--a));
+  }
+
+  .o-knob[data-single] {
+    --a: 0deg;
+  }
+
+  .o-knob[role="slider"] {
+    cursor: grab;
+  }
+
+  .o-knob[role="slider"]:active {
+    cursor: grabbing;
+  }
+
+  .o-knob::before {
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    content: "";
+    background: radial-gradient(
+      circle at 40% 30%,
+      var(--o-signal-glint),
+      var(--o-signal) 60%,
+      var(--o-signal-deep)
+    );
+    box-shadow:
+      inset 0 -2px 4px var(--o-shade-soft),
+      0 2px 3px var(--o-sh);
+  }
+
+  .o-knob::after {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    width: 4px;
+    height: 20px;
+    margin-left: -2px;
+    border-radius: 2px;
+    content: "";
+    background: var(--o-on-signal);
+  }
+
+  .o-knob:focus-visible {
+    border-radius: 50%;
+    outline-offset: 8px;
+  }
+
+  .o-counter {
+    padding: 6px 9px;
+    border-radius: var(--radius-xs);
+    background: var(--o-screen);
+    box-shadow: var(--o-shadow-recess);
+    color: var(--o-led);
+    font: var(--font-weight-bold) var(--text-md) / 1 var(--o-font-led);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .o-grille {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(13, 9px);
+    gap: 7px;
+    justify-content: center;
+    padding: 14px;
+    border-radius: var(--radius-xl);
+    background: var(--o-panel);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  .o-grille i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--o-deep);
+    box-shadow: inset 0 2px 2px var(--o-sh);
+  }
+
+  .o-grille[data-beat] i {
+    animation: o-hole var(--o-dur-hole) var(--o-ease-spring);
+    animation-delay: calc(var(--d, 0) * var(--o-stagger-grille));
+  }
+
+  .o-ledbar {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .o-ledbar > span:last-child {
+    display: flex;
+    gap: 6px;
+  }
+
+  .o-ledbar .o-lamp {
+    width: 9px;
+    height: 9px;
+  }
+
+  /* ── Manual sections ───────────────────────────────────────────────────────────────── */
+  .o-sec-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: end;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--o-ink);
+  }
+
+  .o-sec-no {
+    color: var(--o-signal-ink);
+    font: var(--font-weight-black) var(--text-4xl) / 0.8 var(--o-font-label);
+    font-stretch: var(--o-stretch-compressed);
+  }
+
+  .o-sec-title {
+    margin: 0;
+    font: var(--font-weight-extrabold) var(--text-section) / 0.95
+      var(--o-font-label);
+    font-stretch: var(--o-stretch-condensed);
+    letter-spacing: var(--tracking-tight);
+    text-transform: uppercase;
+  }
+
+  .o-sec-head > .o-link {
+    padding-bottom: 6px;
+  }
+
+  .o-entries {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .o-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr) minmax(0, 300px);
+    gap: 24px;
+    padding: 26px 18px 26px 0;
+    border-bottom: 1px solid var(--o-line);
+    transition: background var(--o-dur-lamp);
+  }
+
+  .o-entry:hover,
+  .o-entry:focus-within {
+    background: linear-gradient(90deg, var(--o-panel), transparent);
+  }
+
+  .o-entry-idx {
+    color: var(--o-ink-2);
+    font: var(--font-weight-black) var(--text-3xl) / 1 var(--o-font-label);
+    font-stretch: var(--o-stretch-compressed);
+    font-variant-numeric: tabular-nums;
+    transition: color var(--o-dur-lamp);
+  }
+
+  .o-entry:hover .o-entry-idx {
+    color: var(--o-signal-ink);
+  }
+
+  .o-entry-title {
+    margin: 0 0 8px;
+    font: var(--font-weight-extrabold) var(--text-heading) / 1.02
+      var(--o-font-label);
+    font-stretch: var(--o-stretch-condensed);
+    transition: transform var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-entry-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* The whole row is the link's hit area; tag links inside sit above it. */
+  .o-entry-title a::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+  }
+
+  .o-entry:hover .o-entry-title {
+    transform: translateX(8px);
+  }
+
+  .o-entry p {
+    max-width: 38em;
+    margin: 0;
+    color: var(--o-ink-2);
+  }
+
+  .o-entry > .o-lamp {
+    position: absolute;
+    top: 38px;
+    left: -18px;
+  }
+
+  .o-entry:hover > .o-lamp {
+    --lamp: var(--o-signal);
+    box-shadow: 0 0 10px var(--o-signal);
+  }
+
+  .o-spec {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px 14px;
+    align-self: start;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    background: var(--o-panel);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  .o-spec dt {
+    color: var(--o-ink-2);
+    font: var(--font-weight-semibold) var(--text-2xs) / 1.6 var(--o-font-label);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+  }
+
+  .o-spec dd {
+    min-width: 0;
+    margin: 0;
+    font: var(--font-weight-medium) var(--text-sm) / 1.6 var(--o-font-mono);
+    overflow-wrap: anywhere;
+  }
+
+  .o-spec a {
+    position: relative;
+    z-index: 1;
+    color: inherit;
+  }
+
+  .o-spec a:hover {
+    color: var(--o-signal-ink);
+  }
+
+  /* ── Cartridge (a project) ─────────────────────────────────────────────────────────── */
+  .o-cartridge {
+    --rx: 0deg;
+    --ry: 0deg;
+    --gx: 50%;
+    --gy: 50%;
+    position: relative;
+    display: grid;
+    align-content: space-between;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+    padding: 26px;
+    overflow: hidden;
+    border-radius: var(--radius-3xl);
+    background: linear-gradient(150deg, var(--o-module), var(--o-module-deep));
+    box-shadow: var(--o-shadow-module);
+    color: var(--o-module-ink);
+    transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform var(--o-dur-settle) var(--o-ease-spring);
+  }
+
+  /* While it tilts: no inset shadow and a normal-blend foil (see `.o-device[data-live]`). */
+  .o-cartridge[data-live] {
+    box-shadow: none;
+    transition: none;
+  }
+
+  .o-cartridge[data-live]::before {
+    mix-blend-mode: normal;
+    opacity: 0.7;
+  }
+
+  .o-cartridge::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      var(--o-holo-gold) 45%,
+      var(--o-holo-cyan) 52%,
+      var(--o-holo-pink) 58%,
+      transparent 72%
+    );
+    background-position: var(--gx) var(--gy);
+    background-size: 260% 260%;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  .o-sticker {
+    max-width: 80%;
+    padding: 16px 18px;
+    border-radius: var(--radius-md);
+    background: var(--o-signal);
+    box-shadow: 0 1px 0 var(--o-shade);
+    color: var(--o-on-signal);
+  }
+
+  .o-sticker b {
+    display: block;
+    font: var(--font-weight-black) clamp(2rem, 1.3rem + 2.2vw, 3.2rem) / 0.9
+      var(--o-font-label);
+    font-stretch: var(--o-stretch-wide);
+    letter-spacing: var(--tracking-tight);
+    overflow-wrap: anywhere;
+    text-transform: uppercase;
+  }
+
+  .o-sticker span {
+    font: var(--font-weight-semibold) var(--text-2xs) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+  }
+
+  .o-cartridge-row {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    justify-content: space-between;
+    color: var(--o-module-ink-2);
+    font: var(--font-weight-medium) var(--text-xs) / 1.4 var(--o-font-mono);
+    text-transform: uppercase;
+  }
+
+  .o-pins {
+    display: flex;
+    gap: 6px;
+  }
+
+  .o-pins i {
+    width: 14px;
+    height: 26px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--o-pin), var(--o-pin-deep));
+  }
+
+  /* A cartridge in a grid of projects links to its page. */
+  a.o-cartridge {
+    text-decoration: none;
+  }
+
+  /* ── Panels ────────────────────────────────────────────────────────────────────────── */
+  .o-panel {
+    position: relative;
+    padding: 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--o-case), var(--o-panel));
+    box-shadow:
+      inset 0 2px 0 var(--o-hl),
+      0 24px 40px -26px var(--o-sh),
+      0 2px 0 var(--o-deep);
+  }
+
+  .o-panel > .o-screw-tl,
+  .o-panel > .o-screw-tr {
+    top: 10px;
+  }
+
+  .o-panel > .o-screw-tl {
+    left: 10px;
+  }
+
+  .o-panel > .o-screw-tr {
+    right: 10px;
+  }
+
+  .o-status {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .o-status > .o-mini {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ── Field ─────────────────────────────────────────────────────────────────────────── */
+  .o-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .o-label {
+    color: var(--o-ink-2);
+    font: var(--font-weight-semibold) var(--text-2xs) / 1.2 var(--o-font-label);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+  }
+
+  .o-label small {
+    font-size: inherit;
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--tracking-snug);
+    text-transform: none;
+  }
+
+  .o-well {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--o-deep);
+    box-shadow: var(--o-shadow-recess);
+    color: var(--o-ink);
+    font: inherit;
+    font-size: var(--text-base);
+    transition: box-shadow var(--o-dur-quick);
+  }
+
+  .o-well:focus,
+  .o-well:focus-visible {
+    outline: none;
+    box-shadow:
+      var(--o-shadow-recess),
+      0 0 0 3px var(--o-focus);
+  }
+
+  .o-well[aria-invalid="true"] {
+    box-shadow:
+      var(--o-shadow-recess),
+      0 0 0 2px var(--o-danger);
+  }
+
+  .o-well:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  textarea.o-well {
+    min-height: 140px;
+    resize: vertical;
+  }
+
+  .o-error {
+    margin: 0;
+    color: var(--o-danger);
+    font-size: var(--text-md);
+  }
+
+  /* ── Back panel (footer) ───────────────────────────────────────────────────────────── */
+  .o-back {
+    background: var(--o-panel);
+    box-shadow:
+      inset 0 2px 0 var(--o-hl),
+      inset 0 4px 10px -6px var(--o-sh);
+  }
+
+  .o-jacks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .o-jack {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+    color: var(--o-ink);
+    text-decoration: none;
+  }
+
+  .o-jack i {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--o-jack-hole) 0 6px,
+      var(--o-jack-ring) 7px 9px,
+      var(--o-deep) 10px
+    );
+    box-shadow:
+      0 2px 0 var(--o-hl),
+      inset 0 2px 3px var(--o-sh);
+    transition: transform var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-jack:hover i,
+  .o-jack:focus-visible i {
+    box-shadow: 0 0 0 3px var(--o-signal);
+    transform: scale(1.12);
+  }
+
+  .o-jack span {
+    font: var(--font-weight-semibold) var(--text-2xs) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .o-serial {
+    display: inline-grid;
+    gap: 4px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    background: var(--o-case);
+    box-shadow: var(--o-shadow-raised);
+    font: var(--font-weight-medium) var(--text-xs) / 1.5 var(--o-font-mono);
+  }
+
+  .o-serial b {
+    font: var(--font-weight-extrabold) 13px / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* ── Manual page (post, project, listings) ─────────────────────────────────────────── */
+  .o-runhead {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--o-ink);
+  }
+
+  .o-page-title {
+    margin: 0;
+    font: var(--font-weight-black) var(--text-title) / 0.92 var(--o-font-label);
+    font-stretch: var(--o-stretch-condensed);
+    overflow-wrap: anywhere;
+    text-transform: uppercase;
+  }
+
+  .o-summary {
+    max-width: 34em;
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: var(--leading-normal);
+  }
+
+  .o-margin {
+    color: var(--o-ink-2);
+    font: var(--font-weight-medium) var(--text-xs) / 1.6 var(--o-font-mono);
+  }
+
+  .o-note {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px 18px;
+    border: 2px solid var(--o-ink);
+    border-radius: var(--radius-xl);
+  }
+
+  .o-note > b {
+    height: fit-content;
+    padding: 4px 8px;
+    border-radius: var(--radius-xs);
+    background: var(--o-signal);
+    color: var(--o-on-signal);
+    font: var(--font-weight-extrabold) var(--text-sm) / 1.4 var(--o-font-label);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+  }
+
+  .o-note p {
+    margin: 0;
+  }
+
+  .o-dial {
+    position: fixed;
+    right: max(18px, env(safe-area-inset-right, 0px));
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: var(--o-z-dial);
+    display: grid;
+    width: 88px;
+    height: 88px;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--o-case), var(--o-panel));
+    box-shadow:
+      var(--o-shadow-raised),
+      0 0 0 4px var(--o-deep);
+    pointer-events: none;
+  }
+
+  .o-dial svg {
+    position: absolute;
+    inset: 6px;
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+  }
+
+  .o-dial line {
+    stroke: var(--o-ink-2);
+  }
+
+  .o-dial [data-needle] line {
+    stroke: var(--o-signal);
+    stroke-linecap: round;
+    stroke-width: 3;
+  }
+
+  .o-dial [data-needle] {
+    transform-origin: 38px 38px;
+    transform: rotate(-135deg);
+    transition: transform var(--o-dur-needle) var(--o-ease-spring);
+  }
+
+  .o-dial circle {
+    fill: var(--o-ink);
+  }
+
+  .o-dial b {
+    margin-top: 26px;
+    font: var(--font-weight-extrabold) 13px / 1 var(--o-font-led);
+  }
+
+  /* ── Admin: service mode ───────────────────────────────────────────────────────────── */
+  .o-unit {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(160deg, var(--o-case), var(--o-panel));
+    box-shadow: var(--o-shadow-unit);
+  }
+
+  .o-unit-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+  }
+
+  .o-unit-title {
+    margin: 0;
+    font: var(--font-weight-extrabold) var(--text-md) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .o-meter {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border-radius: var(--radius-2xl);
+    background: linear-gradient(160deg, var(--o-case), var(--o-panel));
+    box-shadow: var(--o-shadow-unit);
+    transition: transform var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-meter:hover {
+    transform: translateY(-3px);
+  }
+
+  .o-lcd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background: var(--o-screen);
+    box-shadow: inset 0 2px 6px var(--o-shade);
+    color: var(--o-led);
+    font: var(--font-weight-black) 2.6rem / 1 var(--o-font-led);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 10px var(--o-led-glow);
+  }
+
+  .o-lcd small {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    opacity: 0.6;
+  }
+
+  .o-vu {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 6px;
+    align-items: end;
+    height: 200px;
+    padding: 14px;
+    border-radius: var(--radius-xl);
+    background: var(--o-screen);
+    box-shadow: inset 0 2px 8px var(--o-shade);
+  }
+
+  .o-vu-col {
+    display: grid;
+    gap: 3px;
+    align-content: end;
+    height: 100%;
+  }
+
+  .o-vu-col i {
+    height: 7px;
+    border-radius: 2px;
+    background: var(--o-led-off);
+  }
+
+  .o-vu-col i[data-on] {
+    background: var(--o-led);
+    box-shadow: 0 0 6px var(--o-led-glow);
+    animation: o-segment var(--o-dur-quick) var(--o-ease-segment) backwards;
+    animation-delay: calc(var(--k, 0) * var(--o-stagger-segment));
+  }
+
+  .o-vu-col i[data-peak] {
+    background: var(--o-hot);
+    box-shadow: 0 0 6px var(--o-hot);
+  }
+
+  .o-bay {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+    padding: 20px 16px 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    background: var(--o-panel);
+    box-shadow: inset -2px 0 0 var(--o-line);
+  }
+
+  .o-bay ul {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .o-bay-link {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: transparent;
+    color: var(--o-ink);
+    cursor: pointer;
+    font: var(--font-weight-bold) var(--text-sm) / 1.1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      background var(--o-dur-lamp),
+      transform var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-bay-link > i {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--o-jack-hole) 0 4px,
+      var(--o-jack-ring) 5px 6px,
+      var(--o-deep) 7px
+    );
+    box-shadow: 0 1px 0 var(--o-hl);
+  }
+
+  .o-bay-link:hover {
+    background: var(--o-case);
+    transform: translateX(3px);
+  }
+
+  .o-bay-link[aria-current],
+  .o-bay-link[data-status="active"] {
+    background: var(--o-case);
+    box-shadow: var(--o-shadow-raised);
+  }
+
+  .o-bay-link[aria-current] > i,
+  .o-bay-link[data-status="active"] > i {
+    background: radial-gradient(
+      circle,
+      var(--o-signal) 0 4px,
+      var(--o-jack-ring) 5px 6px,
+      var(--o-deep) 7px
+    );
+  }
+
+  .o-mode {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    background: var(--o-screen);
+    color: var(--o-led);
+    font: var(--font-weight-extrabold) var(--text-sm) / 1 var(--o-font-led);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* ── Tables ────────────────────────────────────────────────────────────────────────── */
+  .o-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-md);
+  }
+
+  .o-table th {
+    padding: 10px 18px;
+    border-block: 1px solid var(--o-line);
+    color: var(--o-ink-2);
+    font: var(--font-weight-semibold) var(--text-2xs) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-widest);
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .o-table td {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--o-line);
+    vertical-align: middle;
+  }
+
+  .o-table tbody tr {
+    transition: background var(--o-dur-lamp);
+  }
+
+  .o-table tbody tr:hover {
+    background: var(--o-case);
+  }
+
+  .o-lampline {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    font: var(--font-weight-bold) var(--text-2xs) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Reveal: blocks below the fold rise in once (armed by script, never at rest) ───── */
+  /* Moves only, never fades: content stays readable (and scannable) the whole time. */
+  .o-armed {
+    transform: translateY(26px);
+  }
+
+  .o-armed[data-in] {
+    animation: o-rise var(--o-dur-rise) var(--o-ease-spring) forwards;
+  }
+
+  /* ── Narrow screens ────────────────────────────────────────────────────────────────── */
+  @media (width < 60rem) {
+    .o-controls {
+      justify-content: center;
+    }
+
+    .o-entry {
+      grid-template-columns: 50px minmax(0, 1fr);
+    }
+
+    .o-entry > .o-spec {
+      grid-column: 2;
+    }
+  }
+
+  @media (width < 40rem) {
+    .o-device,
+    .o-mount:not(.o-mount-module) {
+      border-radius: 22px;
+    }
+
+    .o-device {
+      padding: 22px 16px;
+    }
+
+    .o-display {
+      padding: 16px 16px 14px;
+    }
+
+    .o-knob-wrap {
+      width: 112px;
+      height: 112px;
+    }
+
+    .o-knob {
+      width: 78px;
+      height: 78px;
+    }
+
+    .o-grille {
+      gap: 6px;
+    }
+
+    .o-sec-head {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .o-sec-head > .o-link {
+      grid-column: 1 / -1;
+    }
+
+    .o-sec-no {
+      font-size: 2.75rem;
+    }
+
+    .o-entry {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding-right: 0;
+    }
+
+    .o-entry > .o-spec {
+      grid-column: 1;
+    }
+
+    .o-entry > .o-lamp {
+      display: none;
+    }
+
+    .o-dial {
+      width: 70px;
+      height: 70px;
+    }
+
+    .o-dial b {
+      margin-top: 18px;
+      font-size: var(--text-xs);
+    }
+  }
+}
+
+@layer components {
+  /* ── Kit (React) parts: popups, menus, tabs, checks ────────────────────────────────── */
+  .o-key-ghost {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .o-key-ghost:hover,
+  .o-key-ghost[aria-expanded="true"] {
+    background: var(--o-panel);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  .o-key-icon.o-key-sm {
+    width: 32px;
+  }
+
+  .o-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--o-screen) 45%, transparent);
+    transition: opacity var(--o-dur-quick) var(--o-ease-out);
+  }
+
+  .o-backdrop[data-starting-style],
+  .o-backdrop[data-ending-style] {
+    opacity: 0;
+  }
+
+  /* A panel that floats: dialogs, sheets, menus, select lists. */
+  .o-popup {
+    border-radius: var(--radius-3xl);
+    background: linear-gradient(160deg, var(--o-case), var(--o-panel));
+    box-shadow:
+      inset 0 2px 0 var(--o-hl),
+      0 30px 60px -20px var(--o-sh),
+      0 0 0 1px var(--o-line);
+    color: var(--o-ink);
+    outline: none;
+    transition:
+      opacity var(--o-dur-quick) var(--o-ease-out),
+      transform var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-popup[data-starting-style],
+  .o-popup[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  .o-popup-menu {
+    min-width: 8rem;
+    padding: 6px;
+    border-radius: var(--radius-xl);
+  }
+
+  .o-popup-menu[data-starting-style],
+  .o-popup-menu[data-ending-style] {
+    transform: scale(0.97);
+  }
+
+  .o-item {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    cursor: default;
+    font-size: var(--text-md);
+    outline: none;
+    user-select: none;
+  }
+
+  .o-item[data-highlighted] {
+    background: var(--o-deep);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  .o-item[data-disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .o-item svg {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .o-item[data-variant="destructive"] {
+    color: var(--o-danger);
+  }
+
+  /* Tabs: keys in a recessed slot; the selected one is pressed and lit. */
+  .o-tabs {
+    display: inline-flex;
+    gap: 6px;
+    width: fit-content;
+    padding: 5px;
+    border-radius: var(--radius-xl);
+    background: var(--o-panel);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  .o-tab {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--o-ink-2);
+    cursor: pointer;
+    font: var(--font-weight-bold) var(--text-2xs) / 1 var(--o-font-label);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    transition:
+      background var(--o-dur-lamp),
+      box-shadow var(--o-dur-lamp);
+    white-space: nowrap;
+  }
+
+  .o-tab:hover {
+    color: var(--o-ink);
+  }
+
+  .o-tab[data-active],
+  .o-tab[aria-pressed="true"],
+  .o-tab[data-pressed] {
+    background: linear-gradient(180deg, var(--o-case), var(--o-panel));
+    box-shadow: var(--o-shadow-raised);
+    color: var(--o-ink);
+  }
+
+  .o-tab[data-active]::before,
+  .o-tab[data-pressed]::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    content: "";
+    background: var(--o-signal);
+    box-shadow: 0 0 6px var(--o-signal);
+  }
+
+  .o-check {
+    display: grid;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border-radius: var(--radius-xs);
+    background: var(--o-deep);
+    box-shadow: var(--o-shadow-recess);
+    color: var(--o-on-signal);
+    cursor: pointer;
+  }
+
+  .o-check[data-checked] {
+    background: linear-gradient(180deg, var(--o-signal-hi), var(--o-signal));
+    box-shadow: inset 0 1px 0 var(--o-glint);
+  }
+
+  .o-check svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* A slide switch driven by Base UI (`data-checked`). */
+  .o-slot[data-checked] .o-thumb {
+    left: 20px;
+  }
+
+  .o-slot[data-checked] .o-thumb::after {
+    position: absolute;
+    inset: 6px 9px;
+    border-radius: 2px;
+    content: "";
+    background: var(--o-signal);
+  }
+
+  .o-slot[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .o-skeleton {
+    border-radius: var(--radius-md);
+    background: var(--o-deep);
+    animation: o-pulse var(--o-dur-pulse) var(--o-ease-breathe) infinite;
+  }
+
+  .o-avatar {
+    position: relative;
+    display: flex;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 2px var(--o-deep),
+      var(--o-shadow-raised);
+  }
+
+  .o-tip {
+    max-width: 20rem;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--o-screen);
+    color: var(--o-led);
+    font: var(--font-weight-bold) var(--text-sm) / 1.3 var(--o-font-led);
+    letter-spacing: var(--tracking-snug);
+    text-shadow: 0 0 6px var(--o-led-glow);
+  }
+}
+
+/*
+ * Reduced motion (the system setting or the footer switch's `html.calm`): parts keep their place.
+ * Keys, meters and links answer hover and press with a colour change instead of moving; panels
+ * and cartridges stop tilting. The global rules in globals.css stop every animation.
+ */
+@layer components {
+  @media (prefers-reduced-motion: reduce) {
+    .o-key,
+    .o-key:hover,
+    .o-key:active,
+    .o-meter:hover,
+    .o-entry:hover .o-entry-title,
+    .o-jack:hover i,
+    .o-bay-link:hover,
+    .o-device,
+    .o-cartridge {
+      transform: none;
+    }
+
+    .o-key:active,
+    .o-key[data-down] {
+      background: var(--o-deep);
+    }
+  }
+
+  :root.calm .o-key,
+  :root.calm .o-key:hover,
+  :root.calm .o-key:active,
+  :root.calm .o-meter:hover,
+  :root.calm .o-entry:hover .o-entry-title,
+  :root.calm .o-jack:hover i,
+  :root.calm .o-bay-link:hover,
+  :root.calm .o-device,
+  :root.calm .o-cartridge {
+    transform: none;
+  }
+
+  :root.calm .o-key:active,
+  :root.calm .o-key[data-down] {
+    background: var(--o-deep);
+  }
+}
+
+@layer components {
+  /* ── Signal chain (how the page reached you) ───────────────────────────────────────── */
+  .o-chain {
+    position: relative;
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* The cable the stages hang on. */
+  .o-chain::before {
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    left: 15px;
+    width: 4px;
+    border-radius: 2px;
+    content: "";
+    background: var(--o-deep);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  /* The signal travelling down the cable (motion only; `--p` is 0…1). */
+  .o-chain-signal {
+    position: absolute;
+    top: calc(40px + var(--p, 0) * (100% - 80px) - 6px);
+    left: 11px;
+    z-index: 1;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--o-signal);
+    box-shadow: 0 0 14px var(--o-signal);
+    pointer-events: none;
+  }
+
+  .o-chain-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px 160px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--o-line);
+  }
+
+  .o-chain-step > i {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--o-jack-hole) 0 6px,
+      var(--o-jack-ring) 7px 9px,
+      var(--o-deep) 10px
+    );
+    box-shadow:
+      0 2px 0 var(--o-hl),
+      inset 0 2px 3px var(--o-sh);
+  }
+
+  .o-chain-read {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+  }
+
+  .o-chain-read > div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .o-chain-step h3 {
+    margin: 0 0 6px;
+    font: var(--font-weight-extrabold) var(--text-xl) / 1.1 var(--o-font-label);
+    font-stretch: var(--o-stretch-condensed);
+  }
+
+  .o-chain-step p {
+    max-width: 40em;
+    margin: 0;
+    color: var(--o-ink-2);
+  }
+
+  /* With motion, a stage lights when the signal reaches it. */
+  .o-chain[data-armed] .o-chain-step:not([data-on]) .o-lamp {
+    --lamp: var(--o-deep);
+    box-shadow: var(--o-shadow-recess);
+  }
+
+  @media (width < 40rem) {
+    .o-chain-step {
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 12px 18px;
+    }
+
+    .o-chain-step > div:last-child {
+      grid-column: 2;
+    }
+  }
+}

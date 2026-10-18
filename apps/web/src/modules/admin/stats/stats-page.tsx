@@ -6,11 +6,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@orkide/ui/components/table";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@orkide/ui/components/toggle-group";
+} from "@orkide/ui/kit/table";
+import { ToggleGroup, ToggleGroupItem } from "@orkide/ui/kit/toggle-group";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -163,9 +160,7 @@ export const StatsPage = () => {
           <Overview days={days} />
         </QueryBoundary>
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">
-            {m.admin_stats_vitals({}, options)}
-          </h2>
+          <h2 className="o-unit-title">{m.admin_stats_vitals({}, options)}</h2>
           <QueryBoundary>
             <Vitals days={days} />
           </QueryBoundary>

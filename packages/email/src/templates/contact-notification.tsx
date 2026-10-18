@@ -26,17 +26,17 @@ export const ContactNotification = (props: ContactNotificationProps) => {
       preview={subject ?? body.slice(0, 90)}
       siteUrl={siteUrl}
     >
-      <Heading as="h1" className="text-ink m-0 mb-4 text-2xl font-semibold">
+      <Heading as="h1" className="m-0 mb-4 text-2xl font-semibold text-ink">
         {m.email_contact_notify_heading({}, options)}
       </Heading>
       <Text className="m-0 text-sm text-muted">
         {name} &lt;{email}&gt; · {senderLocale.toUpperCase()}
       </Text>
       {subject ? (
-        <Text className="text-ink text-base font-semibold">{subject}</Text>
+        <Text className="text-base font-semibold text-ink">{subject}</Text>
       ) : null}
-      <Section className="bg-panel rounded-md px-4 py-2">
-        <Text className="text-ink text-base leading-6 whitespace-pre-wrap">
+      <Section className="rounded-md bg-panel px-4 py-2">
+        <Text className="text-base leading-6 whitespace-pre-wrap text-ink">
           {body}
         </Text>
       </Section>
