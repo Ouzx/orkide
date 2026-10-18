@@ -42,5 +42,7 @@ export default defineConfig({
       url: `http://localhost:${WEB_PORT}/en`,
     },
   ],
-  workers: process.env.CI ? 2 : undefined,
+  // Each preview server is one single-threaded Miniflare process: more workers only queue
+  // requests behind each other (seconds per request at 16), which times out multi-step tests.
+  workers: process.env.CI ? 2 : 4,
 });
