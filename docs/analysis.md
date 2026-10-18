@@ -9,6 +9,56 @@ How to run (after `pnpm build` and `pnpm e2e:prepare`):
 
 Blind spot of both: they run in headless Chromium and never move the pointer, so tilt, typing and other motion is measured only as it starts. Check frame rates in headless Firefox too (software compositing, like many Linux browsers).
 
+## 2026-10-18 · Spec-font preloads scoped to the blog listings
+
+- **Code:** as the entry below, except that Saira and Martian Mono are preloaded only on the blog listings (index, tag, category: `PostIndex.astro` passes `preloadSpecFonts` to `BaseLayout`). Every other page is back to two preloads.
+- **axe (`pnpm test:a11y`):** 72 of 72 passing.
+- **Lighthouse (`pnpm lighthouse`), all reference thresholds met:**
+
+| URL | Performance (3 runs) | Accessibility | Best practices | SEO | Best run |
+| --- | --- | --- | --- | --- | --- |
+| `/en` | 0.94, 0.94, 0.94 | 1 | 1 | 0.92 | FCP 2.1 s, LCP 2.7 s, TBT 0 ms, CLS 0 |
+| `/en/blog` | 0.98, 0.98, 0.97 | 1 | 1 | 0.92 | FCP 1.3 s, LCP 2.4 s, TBT 0 ms, CLS 0 |
+| `/en/blog/edge-first-architecture` | 0.97, 0.95, 0.95 | 1 | 1 | 0.92 | FCP 2.0 s, LCP 2.3 s, TBT 0 ms, CLS 0.006 |
+
+- **Findings:** the blog listings keep CLS 0 and FCP 1.3 s with no LCP cost; the home page and posts match the review run (no LCP trade-off, FCP about 2.1 s as before).
+- **Waiting for the owner:** nothing.
+
+## 2026-10-18 · After the two fixes from the entry below
+
+- **Code:** same as the entry below, plus the two fixes the owner approved (neither changes what visitors see):
+  1. `e2e/accessibility.test.ts` also waits for `client:only` islands to render before axe scans.
+  2. `BaseLayout.astro` preloads the Latin normal cut of Saira and Martian Mono too (four preloads, up from two). Cause found: the size-adjusted fallbacks Astro generates use `local("Arial")` and `local("Courier New")`, which Linux and Android do not have, so text there rendered in an unadjusted fallback and jumped when those two families arrived (Lighthouse: "Web font loaded", three files).
+- **axe (`pnpm test:a11y`):** 72 of 72 passing.
+- **Lighthouse (`pnpm lighthouse`), all reference thresholds met:**
+
+| URL | Performance (3 runs) | Accessibility | Best practices | SEO | Best run |
+| --- | --- | --- | --- | --- | --- |
+| `/en` | 0.95, 0.95, 0.95 | 1 | 1 | 0.92 | FCP 1.3 s, LCP 2.9 s, TBT 0 ms, CLS 0 |
+| `/en/blog` | 0.98, 0.98, 0.98 | 1 | 1 | 0.92 | FCP 1.3 s, LCP 2.4 s, TBT 0 ms, CLS 0 |
+| `/en/blog/edge-first-architecture` | 0.97, 0.97, 0.97 | 1 | 1 | 0.92 | FCP 1.3 s, LCP 2.6 s, TBT 0 ms, CLS 0 |
+
+- **Findings:** CLS is 0 on all three pages, and FCP fell from about 2.1 s to 1.3 s (back to the pre-redesign baseline); the likely reason is that labels in these two families no longer wait on a late font. The trade-off: LCP rose by about 0.2 s on `/en` (2.7 → 2.9 s) and on the blog post (2.4 → 2.6 s), probably because the two extra preloads compete with the hero's Doto. Performance scores still rose on every page.
+- **Waiting for the owner:** the owner declined the LCP trade-off; the preloads are now scoped to the blog listings (entry above).
+
+## 2026-10-18 · After the security and performance review
+
+- **Code:** `main` at 725c8ab plus the uncommitted review fixes (media purges on delete and edit, visitor IP on SSR calls that take a slug or cursor). None of them change what pages render.
+- **axe (`pnpm test:a11y`):** 68 of 72 passing. All four failures are the admin sign-in page (375 px dark, 768 px light, 1440 px both), with `landmark-one-main` and `page-has-heading-one` on `html`. The other four runs of that page passed.
+- **Lighthouse (`pnpm lighthouse`), all reference thresholds met:**
+
+| URL | Performance (3 runs) | Accessibility | Best practices | SEO | Best run |
+| --- | --- | --- | --- | --- | --- |
+| `/en` | 0.94, 0.94, 0.94 | 1 | 1 | 0.92 | FCP 2.1 s, LCP 2.7 s, TBT 0 ms, CLS 0 |
+| `/en/blog` | 0.95, 0.95, 0.95 | 1 | 1 | 0.92 | FCP 2.1 s, LCP 2.4 s, TBT 0 ms, CLS 0.041 |
+| `/en/blog/edge-first-architecture` | 0.96, 0.96, 0.96 | 1 | 1 | 0.92 | FCP 2.1 s, LCP 2.4 s, TBT 0 ms, CLS 0.01 |
+
+- **Findings:**
+  1. Admin sign-in (axe): a timing race in the test, not a page change. The sign-in form is a `client:only` island, so the server sends no `<main>` or `<h1>`. The test waits only for `client='load'` islands, so axe sometimes scans before React renders. Possible fix (no visible change): also wait for `astro-island[client='only']` to render children. Alternatively, server-render the page's `<main>` and `<h1>` around the island; that also covers visitors whose JavaScript fails.
+  2. `/en/blog` CLS rose from 0.019 to 0.041, all from `ol.o-entries > li.o-entry > dl.o-spec` (the first entry's spec list). It is under the 0.1 "good" line. The cause is not measured yet; a web-font swap in that list is the likely suspect.
+  3. Unchanged: FCP about 2.1 s (the larger inlined document, see the entries below); SEO 0.92 is the deliberate `Content-Signal` directive in `robots.txt`.
+- **Waiting for the owner:** nothing; the owner then approved both fixes (entry above).
+
 ## 2026-10-18 · After the fixes (and the new home sections)
 
 - **Code:** `feat/redesign` (uncommitted), with the home page's two new sections (`inside`, `derive`) and the fixes approved from the entry below.

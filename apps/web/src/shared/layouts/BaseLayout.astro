@@ -11,9 +11,20 @@ import Seo from "@/shared/seo/Seo.astro";
 import type { Props as SeoProps } from "@/shared/seo/Seo.astro";
 import ThemeScript from "@/shared/theme/ThemeScript.astro";
 
-type Props = SeoProps;
+type Props = SeoProps & {
+  /**
+   * Also preload the label and mono faces, for pages whose first screen is spec lists. Their
+   * metric-matched fallbacks need Arial and Courier New, which Linux and Android lack, so the
+   * lists would shift when the fonts arrive. Off elsewhere: the extra preloads delay the LCP.
+   */
+  preloadSpecFonts?: boolean;
+};
 
+const { preloadSpecFonts = false, ...seo } = Astro.props;
 const { locale } = Astro.locals;
+const specPreload = preloadSpecFonts
+  ? [{ style: "normal", subset: "latin" } as const]
+  : undefined;
 ---
 
 <!doctype html>
@@ -45,13 +56,13 @@ const { locale } = Astro.locals;
       cssVariable="--font-hanken"
       preload={[{ style: "normal", subset: "latin" }]}
     />
-    <Font cssVariable="--font-saira" />
+    <Font cssVariable="--font-saira" preload={specPreload} />
     <Font
       cssVariable="--font-doto"
       preload={[{ style: "normal", subset: "latin" }]}
     />
-    <Font cssVariable="--font-martian" />
-    <Seo {...Astro.props} />
+    <Font cssVariable="--font-martian" preload={specPreload} />
+    <Seo {...seo} />
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">

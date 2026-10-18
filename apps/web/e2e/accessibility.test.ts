@@ -24,10 +24,15 @@ for (const scheme of schemes) {
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto(path);
         await page.waitForLoadState("load");
-        // Islands that hydrate on load/idle must be interactive before they are scanned.
+        // Islands that hydrate on load/idle must be interactive before they are scanned, and
+        // client-only islands (no server HTML at all) must have rendered.
         await page
           .waitForFunction(
-            () => !document.querySelector("astro-island[ssr][client='load']")
+            () =>
+              !document.querySelector("astro-island[ssr][client='load']") &&
+              [
+                ...document.querySelectorAll("astro-island[client='only']"),
+              ].every((island) => island.childElementCount > 0)
           )
           .catch(() => {});
 

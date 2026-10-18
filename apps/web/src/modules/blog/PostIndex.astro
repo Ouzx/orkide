@@ -47,6 +47,7 @@ const blogPath = alternates[locale] ?? basePath;
   description={description}
   alternates={alternates}
   noindex={cursor !== undefined}
+  preloadSpecFonts
   jsonLd={graph(
     locale,
     breadcrumbNode([{ name: m.blog_title({}, options), path: blogPath }])
