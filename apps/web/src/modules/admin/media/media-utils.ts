@@ -1,5 +1,4 @@
 import type { Locale } from "@orkide/i18n";
-import { isVideo } from "@orkide/validators/media";
 import type { Media } from "@orkide/validators/media";
 
 import { translationFor } from "../api.ts";
@@ -13,9 +12,12 @@ export type MediaRecord = Awaited<
 export const isImage = (record: Pick<MediaRecord, "mimeType">): boolean =>
   record.mimeType.startsWith("image/");
 
-/** What a document's cover can be: an image, or a video such as a recorded demo. */
+/**
+ * What a document's cover can be: an image, or a video such as a recorded demo. (Checked here, not
+ * with the validators' `isVideo`: importing that module pulls the data models into the admin bundle.)
+ */
 export const isCover = (record: Pick<MediaRecord, "mimeType">): boolean =>
-  isImage(record) || isVideo(record);
+  isImage(record) || record.mimeType.startsWith("video/");
 
 /** The reader-facing shape (`Media`) of a record in `locale` — what documents embed. */
 export const toMedia = (record: MediaRecord, locale: Locale): Media => {
