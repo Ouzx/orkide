@@ -31,4 +31,8 @@ export const mediaUpdateSchema = z.object({
 });
 
 export type Media = z.infer<typeof mediaSchema>;
+
+/** Whether a media item plays (a video) rather than shows (an image). A cover may be either. */
+export const isVideo = (media: Pick<Media, "mimeType">): boolean =>
+  media.mimeType.startsWith("video/");
 export type MediaUpdate = z.infer<typeof mediaUpdateSchema>;

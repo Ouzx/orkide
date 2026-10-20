@@ -1,6 +1,7 @@
 import type { Locale } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
 import type { PostDetail, ProjectDetail } from "@orkide/validators/content";
+import { isVideo } from "@orkide/validators/media";
 import type {
   BlogPosting,
   BreadcrumbList,
@@ -59,7 +60,10 @@ export const blogPostingNode = (
   datePublished: post.publishedAt ?? undefined,
   description: post.seoDescription ?? post.summary,
   headline: post.title,
-  image: post.cover ? absoluteUrl(post.cover.url) : undefined,
+  image:
+    post.cover && !isVideo(post.cover)
+      ? absoluteUrl(post.cover.url)
+      : undefined,
   inLanguage: languageTag[post.locale],
   isPartOf: { "@id": WEBSITE_ID },
   keywords: post.tags.map((tag) => tag.name),
@@ -79,7 +83,10 @@ export const projectNode = (
   dateModified: project.updatedAt,
   datePublished: project.publishedAt ?? undefined,
   description: project.seoDescription ?? project.summary,
-  image: project.cover ? absoluteUrl(project.cover.url) : undefined,
+  image:
+    project.cover && !isVideo(project.cover)
+      ? absoluteUrl(project.cover.url)
+      : undefined,
   inLanguage: languageTag[project.locale],
   keywords: project.tags.map((tag) => tag.name),
   name: project.title,

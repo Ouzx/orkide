@@ -1,5 +1,6 @@
 ---
 import { IMAGE_WIDTHS } from "@orkide/validators/limits";
+import { isVideo } from "@orkide/validators/media";
 import type { Media } from "@orkide/validators/media";
 
 interface Props {
@@ -13,7 +14,8 @@ interface Props {
 
 /*
  * The API negotiates AVIF/WebP per request and strips metadata. The inline placeholder (a 16px
- * WebP) sits blurred underneath until the real image paints over it.
+ * WebP) sits blurred underneath until the real image paints over it. A video (a cover can be a
+ * recorded demo) plays with its controls instead, streamed with HTTP Range by the API.
  */
 const { media, sizes, priority = false, class: className } = Astro.props;
 const intrinsic = media.width ?? undefined;
@@ -27,7 +29,19 @@ const fallback = `${media.url}?w=${widths.find((width) => width >= 960) ?? width
 
 <div class:list={["relative isolate overflow-hidden bg-muted", className]}>
   {
-    media.placeholder && (
+    isVideo(media) && (
+      <video
+        src={media.url}
+        controls
+        playsinline
+        preload="metadata"
+        aria-label={media.alt}
+        class="size-full object-contain"
+      />
+    )
+  }
+  {
+    !isVideo(media) && media.placeholder && (
       <img
         src={media.placeholder}
         alt=""
@@ -36,16 +50,20 @@ const fallback = `${media.url}?w=${widths.find((width) => width >= 960) ?? width
       />
     )
   }
-  <img
-    src={fallback}
-    srcset={srcset}
-    sizes={sizes}
-    width={media.width ?? undefined}
-    height={media.height ?? undefined}
-    alt={media.alt}
-    loading={priority ? "eager" : "lazy"}
-    fetchpriority={priority ? "high" : "auto"}
-    decoding={priority ? "sync" : "async"}
-    class="size-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-103"
-  />
+  {
+    !isVideo(media) && (
+      <img
+        src={fallback}
+        srcset={srcset}
+        sizes={sizes}
+        width={media.width ?? undefined}
+        height={media.height ?? undefined}
+        alt={media.alt}
+        loading={priority ? "eager" : "lazy"}
+        fetchpriority={priority ? "high" : "auto"}
+        decoding={priority ? "sync" : "async"}
+        class="size-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-103"
+      />
+    )
+  }
 </div>

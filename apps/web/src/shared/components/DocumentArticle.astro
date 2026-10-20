@@ -2,6 +2,7 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 import type { PostDetail, ProjectDetail } from "@orkide/validators/content";
+import { isVideo } from "@orkide/validators/media";
 import type { Graph } from "schema-dts";
 
 import TagList from "@/modules/blog/TagList.astro";
@@ -43,6 +44,10 @@ const options = { locale };
 const sheet = sheetNumber(section === "blog" ? "D" : "P", document.publishedAt);
 const kind = m.sheet_detail({}, options);
 
+/** The cover as a link-preview image: only when it is an image (a cover can be a video). */
+const cover =
+  document.cover && !isVideo(document.cover) ? document.cover : undefined;
+
 /** The body's sections, numbered like callouts; each heading gets an id for the contents. */
 const contents: { id: string; text: string }[] = [];
 const html = document.html.replaceAll(
@@ -69,8 +74,8 @@ const html = document.html.replaceAll(
   description={document.seoDescription ?? document.summary}
   alternates={documentAlternates(`/${section}`, document.alternates)}
   type="article"
-  image={document.cover ? `${document.cover.url}?w=1280` : undefined}
-  imageAlt={document.cover?.alt}
+  image={cover ? `${cover.url}?w=1280` : undefined}
+  imageAlt={cover?.alt}
   publishedTime={document.publishedAt}
   modifiedTime={document.updatedAt}
   markdown={`${path}.md`}

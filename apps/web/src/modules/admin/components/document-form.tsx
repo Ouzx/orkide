@@ -23,7 +23,7 @@ import { problemOf, queries, translationFor } from "../api.ts";
 import { useAdmin } from "../context.tsx";
 import { RichTextEditor } from "../editor/rich-text-editor.tsx";
 import { useMediaPicker } from "../media/media-picker.tsx";
-import { isImage, toMedia } from "../media/media-utils.ts";
+import { isCover, isImage, toMedia } from "../media/media-utils.ts";
 import { Panel } from "./page.tsx";
 import { useStatusLabel } from "./status-badge.tsx";
 
@@ -448,11 +448,19 @@ export const DocumentForm = ({
           <Panel title={m.admin_field_cover({}, options)}>
             {draft.coverMediaId ? (
               <div className="space-y-2">
-                {coverRecord ? (
+                {coverRecord && isImage(coverRecord) ? (
                   <img
                     src={`${coverRecord.url}?w=640`}
                     alt=""
                     className="aspect-video w-full rounded-xl border object-cover"
+                  />
+                ) : null}
+                {coverRecord && !isImage(coverRecord) ? (
+                  <video
+                    src={coverRecord.url}
+                    muted
+                    preload="metadata"
+                    className="aspect-video w-full rounded-xl border bg-paper-2 object-contain"
                   />
                 ) : null}
                 {canSave ? (
@@ -474,7 +482,7 @@ export const DocumentForm = ({
                 variant="outline"
                 className="w-full"
                 onClick={async () => {
-                  const record = await pick(isImage);
+                  const record = await pick(isCover);
                   if (record) {
                     patch({ coverMediaId: record.id });
                   }
