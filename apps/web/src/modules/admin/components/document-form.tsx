@@ -460,7 +460,7 @@ export const DocumentForm = ({
                     src={coverRecord.url}
                     muted
                     preload="metadata"
-                    className="aspect-video w-full rounded-xl border bg-paper-2 object-contain"
+                    className="aspect-video w-full rounded-xl border bg-muted object-contain"
                   />
                 ) : null}
                 {canSave ? (
