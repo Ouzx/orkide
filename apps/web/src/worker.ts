@@ -43,6 +43,8 @@ app.all("/api/*", async (c) => {
 app.on(["GET", "HEAD"], "*", (c, next) => {
   const url = new URL(c.req.url);
   if (c.env.WORKERS_DEV_HOST && url.hostname === c.env.WORKERS_DEV_HOST) {
+    // Never cached: Workers Cache keys by path alone, so a cached redirect would loop the domain.
+    c.header("cache-control", "private, no-store");
     return c.redirect(new URL(`${url.pathname}${url.search}`, siteUrl), 301);
   }
   return next();
