@@ -650,16 +650,17 @@ const section = (w: number, h: number, random: Random): Shape[] => {
   const s = new Sheet();
   const x0 = w * 0.12;
   const x1 = w * 0.74;
+  // Layers by their hatch (drawings are not translated, so no material names).
   const layers = [
-    ["Floor", 0.05, "lines"],
-    ["Screed", 0.09, "dots"],
-    ["Insulation", 0.15, "zigzag"],
-    ["Slab", 0.2, "concrete"],
-    ["Gravel", 0.12, "gravel"],
-    ["Earth", 0.2, "earth"],
+    [0.05, "lines"],
+    [0.09, "dots"],
+    [0.15, "zigzag"],
+    [0.2, "concrete"],
+    [0.12, "gravel"],
+    [0.2, "earth"],
   ] as const;
   const total = h * 0.66;
-  const sum = layers.reduce((acc, layer) => acc + layer[1], 0);
+  const sum = layers.reduce((acc, layer) => acc + layer[0], 0);
   let y = h * 0.18;
   s.line(
     path([
@@ -682,7 +683,7 @@ const section = (w: number, h: number, random: Random): Shape[] => {
       "mark"
     )
     .text(x0 - 8, y - 13, "±0.00", { tone: "mark" });
-  for (const [name, share, fill] of layers) {
+  for (const [share, fill] of layers) {
     const lh = (total * share) / sum;
     const y1 = y + lh;
     s.line(path(rect(x0, y, x1, y1), true), 1.3);
@@ -763,7 +764,7 @@ const section = (w: number, h: number, random: Random): Shape[] => {
       ]),
       0.9,
       "2"
-    ).text(x1 + 20, y + lh / 2 + 3.5, `${name} · ${Math.round(lh * 4)}`, {
+    ).text(x1 + 20, y + lh / 2 + 3.5, String(Math.round(lh * 4)), {
       anchor: "start",
     });
     y = y1;

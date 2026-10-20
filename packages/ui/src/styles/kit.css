@@ -62,6 +62,10 @@
       calc(var(--o-frame) + env(safe-area-inset-bottom, 0px))
       calc(var(--o-frame) + env(safe-area-inset-left, 0px));
     border: 2px solid var(--o-line);
+  }
+
+  /* The frame draws itself in on the first sheet of a visit only (html.o-seen after that). */
+  :root:not(.o-seen) .o-frame-border {
     animation: o-frame-in var(--o-dur-frame) var(--o-ease-out) both;
   }
 
@@ -102,11 +106,14 @@
   .o-zones > span {
     display: grid;
     place-items: center;
-    animation: o-zone-in 0.5s var(--o-ease-out) both;
-    animation-delay: calc(var(--i, 0) * var(--o-stagger-zone) + 250ms);
     transition:
       color var(--o-dur-hover),
       background-color var(--o-dur-hover);
+  }
+
+  :root:not(.o-seen) .o-zones > span {
+    animation: o-zone-in 0.5s var(--o-ease-out) both;
+    animation-delay: calc(var(--i, 0) * var(--o-stagger-zone) + 250ms);
   }
 
   .o-zones > span[data-on] {
@@ -1940,8 +1947,8 @@
   .o-cutline {
     position: absolute;
     top: 50px;
-    right: -26px;
-    left: -26px;
+    right: 0;
+    left: 0;
     height: 0;
     pointer-events: none;
   }
@@ -2225,7 +2232,7 @@
     transform: none;
   }
 
-  .o-row:hover > .o-row-meta:last-of-type {
+  .o-row:hover > :nth-child(5) {
     visibility: hidden;
   }
 
@@ -2541,15 +2548,15 @@
     list-style: none;
   }
 
-  .o-steps[data-steps="3"] {
+  .o-steps:where([data-steps="3"]) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .o-steps[data-steps="5"] {
+  .o-steps:where([data-steps="5"]) {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  .o-steps[data-steps="6"] {
+  .o-steps:where([data-steps="6"]) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -3839,13 +3846,13 @@
     font-stretch: 95%;
   }
 
-  .o-palette-link[aria-current="page"],
+  .o-palette-link[aria-current],
   .o-palette-link[data-status="active"] {
     background: var(--o-line-3);
     color: var(--o-ink);
   }
 
-  .o-palette-link[aria-current="page"]::before,
+  .o-palette-link[aria-current]::before,
   .o-palette-link[data-status="active"]::before {
     position: absolute;
     top: 6px;
@@ -4031,6 +4038,10 @@
     .o-index-head > :nth-child(5),
     .o-row > :nth-child(5) {
       display: none;
+    }
+
+    .o-row:hover > :nth-child(4) {
+      visibility: hidden;
     }
   }
 
