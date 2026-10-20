@@ -55,7 +55,8 @@ const options = { locale };
 
   for (const button of switches) {
     button.addEventListener("click", async () => {
-      const white = !readWhite();
+      // From the page, not storage: storage can be blocked, the class is always there.
+      const white = !document.documentElement.classList.contains("light");
       const apply = () => {
         storeWhite(white);
         show(white);

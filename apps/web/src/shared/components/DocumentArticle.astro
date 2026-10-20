@@ -49,7 +49,15 @@ const html = document.html.replaceAll(
   /<h2>(?<inner>[\s\S]*?)<\/h2>/gu,
   (_match, inner: string) => {
     const id = `section-${contents.length + 1}`;
-    contents.push({ id, text: inner.replaceAll(/<[^>]+>/gu, "").trim() });
+    // The heading's text, unescaped (Astro escapes it again): `&amp;` goes last.
+    const text = inner
+      .replaceAll(/<[^>]+>/gu, "")
+      .replaceAll("&lt;", "<")
+      .replaceAll("&gt;", ">")
+      .replaceAll("&nbsp;", " ")
+      .replaceAll("&amp;", "&")
+      .trim();
+    contents.push({ id, text });
     return `<h2 id="${id}">${inner}</h2>`;
   }
 );

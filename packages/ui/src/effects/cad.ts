@@ -11,7 +11,10 @@ export const cad = {
   /** Parts the snap considers. */
   snapTo:
     "a, button, [data-snap], .o-plate, .o-note, .o-stage, .o-input, .o-vp, .o-qty, .o-step",
-  /** Parts where the visitor reads or types: the normal cursor comes back. */
+  /**
+   * Parts where the visitor reads or types, and popovers (the top layer hides the crosshair): the
+   * normal cursor comes back.
+   */
   textual:
-    "input, textarea, select, [contenteditable='true'], .prose-orkide, .o-lead, [data-cad-text]",
+    "input, textarea, select, [contenteditable='true'], [popover], .prose-orkide, .o-lead, [data-cad-text]",
 } as const;

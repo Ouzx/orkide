@@ -93,6 +93,8 @@ const layer = svg?.querySelector("[data-parts]");
 
 if (box && svg && layer) {
   const moving = motionAllowed();
+  // Dragging turns the drawing for every visitor: show the grab cursor.
+  box.dataset.live = "";
   const rows = [
     ...document.querySelectorAll<HTMLTableRowElement>("tr[data-part]"),
   ];
@@ -135,6 +137,8 @@ if (box && svg && layer) {
   let elevation: number = axo.camera.elevation;
   let restAzimuth = azimuth;
   let restElevation = elevation;
+  /** When the sway started over: at a release it starts from the angle the drag left. */
+  let swayFrom = 0;
   let gap: number = axo.gap.rest;
   let order = "";
   let frame: Drawing | undefined;
@@ -224,6 +228,10 @@ if (box && svg && layer) {
     | { x: number; y: number; azimuth: number; elevation: number }
     | undefined;
   svg.addEventListener("pointerdown", (event) => {
+    // The main button only: a right click opens a menu that swallows the pointerup.
+    if (event.button !== 0) {
+      return;
+    }
     drag = { azimuth, elevation, x: event.clientX, y: event.clientY };
     if (event.pointerType === "mouse") {
       svg.setPointerCapture(event.pointerId);
@@ -259,6 +267,7 @@ if (box && svg && layer) {
       drag = undefined;
       restAzimuth = azimuth;
       restElevation = elevation;
+      swayFrom = performance.now();
     }
   };
   svg.addEventListener("pointerup", release);
@@ -335,10 +344,11 @@ if (box && svg && layer) {
       if (!drag) {
         azimuth =
           restAzimuth +
-          axo.sway.azimuth * Math.sin(now * axo.sway.azimuthSpeed);
+          axo.sway.azimuth * Math.sin((now - swayFrom) * axo.sway.azimuthSpeed);
         elevation =
           restElevation +
-          axo.sway.elevation * Math.sin(now * axo.sway.elevationSpeed);
+          axo.sway.elevation *
+            Math.sin((now - swayFrom) * axo.sway.elevationSpeed);
       }
       gap += (goal - gap) * Math.min(1, dt * springs.explode.lerpPerMs);
       render();

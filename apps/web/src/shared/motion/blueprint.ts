@@ -36,10 +36,21 @@ const countUp = (element: HTMLElement) => {
   });
 };
 
+/*
+ * The draw keyframes only have an end, so a stroke starts from its own offset: arrivals set it
+ * to 1 (undrawn) inline, while parts that were on screen at load stay drawn.
+ */
+const undraw = (strokes: Iterable<SVGElement>) => {
+  for (const stroke of strokes) {
+    stroke.style.strokeDashoffset = "1";
+  }
+};
+
 /* ── Plates are plotted stroke by stroke ───────────────────────────────────────────────── */
 const plot = (art: Element, delay: number) => {
   const strokes = [...art.querySelectorAll<SVGElement>("[data-stroke]")];
   const each = duration.plot / Math.max(1, strokes.length);
+  undraw(strokes);
   for (const [index, stroke] of strokes.entries()) {
     stroke.style.animationDuration = `${Math.max(240, each * 3).toFixed(0)}ms`;
     stroke.style.animationDelay = `${(delay + index * each).toFixed(0)}ms`;
@@ -47,16 +58,18 @@ const plot = (art: Element, delay: number) => {
 };
 
 /* ── Arrivals ───────────────────────────────────────────────────────────────────────────── */
-const arrive = (element: HTMLElement, order: number) => {
+const arrive = (element: HTMLElement | SVGElement, order: number) => {
   element.dataset.in = "";
+  undraw(element.querySelectorAll<SVGElement>(".o-bubble svg *"));
   for (const counter of element.querySelectorAll<HTMLElement>("[data-count]")) {
     countUp(counter);
   }
-  let plates = 0;
-  for (const art of element.querySelectorAll<SVGElement>("[data-plot]")) {
-    plot(art, order * stagger.plate + plates * stagger.plate);
+  const arts = element.matches("[data-plot]")
+    ? [element]
+    : element.querySelectorAll<SVGElement>("[data-plot]");
+  for (const [index, art] of [...arts].entries()) {
+    plot(art, (order + index) * stagger.plate);
     art.dataset.in = "";
-    plates += 1;
   }
   for (const target of element.querySelectorAll<HTMLElement>("[data-cloud]")) {
     setTimeout(() => cloud(target, target.dataset.cloud ?? ""), 500);
@@ -69,7 +82,7 @@ const arriving = new IntersectionObserver(
     for (const entry of entries) {
       if (entry.isIntersecting) {
         arriving.unobserve(entry.target);
-        arrive(entry.target as HTMLElement, order);
+        arrive(entry.target as HTMLElement | SVGElement, order);
         order += 1;
       }
     }
@@ -78,14 +91,25 @@ const arriving = new IntersectionObserver(
 );
 
 // Parts already on screen keep their drawn state: only what is still below the fold is redrawn.
+const belowFold = (element: Element) =>
+  element.getBoundingClientRect().top >= innerHeight * 0.9;
 for (const section of document.querySelectorAll<HTMLElement>("[data-reveal]")) {
-  if (section.getBoundingClientRect().top < innerHeight * 0.9) {
-    section.dataset.in = "";
-    for (const art of section.querySelectorAll<SVGElement>("[data-plot]")) {
+  if (belowFold(section)) {
+    arriving.observe(section);
+    continue;
+  }
+  // A section that starts on screen can run far below it (a whole index): its plates still
+  // arrive one by one, and its newest entry still gets its cloud.
+  section.dataset.in = "";
+  for (const art of section.querySelectorAll<SVGElement>("[data-plot]")) {
+    if (belowFold(art)) {
+      arriving.observe(art);
+    } else {
       art.dataset.in = "";
     }
-  } else {
-    arriving.observe(section);
+  }
+  for (const target of section.querySelectorAll<HTMLElement>("[data-cloud]")) {
+    cloud(target, target.dataset.cloud ?? "");
   }
 }
 root.classList.add("o-moving");
