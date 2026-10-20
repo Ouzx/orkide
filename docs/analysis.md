@@ -4,10 +4,19 @@ Accessibility and performance are analysed on request, not enforced (rule 18 of 
 
 How to run (after `pnpm build` and `pnpm e2e:prepare`):
 
-- `pnpm test:a11y`: axe (WCAG 2.2 AA + best practices) and a horizontal-scroll check on the public pages at 375/768/1440/2560 px, light and dark scheme.
+- `pnpm test:a11y`: axe (WCAG 2.2 AA + best practices) and a horizontal-scroll check on the public pages at 375/768/1440/2560 px, in the blue and the white print.
 - `pnpm lighthouse`: Lighthouse CI, default mobile profile, 3 runs per URL against `scripts/preview-stack.ts`; `apps/web/lighthouserc.json` holds the reference thresholds (ADR-024).
 
 Blind spot of both: they run in headless Chromium and never move the pointer, so tilt, typing and other motion is measured only as it starts. Check frame rates in headless Firefox too (software compositing, like many Linux browsers).
+
+## 2026-10-20 · The Blueprint redesign (ADR-032)
+
+- **Code:** the Blueprint redesign and its two review-fix commits (`b63f18e`, `f1e71c1`, `5be4748`), local build.
+- **axe (`pnpm test:a11y`), first run on the redesign:** 68 of 72 passing, with no axe violation in either print. The 4 failures were horizontal scroll on the blog post (EN and TR) at 768 px in both prints, 15–20 px: the title strip (wordmark, a long sheet number such as `D-260921`, the navigation and both switches) was wider than the sheet.
+- **Fix (made under the owner's go-ahead for this roadmap; visible only from 720 to 860 px):** the strip's sheet number hides below 860 px, as it already did below 720 px. The number stays in the page head and the status line.
+- **axe after the fix and the review fixes:** 72 of 72 passing.
+- **Not run:** Lighthouse.
+- **Waiting for the owner:** nothing.
 
 ## 2026-10-18 · Spec-font preloads scoped to the blog listings
 
