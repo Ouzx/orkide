@@ -79,11 +79,9 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LiveVisitors"] }],
   "triggers": {
-    "crons": [
-      // Publish posts and projects whose `scheduledAt` has passed.
-      "*/5 * * * *",
-      // Roll yesterday's Analytics Engine events into `daily_stat`.
-      "15 0 * * *",
-    ],
+    // One trigger (the Workers Free plan allows five per account): every five minutes it publishes
+    // posts and projects whose `scheduledAt` has passed, and at 00:15 UTC it also rolls yesterday's
+    // Analytics Engine events into `daily_stat` (`src/scheduled.ts`).
+    "crons": ["*/5 * * * *"],
   },
 }

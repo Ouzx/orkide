@@ -11,7 +11,7 @@ import {
   request,
   signInAs,
 } from "../../../test/helpers.ts";
-import { CRONS, scheduled } from "../../scheduled.ts";
+import { CRON, scheduled } from "../../scheduled.ts";
 import { rollup } from "./stats.service.ts";
 
 /** A fresh SQL API response per call: a Response body can only be read once. */
@@ -88,6 +88,31 @@ describe("daily rollup", () => {
       topPaths: [{ path: "/en", views: 42 }],
       totals: { views: 42, visitors: 17 },
     });
+  });
+});
+
+describe("the cron", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("rolls up yesterday on the 00:15 UTC tick only", async () => {
+    const upstream = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(analyticsResponse);
+
+    await runCron(CRON, new Date("2026-03-02T00:10:00Z"));
+    expect(upstream).not.toHaveBeenCalled();
+
+    await runCron(CRON, new Date("2026-03-02T00:15:00Z"));
+    const { results } = await env.DB.prepare(
+      "SELECT views FROM daily_stat WHERE day = ?"
+    )
+      .bind("2026-03-01")
+      .all<{ views: number }>();
+
+    expect(upstream).toHaveBeenCalledOnce();
+    expect(results).toStrictEqual([{ views: 42 }]);
   });
 });
 
@@ -213,10 +238,7 @@ describe("scheduled publishing", () => {
     );
 
     const before = await getJson<{ items: unknown[] }>("/api/posts?locale=en");
-    await runCron(
-      CRONS.publishScheduled,
-      new Date(scheduledAt.getTime() + 1000)
-    );
+    await runCron(CRON, new Date(scheduledAt.getTime() + 1000));
     const after = await getJson<{
       items: { slug: string; publishedAt: string }[];
     }>("/api/posts?locale=en");
