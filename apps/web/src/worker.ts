@@ -7,6 +7,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { trimTrailingSlash } from "hono/trailing-slash";
 
 import { forwardToApi } from "@/shared/lib/forward.ts";
+import { siteUrl } from "@/shared/site.ts";
 
 /**
  * Web Worker entry. Hono sits in front of Astro so the Worker owns every request:
@@ -15,7 +16,9 @@ import { forwardToApi } from "@/shared/lib/forward.ts";
  *    browser, no CORS, no extra network hop). When an admin write reports the cache tags it
  *    touched, the rendered pages carrying those tags are purged from this Worker's cache —
  *    Workers Cache is per Worker, so the API cannot purge them itself.
- * 2. Everything else goes through the Astro pipeline (static assets, middleware, pages).
+ * 2. Pages asked for on the Worker's own workers.dev address (`WORKERS_DEV_HOST`) move permanently
+ *    to the public origin (`site`), so old links keep working once a custom domain is attached.
+ * 3. Everything else goes through the Astro pipeline (static assets, middleware, pages).
  */
 const app = new Hono<{ Bindings: Env }>();
 
@@ -35,6 +38,14 @@ app.all("/api/*", async (c) => {
     status: response.status,
     statusText: response.statusText,
   });
+});
+
+app.on(["GET", "HEAD"], "*", (c, next) => {
+  const url = new URL(c.req.url);
+  if (c.env.WORKERS_DEV_HOST && url.hostname === c.env.WORKERS_DEV_HOST) {
+    return c.redirect(new URL(`${url.pathname}${url.search}`, siteUrl), 301);
+  }
+  return next();
 });
 
 // Pages only: API responses carry their own headers (and are immutable once fetched).

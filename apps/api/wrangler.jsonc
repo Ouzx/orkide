@@ -21,7 +21,7 @@
   "vars": {
     "ENVIRONMENT": "production",
     "LOG_LEVEL": "info",
-    "BETTER_AUTH_URL": "https://orkide-web.ouzx.workers.dev",
+    "BETTER_AUTH_URL": "https://orkide.ouzx.me",
     "ADMIN_EMAILS": "oguzhankandakoglu@gmail.com",
     "CONTACT_INBOX_EMAIL": "oguzhankandakoglu@gmail.com",
     "EMAIL_FROM": "Orkide <onboarding@resend.dev>",

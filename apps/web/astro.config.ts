@@ -57,7 +57,7 @@ const revisions = (() => {
 })();
 
 /** Public origin. Canonical URLs, sitemaps, feeds and OpenGraph tags are built from it. */
-const site = "https://orkide-web.ouzx.workers.dev";
+const site = "https://orkide.ouzx.me";
 
 export default defineConfig({
   adapter: cloudflare({

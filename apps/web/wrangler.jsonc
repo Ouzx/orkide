@@ -17,9 +17,13 @@
   // Lets the cache provider tag responses with the deployed version.
   "version_metadata": { "binding": "CF_VERSION_METADATA" },
   "assets": { "binding": "ASSETS" },
+  // The public origin (`site` in astro.config.ts). A product sets its own domain here.
+  "routes": [{ "pattern": "orkide.ouzx.me", "custom_domain": true }],
 
   "vars": {
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFLfPVF6jH6xMnSu",
+    // This Worker's workers.dev address: its pages redirect to the public origin (src/worker.ts).
+    "WORKERS_DEV_HOST": "orkide-web.ouzx.workers.dev",
   },
 
   // `/api/*` is forwarded to the API Worker in-process: same origin, no CORS, no network hop.

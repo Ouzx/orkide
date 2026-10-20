@@ -1,6 +1,6 @@
 # Operations
 
-Production runs on workers.dev: web `https://orkide-web.ouzx.workers.dev`, api `https://orkide-api.ouzx.workers.dev` (the browser only talks to web; `/api/*` is forwarded over the Service Binding). Decisions behind this setup: ADR-019 to ADR-021.
+Production is `https://orkide.ouzx.me`, a custom domain of the web Worker (`routes` in `apps/web/wrangler.jsonc`); its workers.dev address `https://orkide-web.ouzx.workers.dev` redirects there (`WORKERS_DEV_HOST`). The API Worker (`https://orkide-api.ouzx.workers.dev`) is reached only through the Service Binding: the browser only talks to web, and `/api/*` is forwarded. Decisions behind this setup: ADR-019 to ADR-021.
 
 ## Local setup
 
@@ -15,7 +15,7 @@ Cloud sessions start from the `orkide-solutions` workspace; see its `docs/agent-
 ## Pending production setup
 
 1. **Analytics Engine**: enabled (done); `/api/track` returns 204.
-2. **GitHub OAuth app** (done; needed to sign in): GitHub -> Settings -> Developer settings -> OAuth Apps -> New. Homepage `https://orkide-web.ouzx.workers.dev`, callback `https://orkide-web.ouzx.workers.dev/api/auth/callback/github`. Then:
+2. **GitHub OAuth app** (done; needed to sign in): GitHub -> Settings -> Developer settings -> OAuth Apps -> New. Homepage `https://orkide.ouzx.me`, callback `https://orkide.ouzx.me/api/auth/callback/github` (update both whenever the public origin changes). Then:
    ```bash
    cd apps/api
    pnpm exec wrangler secret put GITHUB_CLIENT_ID

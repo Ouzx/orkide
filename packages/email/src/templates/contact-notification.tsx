@@ -56,7 +56,7 @@ ContactNotification.PreviewProps = {
   locale: "en",
   name: "Ada",
   senderLocale: "tr",
-  siteUrl: "https://orkide-web.ouzx.workers.dev",
+  siteUrl: "https://orkide.ouzx.me",
   subject: "Collaboration",
 } satisfies ContactNotificationProps;
 
