@@ -233,7 +233,13 @@ const serveFile = async (key: string, request: Request) => {
   if (!("body" in object)) {
     return new Response(null, { headers, status: 304 });
   }
-  if (object.range && "offset" in object.range) {
+  // R2 reports a range even for a whole-object read: answer 206 only to a request for one, so a
+  // full read stays a cacheable 200 (Workers Cache then serves byte ranges from it).
+  if (
+    request.headers.has("range") &&
+    object.range &&
+    "offset" in object.range
+  ) {
     const start = object.range.offset ?? 0;
     const end = start + (object.range.length ?? object.size - start) - 1;
     headers.set("content-range", `bytes ${start}-${end}/${object.size}`);

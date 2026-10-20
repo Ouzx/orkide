@@ -117,6 +117,22 @@ describe("media delivery", () => {
     await expect(partial.text()).resolves.toBe("%PDF-1.4");
   });
 
+  it("answers a whole-file read with 200 and no content range", async () => {
+    const { cookie } = await signInAs("owner");
+    const uploaded = await uploadFile(
+      cookie,
+      PDF,
+      "application/pdf",
+      "whole.pdf"
+    );
+    const { url } = await uploaded.json<{ url: string }>();
+
+    const whole = await request(url);
+
+    expect(whole.status).toBe(200);
+    expect(whole.headers.get("content-range")).toBeNull();
+  });
+
   it("serves image variants with a deterministic ETag and revalidates without a transform", async () => {
     const { cookie } = await signInAs("owner");
     const uploaded = await uploadFile(cookie, PNG, "image/png", "etag.png");
