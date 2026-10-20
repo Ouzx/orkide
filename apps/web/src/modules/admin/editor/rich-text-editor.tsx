@@ -186,7 +186,7 @@ const Toolbar = ({
     <div
       role="toolbar"
       aria-label={m.admin_editor_toolbar({}, options)}
-      className="sticky top-14 z-10 flex flex-wrap items-center gap-0.5 border-b border-line bg-panel p-1.5 lg:top-0"
+      className="sticky top-14 z-10 flex flex-wrap items-center gap-0.5 border-b border-line-2 bg-paper-2 p-1.5 lg:top-0"
     >
       <ToolButton
         icon={Bold}
@@ -344,7 +344,7 @@ export const RichTextEditor = ({
   }, [editor, editable]);
 
   return (
-    <div className="o-unit focus-within:ring-3 focus-within:ring-focus">
+    <div className="o-card focus-within:ring-2 focus-within:ring-focus">
       <Tiptap editor={editor}>
         {editable ? <Toolbar onRequestImage={onRequestImage} /> : null}
         <Tiptap.Content />

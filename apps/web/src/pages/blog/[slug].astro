@@ -41,8 +41,7 @@ Astro.response.headers.set("vary", "accept");
   section="blog"
   path={path}
   sectionPath={blogPath}
-  runhead={`${m.skin_manual({ site: m.site_name({}, options) }, options)} · §1 ${m.blog_title({}, options)}`}
-  backLabel={m.blog_back({}, options)}
+  sectionName={m.blog_title({}, options)}
   coverClass="aspect-[16/9]"
   jsonLd={graph(
     locale,
@@ -55,53 +54,53 @@ Astro.response.headers.set("vary", "accept");
 >
   {
     post.category && (
-      <span slot="runhead" class="o-eng">
-        {post.category.name}
-      </span>
+      <p slot="runhead" class="o-kicker">
+        <a
+          href={localizeHref(`/blog/category/${post.category.slug}`, options)}
+          class="o-link"
+        >
+          {post.category.name}
+        </a>
+      </p>
     )
   }
   <Fragment slot="meta">
     {
-      post.category && (
-        <a
-          href={localizeHref(`/blog/category/${post.category.slug}`, options)}
-          class="text-ink-2 no-underline hover:text-signal-ink"
-        >
-          {post.category.name}
-        </a>
-      )
-    }
-    {
       post.publishedAt && (
-        <time datetime={post.publishedAt}>
-          {formatDate(post.publishedAt, locale)}
-        </time>
+        <li>
+          {m.blog_published({}, options)}{" "}
+          <time datetime={post.publishedAt}>
+            <b>{formatDate(post.publishedAt, locale)}</b>
+          </time>
+        </li>
       )
     }
-    <span>
-      {
-        m.blog_reading_time(
-          { minutes: post.readingTimeMinutes.toString() },
-          options
-        )
-      }
-    </span>
+    <li>
+      <b>
+        {
+          m.blog_reading_time(
+            { minutes: post.readingTimeMinutes.toString() },
+            options
+          )
+        }
+      </b>
+    </li>
     {
       post.publishedAt &&
         post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
-          <span>
+          <li>
             {m.blog_updated({}, options)}{" "}
             <time datetime={post.updatedAt}>
-              {formatDate(post.updatedAt, locale)}
+              <b>{formatDate(post.updatedAt, locale)}</b>
             </time>
-          </span>
+          </li>
         )
     }
   </Fragment>
   {
     post.attachments.length > 0 && (
       <section slot="after" aria-labelledby="attachments" class="mt-14">
-        <h2 id="attachments" class="o-eng m-0">
+        <h2 id="attachments" class="o-label m-0">
           {m.blog_attachments({}, options)}
         </h2>
         <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
@@ -109,7 +108,7 @@ Astro.response.headers.set("vary", "accept");
             <li>
               <a
                 href={attachment.url}
-                class="o-key"
+                class="o-btn o-btn-sm"
                 data-astro-prefetch="false"
               >
                 <Paperclip aria-hidden="true" />

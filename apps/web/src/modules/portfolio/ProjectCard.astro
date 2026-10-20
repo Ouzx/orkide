@@ -3,10 +3,14 @@ import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 import type { ProjectSummary } from "@orkide/validators/content";
 
+import { sheetNumber } from "@/shared/lib/sheet.ts";
+
+import PlateArt from "./PlateArt.astro";
+
 interface Props {
   project: ProjectSummary;
   headingLevel?: 2 | 3;
-  /** A picture of the project beside its own copy (home page): no link, hidden from assistive tech. */
+  /** The wide plate beside the featured project's copy (home page): no link, hidden from assistive tech. */
   decorative?: boolean;
 }
 
@@ -15,44 +19,43 @@ const { locale } = Astro.locals;
 const options = { locale };
 const href = localizeHref(`/portfolio/${project.slug}`, options);
 const Heading = `h${headingLevel}` as const;
-const Tag = decorative ? "div" : "a";
+const sheet = sheetNumber("P", project.publishedAt);
+const year = project.publishedAt?.slice(0, 4) ?? "—";
 ---
 
-<!-- A project as a cartridge: a dark module with a signal sticker that tilts toward the pointer. -->
-<div class="o-mount o-mount-module">
-  <Tag
-    class="o-cartridge"
-    href={decorative ? undefined : href}
-    aria-hidden={decorative ? "true" : undefined}
-    data-tilt="cartridge"
-  >
-    <div class="o-cartridge-row">
-      <span>{project.tags.map((tag) => tag.name).join(" · ")}</span>
-      {project.featured && <span>{m.portfolio_featured({}, options)}</span>}
-    </div>
-    <div class="o-sticker">
-      <span>{m.portfolio_cartridge({}, options)}</span>
-      {
-        decorative ? (
-          <b>{project.title}</b>
-        ) : (
-          <Heading class="m-0">
-            <b>{project.title}</b>
-          </Heading>
-        )
-      }
-    </div>
-    <div class="o-cartridge-row">
-      <div class="o-pins" aria-hidden="true">
-        <i></i><i></i><i></i><i></i><i></i><i></i>
+<!-- A project as a plate: a drawing generated from its slug, a title strip and its summary. -->{
+  decorative ? (
+    <div class="o-plate" data-lead data-dim aria-hidden="true">
+      <PlateArt seed={project.slug} lead />
+      <div class="o-plate-tb">
+        <span>{sheet}</span>
+        <span>{project.title}</span>
+        <span>{m.plate_scale({}, options)}</span>
+        <span>{year}</span>
       </div>
-      {
-        !decorative && (
-          <span>
-            {m.portfolio_details({}, options)} <span aria-hidden="true">→</span>
-          </span>
-        )
-      }
     </div>
-  </Tag>
-</div>
+  ) : (
+    <article class="o-plate" data-dim>
+      <PlateArt seed={project.slug} />
+      <div class="o-plate-tb" aria-hidden="true">
+        <span>{sheet}</span>
+        <span>{project.title}</span>
+        <span>{m.plate_scale({}, options)}</span>
+        <span>{year}</span>
+      </div>
+      <div class="o-plate-body">
+        <Heading>
+          <a href={href}>{project.title}</a>
+        </Heading>
+        <p>{project.summary}</p>
+        {project.tags.length > 0 && (
+          <ul class="o-tags" aria-label={m.blog_tags({}, options)}>
+            {project.tags.map((tag) => (
+              <li class="o-tag">{tag.name}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </article>
+  )
+}

@@ -1,15 +1,13 @@
 [
   {
-    "name": "Skin motion and front panel (frame, instrument, panel, stack, sound)",
+    "name": "Skin motion and cover drawing (frame, blueprint, hero, stack)",
     "path": [
       "dist/client/_astro/frame.*.js",
-      "dist/client/_astro/instrument.*.js",
-      "dist/client/_astro/panel-motion.*.js",
+      "dist/client/_astro/blueprint.*.js",
       "dist/client/_astro/Hero.astro_*.js",
-      "dist/client/_astro/sound.*.js",
       "dist/client/_astro/Stack.astro_*.js"
     ],
-    "limit": "8 kB"
+    "limit": "9.5 kB"
   },
   {
     "name": "React runtime (shared by every island)",

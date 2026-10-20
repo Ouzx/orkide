@@ -1,33 +1,48 @@
 ---
 import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
 
 interface Props {
-  /** The manual section this page belongs to: 1 Blog, 2 Portfolio, 3 Contact. */
-  section: number;
-  /** The section's name, for the running head. */
-  name: string;
+  /** This page's drawing number (G-002 the drawing index, G-003 the plates, G-004 contact). */
+  sheet: string;
+  /** What kind of sheet it is, for the drawing block and the crumbs. */
+  kind: string;
   title: string;
   lead?: string | undefined;
 }
-const { section, name, title, lead } = Astro.props;
+const { sheet, kind, title, lead } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
 ---
 
-<header class="o-wrap pt-9">
-  <div class="o-runhead">
-    <span class="o-eng">
-      {
-        `${m.skin_manual({ site: m.site_name({}, options) }, options)} · §${section} ${name}`
-      }
-    </span>
-    <span class="o-eng">
-      {m.skin_page({ n: section.toString().padStart(2, "0") }, options)}
-    </span>
-  </div>
-  <div class="mt-8 grid gap-5">
-    <h1 class="o-page-title">{title}</h1>
-    {lead && <p class="o-summary text-ink-2">{lead}</p>}
-    <slot />
+<!-- A sheet's header: crumbs back to the cover, its drawing block, its title. -->
+<header class="o-wrap" data-section-title={`${sheet} · ${kind}`}>
+  <ol class="o-crumbs">
+    <li>
+      <a href={localizeHref("/", options)}>G-001 {m.sheet_cover({}, options)}</a
+      >
+    </li>
+    <li aria-current="page">{sheet}</li>
+  </ol>
+  <div class="o-pagehead">
+    <dl class="o-dwg">
+      <div data-big>
+        <dt>{m.doc_drawing({}, options)}</dt>
+        <dd>{sheet}</dd>
+      </div>
+      <div>
+        <dt>{m.tb_title({}, options)}</dt>
+        <dd>{kind}</dd>
+      </div>
+      <div>
+        <dt>{m.tb_revision({}, options)}</dt>
+        <dd>{import.meta.env.PUBLIC_BUILD}</dd>
+      </div>
+    </dl>
+    <div class="o-pagehead-main">
+      <h1 class="o-title">{title}</h1>
+      {lead && <p class="o-lead">{lead}</p>}
+      <slot />
+    </div>
   </div>
 </header>

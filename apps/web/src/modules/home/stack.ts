@@ -1,14 +1,15 @@
-import { onScroll } from "@/shared/motion/frame.ts";
+import { duration, easeOutQuart } from "@orkide/ui/motion/motion";
+
+import { onFrame, onScroll } from "@/shared/motion/frame.ts";
 import { afterFirstPaint, motionAllowed } from "@/shared/motion/motion.ts";
 
 /**
- * The signal chain's readings: how long this page load took to reach each stage, from the
- * browser's own timing entries (so the cached HTML is the same for every visitor). With motion
- * allowed, a signal travels down the cable as the section scrolls by, lighting each stage and
- * counting its reading up; otherwise the readings simply appear.
+ * Section A–A's readings: how long this page load took to reach each stage, from the browser's own
+ * timing entries (so the cached HTML is the same for every visitor). With motion allowed, the
+ * cutting plane follows the scroll, each stage is hatched as the plane reaches it and its reading
+ * counts up; otherwise the readings simply appear.
  */
-const chain = document.querySelector<HTMLElement>("[data-chain]");
-const counters = [...document.querySelectorAll<HTMLElement>("[data-timing]")];
+const cut = document.querySelector<HTMLElement>("[data-cut]");
 
 /** A timing entry, or nothing when the browser left it at zero. */
 const positive = (value: number | undefined) =>
@@ -29,69 +30,64 @@ const readings = (): (number | undefined)[] => {
   ];
 };
 
-const format = (value: number | undefined) =>
-  value === undefined ? "—" : `${Math.round(value)} ms`;
+const show = (index: number, value: number | undefined) => {
+  for (const counter of document.querySelectorAll<HTMLElement>(
+    `[data-timing="${index}"]`
+  )) {
+    counter.textContent =
+      value === undefined ? "—" : Math.round(value).toString();
+  }
+};
 
-/** Counts a reading up from zero in a few steps, like a meter settling. */
-const countUp = (counter: HTMLElement, value: number | undefined) => {
+const countUp = (index: number, value: number | undefined) => {
   if (value === undefined) {
-    counter.textContent = format(value);
+    show(index, value);
     return;
   }
   const start = performance.now();
-  const step = (now: number) => {
-    const progress = Math.min(1, (now - start) / 600);
-    counter.textContent = format(value * (Math.floor(progress * 8) / 8));
-    if (progress < 1) {
-      requestAnimationFrame(step);
+  const stop = onFrame((now) => {
+    const k = Math.min(1, (now - start) / (duration.count * 0.6));
+    show(index, value * easeOutQuart(k));
+    if (k >= 1) {
+      stop();
     }
-  };
-  requestAnimationFrame(step);
+  });
 };
 
 afterFirstPaint(() => {
   const values = readings();
-  if (!(chain && motionAllowed())) {
-    for (const [index, counter] of counters.entries()) {
-      counter.textContent = format(values[index]);
+  if (!(cut && motionAllowed())) {
+    for (const [index, value] of values.entries()) {
+      show(index, value);
     }
     return;
   }
 
-  const steps = [...chain.querySelectorAll<HTMLElement>(".o-chain-step")];
-  const signal = chain.querySelector<HTMLElement>("[data-signal]");
-  chain.dataset.armed = "";
-  if (signal) {
-    signal.hidden = false;
-  }
+  const stages = [...cut.querySelectorAll<HTMLElement>("[data-stage]")];
+  const links = [...cut.querySelectorAll<HTMLElement>("[data-chain]")];
+  const plane = cut.querySelector<HTMLElement>(".o-cutline");
+  const count = Math.max(1, stages.length);
   let reached = -1;
-  let shown = "";
   onScroll(() => {
-    // The centre of each stage's socket, in pixels from the chain's top (wrapping moves them).
-    const sockets = steps.map((step) => {
-      const socket = step.querySelector("i");
-      return (
-        step.offsetTop +
-        (socket ? socket.offsetTop + socket.offsetHeight / 2 : 0)
-      );
-    });
-    // The signal sits where a reading line at 45 % of the viewport crosses the cable, from the
-    // first socket to the last; a stage lights when the line reaches its socket.
-    const line = innerHeight * 0.45 - chain.getBoundingClientRect().top;
-    const y = Math.min(sockets.at(-1) ?? 0, Math.max(sockets[0] ?? 0, line));
-    const top = `${y.toFixed(1)}px`;
-    if (top !== shown) {
-      shown = top;
-      chain.style.setProperty("--y", top);
+    const box = cut.getBoundingClientRect();
+    const progress = Math.min(
+      1,
+      Math.max(
+        0,
+        (innerHeight * 0.85 - box.top) / (box.height + innerHeight * 0.25)
+      )
+    );
+    plane?.style.setProperty("--cut", progress.toFixed(3));
+    const span = progress * (count + 0.4);
+    for (const [index, link] of links.entries()) {
+      const k = Math.min(1, Math.max(0, span - index));
+      link.style.setProperty("--k", k.toFixed(3));
+      link.toggleAttribute("data-on", k >= 1);
     }
-    while ((sockets[reached + 1] ?? Number.POSITIVE_INFINITY) <= line) {
+    while (reached + 1 < count && span >= reached + 1.45) {
       reached += 1;
-      const stage = steps[reached];
-      const counter = counters[reached];
-      if (stage && counter) {
-        stage.dataset.on = "";
-        countUp(counter, values[reached]);
-      }
+      stages[reached]?.toggleAttribute("data-on", true);
+      countUp(reached, values[reached]);
     }
   });
 });

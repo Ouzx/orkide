@@ -42,7 +42,7 @@ const SheetContent = ({
       data-slot="sheet-content"
       data-side={side}
       className={cn(
-        "fixed z-50 flex flex-col gap-4 bg-panel text-ink shadow-cast transition duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0",
+        "fixed z-50 flex flex-col gap-4 border-line bg-paper text-ink shadow-slip transition duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=left]:border-r-2 data-[side=right]:border-l-2",
         "data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=top]:inset-x-0 data-[side=top]:top-0",
         "data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:w-3/4 data-[side=left]:sm:max-w-sm",
         "data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:w-3/4 data-[side=right]:sm:max-w-sm",
@@ -73,7 +73,7 @@ const SheetContent = ({
 const SheetTitle = ({ className, ...props }: SheetPrimitive.Title.Props) => (
   <SheetPrimitive.Title
     data-slot="sheet-title"
-    className={cn("o-unit-title", className)}
+    className={cn("o-card-title", className)}
     {...props}
   />
 );

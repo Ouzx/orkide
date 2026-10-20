@@ -191,8 +191,8 @@ const TranslationFields = ({
         />
         <FieldError message={issue("content")} />
       </div>
-      <fieldset className="o-unit space-y-4 p-5">
-        <legend className="o-eng px-1">
+      <fieldset className="o-card space-y-4 p-5">
+        <legend className="o-label px-1">
           {m.admin_section_seo({}, options)}
         </legend>
         <div className="space-y-1.5">
@@ -408,7 +408,7 @@ export const DocumentForm = ({
                 onChange={(event) =>
                   patch({ status: event.currentTarget.value as Status })
                 }
-                className="o-well"
+                className="o-input"
               >
                 {statusOptions.map((status) => (
                   <option key={status} value={status}>

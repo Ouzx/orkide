@@ -28,16 +28,61 @@ export const siteDefaults: Record<Locale, SiteContent> = {
           text: "Edit the tokens, fonts and brand drawing; the pages stay as they are.",
           title: "Reskin",
         },
+        {
+          command: "git fetch upstream && git merge upstream/main",
+          text: "Pull the template's fixes into your product. Your skin and your content stay yours.",
+          title: "Merge",
+        },
       ],
       title: "Start a product from Orkide",
       url: "https://github.com/Ouzx/orkide",
     },
     hero: {
       contactCta: "Get in touch",
-      eyebrow: "Software engineer · Builder",
-      lead: "I design and build products end to end — from edge infrastructure to the last pixel — and write about what I learn along the way.",
-      title: "Fast, careful software for the open web.",
-      workCta: "See the work",
+      deriveCta: "Derive a product",
+      eyebrow: "Open-source template for Cloudflare Workers",
+      lead: "Orkide is a production-grade monorepo for Cloudflare: two Workers on one origin, typed end to end, with a blog, a portfolio and an admin already built. Derive a product from it and keep merging its fixes.",
+      parts: [
+        {
+          name: "Browser",
+          qty: "1",
+          text: "Gets the HTML with its CSS inlined",
+        },
+        {
+          name: "Edge cache",
+          qty: "1",
+          text: "Keeps each page, tagged by what it shows",
+        },
+        {
+          name: "Web Worker · Astro",
+          qty: "1",
+          text: "Renders pages and owns every request",
+        },
+        {
+          name: "Service Binding",
+          qty: "1",
+          text: "Hands /api over in process: no CORS, no hop",
+        },
+        {
+          name: "API Worker · Hono",
+          qty: "1",
+          text: "Typed routes, roles and purge headers",
+        },
+        {
+          name: "D1",
+          qty: "1",
+          text: "Posts and projects, one row per language",
+        },
+        { name: "R2", qty: "1", text: "Images and files" },
+        { name: "Queues", qty: "2", text: "Jobs and their dead letters" },
+        {
+          name: "Durable Object",
+          qty: "1",
+          text: "Counts who is reading right now",
+        },
+      ],
+      sourceCta: "Read the source",
+      title: "Every product starts from these drawings.",
     },
     inside: {
       features: [
@@ -73,7 +118,7 @@ export const siteDefaults: Record<Locale, SiteContent> = {
         },
       ],
       kicker: "What this site is made of",
-      lead: "Orkide is this site and the template every product I build starts from: a production-grade Cloudflare monorepo, typed end to end and open source.",
+      lead: "Orkide is this site and the template products start from: a production-grade Cloudflare monorepo, typed end to end and open source.",
       meters: [
         {
           label: "Workers, one origin",
@@ -88,7 +133,7 @@ export const siteDefaults: Record<Locale, SiteContent> = {
         {
           label: "Decisions in the ADR log",
           unit: "",
-          value: "31",
+          value: "32",
         },
         {
           label: "Framework code on reading pages",
@@ -157,16 +202,57 @@ export const siteDefaults: Record<Locale, SiteContent> = {
           text: "Token’ları, yazı tiplerini ve marka çizimini düzenle; sayfalar olduğu gibi kalır.",
           title: "Kapla",
         },
+        {
+          command: "git fetch upstream && git merge upstream/main",
+          text: "Şablonun düzeltmelerini ürününe çek. Kaplaman da içeriğin de sende kalır.",
+          title: "Birleştir",
+        },
       ],
       title: "Orkide’den bir ürün başlat",
       url: "https://github.com/Ouzx/orkide",
     },
     hero: {
       contactCta: "İletişime geç",
-      eyebrow: "Yazılım mühendisi · Üretici",
-      lead: "Ürünleri uçtan uca tasarlayıp geliştiriyorum — uç altyapıdan son piksele kadar — ve yol boyunca öğrendiklerimi yazıyorum.",
-      title: "Açık web için hızlı ve özenli yazılım.",
-      workCta: "İşleri gör",
+      deriveCta: "Ürün türet",
+      eyebrow: "Cloudflare Workers için açık kaynak şablon",
+      lead: "Orkide, Cloudflare için üretim kalitesinde bir monorepo: tek kökende iki Worker, uçtan uca tipli; blog, portfolyo ve yönetim paneli hazır. Ondan bir ürün türet ve düzeltmelerini birleştirmeye devam et.",
+      parts: [
+        { name: "Tarayıcı", qty: "1", text: "CSS’i gömülü HTML’i alır" },
+        {
+          name: "Uç önbellek",
+          qty: "1",
+          text: "Her sayfayı gösterdiğiyle etiketleyip saklar",
+        },
+        {
+          name: "Web Worker · Astro",
+          qty: "1",
+          text: "Sayfaları oluşturur, her isteği karşılar",
+        },
+        {
+          name: "Service Binding",
+          qty: "1",
+          text: "/api’yi süreç içinde devreder: CORS yok, atlama yok",
+        },
+        {
+          name: "API Worker · Hono",
+          qty: "1",
+          text: "Tipli rotalar, roller ve temizleme başlıkları",
+        },
+        {
+          name: "D1",
+          qty: "1",
+          text: "Yazılar ve projeler, her dil için bir satır",
+        },
+        { name: "R2", qty: "1", text: "Görseller ve dosyalar" },
+        { name: "Kuyruklar", qty: "2", text: "İşler ve teslim edilemeyenler" },
+        {
+          name: "Durable Object",
+          qty: "1",
+          text: "Şu an kaç kişinin okuduğunu sayar",
+        },
+      ],
+      sourceCta: "Kaynağı oku",
+      title: "Her ürün bu çizimlerden doğar.",
     },
     inside: {
       features: [
@@ -202,7 +288,7 @@ export const siteDefaults: Record<Locale, SiteContent> = {
         },
       ],
       kicker: "Bu site neyden yapıldı",
-      lead: "Orkide hem bu site hem de geliştirdiğim her ürünün başladığı şablon: üretim kalitesinde, uçtan uca tipli ve açık kaynak bir Cloudflare monoreposu.",
+      lead: "Orkide hem bu site hem de ürünlerin başladığı şablon: üretim kalitesinde, uçtan uca tipli ve açık kaynak bir Cloudflare monoreposu.",
       meters: [
         {
           label: "Worker, tek köken",
@@ -217,7 +303,7 @@ export const siteDefaults: Record<Locale, SiteContent> = {
         {
           label: "ADR kaydındaki karar",
           unit: "",
-          value: "31",
+          value: "32",
         },
         {
           label: "Okuma sayfalarında framework kodu",

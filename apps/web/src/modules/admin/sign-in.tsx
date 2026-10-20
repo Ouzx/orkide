@@ -64,39 +64,23 @@ export const SignIn = ({
   );
 
   return (
-    <main className="o-stage grid min-h-dvh place-items-center px-4 py-10">
-      <div className="o-mount w-full max-w-md">
-        <div className="o-device">
-          <span className="o-screw o-screw-tl" aria-hidden="true" />
-          <span className="o-screw o-screw-tr" aria-hidden="true" />
-          <span className="o-screw o-screw-bl" aria-hidden="true" />
-          <span className="o-screw o-screw-br" aria-hidden="true" />
-          <div className="mb-4 flex items-center justify-between gap-2 px-1">
-            <span className="o-brand">
-              <b>{m.site_name({}, options)}</b>
-              <span>{m.skin_model({}, options)}</span>
-            </span>
-            <span
-              className="o-lamp o-lamp-pulse"
-              data-tone="warn"
-              aria-hidden="true"
-            />
-          </div>
-          <div className="o-display">
-            <p className="o-display-top relative m-0">
-              <span>{m.admin_service_mode({}, options)}</span>
-            </p>
-            <h1 className="o-display-title relative mt-4 mb-2 min-h-0 text-section">
-              {m.admin_sign_in_title({}, options)}
-              <span className="o-caret" aria-hidden="true" />
-            </h1>
-          </div>
-          <p className="mx-1 mt-5 mb-0 text-ink-2">
-            {m.admin_sign_in_lead({}, options)}
-          </p>
-          <div className="mt-6 grid gap-3">
+    <main className="grid min-h-dvh place-items-center px-4 py-10">
+      <div className="o-card w-full max-w-md">
+        <div className="o-appbar">
+          <span className="o-brand-word">{m.site_name({}, options)}</span>
+          <span className="ml-auto font-mono text-2xs text-mark-ink">
+            A-201
+          </span>
+        </div>
+        <div className="grid gap-4 p-6">
+          <p className="o-kicker m-0">{m.admin_drafting_table({}, options)}</p>
+          <h1 className="o-title text-section">
+            {m.admin_sign_in_title({}, options)}
+          </h1>
+          <p className="m-0 text-ink-2">{m.admin_sign_in_lead({}, options)}</p>
+          <div className="mt-2 grid gap-4">
             <Button
-              className="o-key-lg w-full"
+              className="w-full"
               disabled={pending !== undefined}
               onClick={github}
             >
@@ -105,7 +89,7 @@ export const SignIn = ({
             </Button>
             <Button
               variant="outline"
-              className="o-key-lg w-full"
+              className="w-full"
               disabled={pending !== undefined}
               onClick={passkey}
             >
@@ -114,7 +98,7 @@ export const SignIn = ({
             </Button>
           </div>
           {failed || errorFromRedirect ? (
-            <p role="alert" className="o-error mx-1 mt-4 mb-0">
+            <p role="alert" className="o-err">
               {m.admin_sign_in_failed({}, options)}
             </p>
           ) : null}

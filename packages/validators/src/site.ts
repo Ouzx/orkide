@@ -29,16 +29,25 @@ export const siteSchemas = {
       .array(
         z.object({ command: line(120), text: prose(240), title: line(60) })
       )
-      .length(3),
+      .min(3)
+      .max(6),
     title: line(160),
     url: z.url({ protocol: /^https$/u }),
   }),
+  /**
+   * The cover: its words, its buttons, and the parts list of the drawing beside it. The drawing
+   * shows nine parts, so the list has exactly nine, in the drawing's order.
+   */
   hero: z.object({
     contactCta: line(40),
+    deriveCta: line(40),
     eyebrow: line(80),
     lead: prose(400),
+    parts: z
+      .array(z.object({ name: line(40), qty: line(4), text: prose(160) }))
+      .length(9),
+    sourceCta: line(40),
     title: line(160),
-    workCta: line(40),
   }),
   /** What the site is made of: a few readings and the features that matter. */
   inside: z.object({

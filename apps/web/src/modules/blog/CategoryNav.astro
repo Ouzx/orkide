@@ -15,15 +15,14 @@ const { locale } = Astro.locals;
 
 {
   categories.length > 0 && (
-    <nav aria-label={m.blog_categories({}, { locale })} class="mt-2">
+    <nav aria-label={m.blog_categories({}, { locale })} class="mt-6">
       <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
         <li>
           <a
             href={localizeHref("/blog", { locale })}
             aria-current={current ? undefined : "page"}
-            class="o-key o-key-sm"
+            class="o-chip"
           >
-            <span class="o-lamp" aria-hidden="true" />
             {m.blog_all({}, { locale })}
           </a>
         </li>
@@ -32,9 +31,8 @@ const { locale } = Astro.locals;
             <a
               href={localizeHref(`/blog/category/${category.slug}`, { locale })}
               aria-current={category.slug === current ? "page" : undefined}
-              class="o-key o-key-sm"
+              class="o-chip"
             >
-              <span class="o-lamp" aria-hidden="true" />
               {category.name}
             </a>
           </li>

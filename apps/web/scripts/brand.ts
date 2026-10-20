@@ -1,9 +1,10 @@
 /**
  * Draws the brand originals from the skin (packages/ui tokens and fonts) into `design/incoming/`:
- * the favicon and app icon (a knob seen from above), the link-preview images (the front panel)
- * and the email header (the device's top edge). `pnpm --filter @orkide/web media` then turns them
- * into the served files. A product with its own skin edits the markup below, or drops its own
- * originals into `design/incoming/` instead.
+ * the favicon and app icon (the orchid mark on a sheet of blueprint paper), the link-preview images
+ * (a drawing sheet with its title block and the stack drawn in isometric) and the email header (a
+ * strip of the sheet). `pnpm --filter @orkide/web media` then turns them into the served files.
+ * A product with its own skin edits the markup below, or drops its own originals into
+ * `design/incoming/` instead.
  *
  * Run: `pnpm --filter @orkide/web brand` (renders with Playwright's Chromium; fonts come from
  * Google Fonts, so it needs the network).
@@ -14,72 +15,113 @@ import path from "node:path";
 import { tokens } from "@orkide/ui/tokens/tokens";
 import { chromium } from "@playwright/test";
 
+import { resting, VIEW } from "../src/modules/home/axo.ts";
+
 const incoming = path.resolve(import.meta.dirname, "../../../design/incoming");
-const { light } = tokens.color;
-const { dark } = tokens.color;
+const { blue } = tokens.color;
 
-/** A knob from above: graphite skirt, signal cap, ink pointer. Reads at 16 px. */
-const knob = (size: number, ticks: boolean) => {
-  const marks = ticks
-    ? Array.from({ length: 28 }, (_, step) => {
-        const angle = ((-135 + step * 10) * Math.PI) / 180;
-        const inner = step % 9 === 0 ? 40 : 43;
-        const lit = step <= 9;
-        return `<line x1="${50 + Math.sin(angle) * inner}" y1="${50 - Math.cos(angle) * inner}" x2="${50 + Math.sin(angle) * 47}" y2="${50 - Math.cos(angle) * 47}" stroke="${lit ? light.signal : light["ink-2"]}" stroke-width="1.6" stroke-linecap="round"/>`;
-      }).join("")
-    : "";
-  const skirt = ticks ? 36 : 48;
-  const cap = ticks ? 25 : 33;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${size}" height="${size}">
-  <defs><radialGradient id="cap" cx="0.4" cy="0.3" r="0.8"><stop offset="0" stop-color="${light["signal-glint"]}"/><stop offset="0.6" stop-color="${light.signal}"/><stop offset="1" stop-color="${light["signal-deep"]}"/></radialGradient></defs>
-  ${marks}
-  <circle cx="50" cy="50" r="${skirt}" fill="${dark.case}"/>
-  <circle cx="50" cy="50" r="${cap}" fill="url(#cap)"/>
-  <rect x="${50 - cap * 0.12}" y="${50 - cap * 0.92}" width="${cap * 0.24}" height="${cap * 0.62}" rx="${cap * 0.12}" fill="${light["on-signal"]}" transform="rotate(-40 50 50)"/>
+/** The orchid mark: three petals on construction geometry, a redline centre mark. */
+const mark = (
+  size: number,
+  stroke: number
+) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="${size}" height="${size}">
+  <circle cx="14" cy="14" r="12.5" fill="none" stroke="${blue["line-2"]}" stroke-width="${stroke * 0.6}" stroke-dasharray="3 2"/>
+  <g fill="none" stroke="${blue.line}" stroke-width="${stroke}" stroke-linejoin="round">
+    <path d="M14 14 C 10.6 9.6 10.8 4.6 14 2.4 C 17.2 4.6 17.4 9.6 14 14 Z"/>
+    <path d="M14 14 C 19.4 14.8 23.6 18 23.2 21.8 C 19.6 23.4 15.4 20 14 14 Z"/>
+    <path d="M14 14 C 12.6 20 8.4 23.4 4.8 21.8 C 4.4 18 8.6 14.8 14 14 Z"/>
+  </g>
+  <path d="M14 10.5 V 17.5 M 10.5 14 H 17.5" stroke="${blue.mark}" stroke-width="${stroke}"/>
 </svg>`;
-};
 
-/**
- * The favicon: the knob drawn for 16 px. A bigger cap and a longer pointer than the panel's knob,
- * and a hairline rim in the case colour so it stays visible on dark tab bars.
- */
+/** The favicon: the mark on a blue tile with a sheet border, drawn bold enough for 16 px. */
 const favicon = (
   size: number
 ) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${size}" height="${size}">
-  <defs><radialGradient id="cap" cx="0.38" cy="0.3" r="0.85"><stop offset="0" stop-color="${light["signal-glint"]}"/><stop offset="0.55" stop-color="${light.signal}"/><stop offset="1" stop-color="${light["signal-deep"]}"/></radialGradient></defs>
-  <circle cx="32" cy="32" r="31" fill="${dark.case}" stroke="${light.case}" stroke-width="2"/>
-  <circle cx="32" cy="32" r="22.5" fill="url(#cap)"/>
-  <rect x="28.75" y="11.5" width="6.5" height="18" rx="3.25" fill="${light["on-signal"]}" transform="rotate(-40 32 32)"/>
+  <rect width="64" height="64" fill="${blue.paper}"/>
+  <rect x="3" y="3" width="58" height="58" fill="none" stroke="${blue.line}" stroke-width="2.5"/>
+  <g transform="translate(8 8) scale(1.7142857)">
+    <g fill="none" stroke="${blue.line}" stroke-width="2.1" stroke-linejoin="round">
+      <path d="M14 14 C 10.6 9.6 10.8 4.6 14 2.4 C 17.2 4.6 17.4 9.6 14 14 Z"/>
+      <path d="M14 14 C 19.4 14.8 23.6 18 23.2 21.8 C 19.6 23.4 15.4 20 14 14 Z"/>
+      <path d="M14 14 C 12.6 20 8.4 23.4 4.8 21.8 C 4.4 18 8.6 14.8 14 14 Z"/>
+    </g>
+    <path d="M14 10 V 18 M 10 14 H 18" stroke="${blue.mark}" stroke-width="2.1"/>
+  </g>
 </svg>
 `;
 
+/** The stack as the cover draws it at rest, as standalone SVG. */
+const stack = (width: number) => {
+  const drawing = resting();
+  const parts = drawing.parts
+    .map(
+      (part) => `<g>
+      ${part.fills.map((fill) => `<path d="${fill.d}" fill="${fill.top ? blue["paper-3"] : blue.paper}"/>`).join("")}
+      <path d="${part.edges}" fill="none" stroke="${blue.line}" stroke-width="1.3" stroke-linejoin="round"/>
+      ${part.deco ? `<path d="${part.deco}" fill="none" stroke="${blue["line-2"]}" stroke-width="0.9"/>` : ""}
+      ${part.hatch ? `<path d="${part.hatch}" fill="${blue["line-3"]}" stroke="${blue["line-2"]}" stroke-width="0.9"/>` : ""}
+      ${part.pixel ? `<path d="${part.pixel}" fill="${blue.mark}"/>` : ""}
+      ${part.label ? `<text transform="${part.label.transform}" fill="${blue.ink}" font-family="Chivo Mono" font-weight="600" font-size="8.5">${part.label.text}</text>` : ""}
+    </g>`
+    )
+    .join("");
+  const balloons = drawing.balloons
+    .map(
+      (
+        b
+      ) => `<path d="M${b.x} ${b.y}L${b.bx} ${b.by}" stroke="${blue["line-2"]}"/>
+      <circle cx="${b.bx}" cy="${b.by}" r="11.5" fill="${blue.paper}" stroke="${blue.line}" stroke-width="1.3"/>
+      <text x="${b.bx}" y="${b.by + 3.6}" text-anchor="middle" fill="${blue.ink}" font-family="Chivo Mono" font-weight="600" font-size="10.5">${b.id}</text>`
+    )
+    .join("");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW.width} ${VIEW.height}" width="${width}" height="${(width * VIEW.height) / VIEW.width}">
+    ${parts}
+    <path d="${drawing.hidden}" fill="none" stroke="${blue["line-3"]}" stroke-dasharray="4 4"/>
+    <path d="${drawing.explode}" fill="none" stroke="${blue["line-3"]}" stroke-dasharray="10 4 2 4"/>
+    ${balloons}
+  </svg>`;
+};
+
 const fonts =
-  "https://fonts.googleapis.com/css2?family=Doto:wght,ROND@900,100&family=Saira:wdth,wght@75..125,600..900&display=block";
+  "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Chivo+Mono:wght@400..700&display=block";
 
 const page = (width: number, height: number, body: string) => `<!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="${fonts}"><style>
   * { box-sizing: border-box; margin: 0; }
-  body { width: ${width}px; height: ${height}px; overflow: hidden; background: ${light.case}; color: ${light.ink}; font-family: Saira, sans-serif; }
-  .eng { font-weight: 600; font-stretch: 85%; letter-spacing: 0.16em; text-transform: uppercase; color: ${light["ink-2"]}; }
-  .panel { position: absolute; border-radius: 40px; background: linear-gradient(160deg, ${light.case}, ${light.panel}); box-shadow: inset 0 3px 0 ${light.hl}, inset 0 -4px 0 ${light.deep}, 0 40px 70px -40px ${light.sh}; }
-  .screen { border-radius: 20px; background: ${light.screen}; box-shadow: inset 0 4px 14px ${light.shade}, 0 0 0 8px ${light.deep}; color: ${light.led}; font-family: Doto, monospace; font-weight: 900; text-shadow: 0 0 18px ${light["led-glow"]}; }
-  .lamp { width: 14px; height: 14px; border-radius: 50%; background: ${light.ok}; box-shadow: 0 0 14px ${light.ok}; }
-  .brand { font-weight: 900; font-stretch: 125%; letter-spacing: 0.04em; }
+  body {
+    width: ${width}px; height: ${height}px; overflow: hidden; color: ${blue.ink}; font-family: Archivo, sans-serif;
+    background-color: ${blue.paper};
+    background-image:
+      linear-gradient(${blue["grid-major"]} 1px, transparent 1px), linear-gradient(90deg, ${blue["grid-major"]} 1px, transparent 1px),
+      linear-gradient(${blue.grid} 1px, transparent 1px), linear-gradient(90deg, ${blue.grid} 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+  }
+  .frame { position: absolute; inset: 14px; border: 3px solid ${blue.line}; }
+  .frame::after { content: ""; position: absolute; inset: 22px; border: 1.5px solid ${blue["line-2"]}; }
+  .label { font-family: "Chivo Mono", monospace; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: ${blue["ink-2"]}; }
+  .title { font-weight: 800; font-stretch: 66%; text-transform: uppercase; line-height: 0.93; }
+  .word { font-weight: 850; font-stretch: 125%; letter-spacing: 0.16em; text-transform: uppercase; }
+  .block { position: absolute; display: grid; grid-template-columns: 1.6fr 1fr; border: 3px solid ${blue.line}; background: ${blue.paper}; }
+  .block > div { padding: 10px 14px; border-right: 1.5px solid ${blue["line-2"]}; border-bottom: 1.5px solid ${blue["line-2"]}; }
+  .block b { display: block; margin-top: 6px; font-weight: 800; font-stretch: 80%; font-size: 26px; text-transform: uppercase; }
+  .accent { color: ${blue["mark-ink"]}; }
 </style></head><body>${body}</body></html>`;
 
-/** The front panel with a two-line display: the link preview for a section of the site. */
-const preview = (line: string, sub: string) =>
+/** A link preview: a sheet with its title, the stack drawing and a title block. */
+const preview = (title: string, sheet: string, name: string) =>
   page(
     1200,
     630,
-    `<div class="panel" style="inset: 48px">
-      <div style="position:absolute; top:34px; left:44px; display:flex; gap:12px; align-items:center"><span class="lamp"></span><span class="eng" style="font-size:18px">PWR</span></div>
-      <div style="position:absolute; top:30px; right:46px" class="eng" ><span style="font-size:18px">${sub}</span></div>
-      <div class="screen" style="position:absolute; left:44px; top:84px; width:720px; height:400px; padding:40px 44px">
-        <div style="font-size:30px; opacity:.8">ORKIDE · MODEL 26</div>
-        <div style="font-size:104px; line-height:1.05; margin-top:34px">${line}</div>
-      </div>
-      <div style="position:absolute; right:58px; top:150px">${knob(250, true)}</div>
+    `<div class="frame"></div>
+    <div style="position:absolute; left:84px; top:96px; width:660px">
+      <div class="label" style="font-size:20px"><span class="accent">${sheet}</span> · ${name}</div>
+      <div class="title" style="font-size:84px; margin-top:22px">${title}</div>
+    </div>
+    <div style="position:absolute; right:70px; top:56px">${stack(380)}</div>
+    <div class="block" style="left:84px; bottom:70px; width:520px">
+      <div><span class="label" style="font-size:13px">Project</span><b>Orkide</b></div>
+      <div><span class="label" style="font-size:13px">Dwg no.</span><b class="accent">${sheet}</b></div>
     </div>`
   );
 
@@ -88,69 +130,51 @@ const shoot = async (
   file: string,
   html: string,
   width: number,
-  height: number,
-  transparent = false
+  height: number
 ) => {
   const tab = await browser.newPage({ viewport: { height, width } });
   await tab.setContent(html, { waitUntil: "networkidle" });
   await tab.evaluate(() => document.fonts.ready);
-  await tab.screenshot({
-    omitBackground: transparent,
-    path: path.join(incoming, file),
-  });
+  await tab.screenshot({ path: path.join(incoming, file) });
   await tab.close();
 };
 
 await mkdir(incoming, { recursive: true });
 await writeFile(path.join(incoming, "favicon.svg"), favicon(64));
-await shoot(
-  "favicon.png",
-  page(1024, 1024, favicon(1024)).replace(
-    `background: ${light.case}`,
-    "background: transparent"
-  ),
-  1024,
-  1024,
-  true
-);
+await shoot("favicon.png", page(1024, 1024, favicon(1024)), 1024, 1024);
 await shoot(
   "app-icon.png",
   page(
     1024,
     1024,
-    `<div style="display:grid; place-items:center; width:1024px; height:1024px">${knob(900, true)}</div>`
+    `<div class="frame"></div><div style="display:grid; place-items:center; width:1024px; height:1024px">${mark(720, 1.4)}</div>`
   ),
   1024,
   1024
 );
 await shoot(
   "og-default.png",
-  preview("ENGINEERING,<br>CRAFTED.", "Software engineer · Builder"),
+  preview("Every product starts from these drawings.", "G-001", "Cover sheet"),
   1200,
   630
 );
 await shoot(
   "og-blog.png",
-  preview("§1 BLOG", "Notes on engineering"),
+  preview("Writing", "G-002", "Drawing index"),
   1200,
   630
 );
-await shoot(
-  "og-portfolio.png",
-  preview("§2 WORK", "Selected projects"),
-  1200,
-  630
-);
+await shoot("og-portfolio.png", preview("Work", "G-003", "Plates"), 1200, 630);
 await shoot(
   "email-header.png",
   page(
     1200,
     300,
-    `<div class="panel" style="inset: 30px 40px">
-      <div style="position:absolute; left:46px; top:50%; transform:translateY(-50%); display:flex; align-items:baseline; gap:18px"><span class="brand" style="font-size:64px">ORKIDE</span><span class="eng" style="font-size:20px">MODEL 26</span></div>
-      <div style="position:absolute; right:150px; top:50%; transform:translateY(-50%); display:flex; gap:12px; align-items:center"><span class="lamp"></span><span class="eng" style="font-size:18px">PWR</span></div>
-      <div style="position:absolute; right:30px; top:50%; transform:translateY(-50%)">${knob(110, false)}</div>
-    </div>`
+    `<div class="frame"></div>
+    <div style="position:absolute; left:84px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:28px">
+      ${mark(120, 1.6)}<span class="word" style="font-size:64px">Orkide</span>
+    </div>
+    <div class="label" style="position:absolute; right:84px; top:50%; transform:translateY(-50%); font-size:20px"><span class="accent">G-001</span> · Cover sheet</div>`
   ),
   1200,
   300

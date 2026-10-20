@@ -1,58 +1,86 @@
 ---
 import { m } from "@orkide/i18n/messages";
 
-import { themes } from "./theme.ts";
-import type { Theme } from "./theme.ts";
-
 const { locale } = Astro.locals;
 const options = { locale };
-const labels: Record<Theme, string> = {
-  dark: m.theme_dark({}, options),
-  light: m.theme_light({}, options),
-  system: m.theme_system({}, options),
-};
 ---
 
-<!-- A three-position slide switch: system, light, dark (one radio per position). -->
-<theme-switch class="o-switch">
-  <fieldset class="o-slot o-slot-3">
-    <legend class="sr-only">{m.theme_label({}, options)}</legend>
-    {
-      themes.map((theme) => (
-        <label title={labels[theme]}>
-          <input class="sr-only" type="radio" name="theme" value={theme} />
-          <span class="sr-only">{labels[theme]}</span>
-        </label>
-      ))
-    }
-    <span class="o-thumb" aria-hidden="true"></span>
-  </fieldset>
-  <span class="o-eng" aria-hidden="true">{m.theme_label({}, options)}</span>
-</theme-switch>
+<!--
+  The print: blue (the default) or white. A double-throw switch whose blade points at the print in
+  use; checked means the white print. The change is exposed by a lamp sweeping across the sheet.
+-->
+<button
+  type="button"
+  class="o-switch"
+  role="switch"
+  aria-checked="false"
+  aria-label={m.theme_switch({}, options)}
+  data-throws="2"
+  data-print-switch
+>
+  <svg viewBox="0 0 46 26" aria-hidden="true">
+    <circle data-part="contact" cx="6" cy="13" r="2.6"></circle>
+    <line x1="40" y1="3.5" x2="46" y2="3.5"></line>
+    <line x1="40" y1="22.5" x2="46" y2="22.5"></line>
+    <circle data-part="contact" cx="38" cy="3.5" r="2.2"></circle>
+    <circle data-part="contact" cx="38" cy="22.5" r="2.2"></circle>
+    <line data-part="blade" x1="6" y1="13" x2="36" y2="13"></line>
+  </svg>
+  <span class="o-switch-names" aria-hidden="true">
+    <span data-print="blue" data-on>{m.theme_blue({}, options)}</span>
+    <span data-print="white">{m.theme_white({}, options)}</span>
+  </span>
+</button>
 
 <script>
-  import {
-    followSystemTheme,
-    isTheme,
-    readTheme,
-    storeTheme,
-  } from "./theme.ts";
+  import { motionAllowed } from "@/shared/motion/motion.ts";
 
-  class ThemeSwitch extends HTMLElement {
-    connectedCallback() {
-      const current = readTheme();
-      for (const input of this.querySelectorAll<HTMLInputElement>("input")) {
-        input.checked = input.value === current;
+  import { readWhite, storeWhite } from "./theme.ts";
+
+  const switches = [
+    ...document.querySelectorAll<HTMLElement>("[data-print-switch]"),
+  ];
+  const show = (white: boolean) => {
+    for (const button of switches) {
+      button.setAttribute("aria-checked", String(white));
+      for (const name of button.querySelectorAll<HTMLElement>("[data-print]")) {
+        name.toggleAttribute(
+          "data-on",
+          (name.dataset.print === "white") === white
+        );
       }
-      this.addEventListener("change", (event) => {
-        const { value } = event.target as HTMLInputElement;
-        if (isTheme(value)) {
-          storeTheme(value);
-        }
-      });
     }
-  }
+  };
+  show(readWhite());
 
-  customElements.define("theme-switch", ThemeSwitch);
-  followSystemTheme();
+  for (const button of switches) {
+    button.addEventListener("click", async () => {
+      const white = !readWhite();
+      const apply = () => {
+        storeWhite(white);
+        show(white);
+      };
+      const lamp = document.querySelector<HTMLElement>("[data-lamp]");
+      if (!("startViewTransition" in document && lamp && motionAllowed())) {
+        apply();
+        return;
+      }
+      // The lamp is captured at the left edge, then at the right: the transition moves it across
+      // while the new print is exposed behind it (styles/motion.css).
+      const root = document.documentElement;
+      root.classList.add("o-exposing");
+      lamp.toggleAttribute("data-on", true);
+      const transition = document.startViewTransition(() => {
+        apply();
+        lamp.toggleAttribute("data-end", true);
+      });
+      try {
+        await transition.finished;
+      } finally {
+        root.classList.remove("o-exposing");
+        delete lamp.dataset.on;
+        delete lamp.dataset.end;
+      }
+    });
+  }
 </script>

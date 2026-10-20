@@ -69,7 +69,7 @@ const AlertDialogTitle = ({
 }: ComponentProps<typeof AlertDialogPrimitive.Title>) => (
   <AlertDialogPrimitive.Title
     data-slot="alert-dialog-title"
-    className={cn("o-unit-title text-lg", className)}
+    className={cn("o-card-title", className)}
     {...props}
   />
 );

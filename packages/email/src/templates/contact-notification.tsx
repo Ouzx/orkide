@@ -35,7 +35,7 @@ export const ContactNotification = (props: ContactNotificationProps) => {
       {subject ? (
         <Text className="text-base font-semibold text-ink">{subject}</Text>
       ) : null}
-      <Section className="rounded-md bg-panel px-4 py-2">
+      <Section className="bg-panel rounded-md px-4 py-2">
         <Text className="text-base leading-6 whitespace-pre-wrap text-ink">
           {body}
         </Text>

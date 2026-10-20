@@ -2,8 +2,14 @@ import type { Locale } from "@orkide/i18n";
 
 declare global {
   interface ImportMetaEnv {
-    /** Short commit of this build (`astro.config.ts`), the back panel's serial number. */
+    /** Short commit of this build (`astro.config.ts`), the title block's revision. */
     readonly PUBLIC_BUILD: string;
+    /** The build's last commits, newest first (`astro.config.ts`): the revision table. */
+    readonly PUBLIC_REVISIONS: readonly {
+      readonly date: string;
+      readonly hash: string;
+      readonly subject: string;
+    }[];
   }
 
   namespace App {

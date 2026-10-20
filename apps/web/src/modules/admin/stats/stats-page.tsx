@@ -160,7 +160,7 @@ export const StatsPage = () => {
           <Overview days={days} />
         </QueryBoundary>
         <section className="space-y-4">
-          <h2 className="o-unit-title">{m.admin_stats_vitals({}, options)}</h2>
+          <h2 className="o-card-title">{m.admin_stats_vitals({}, options)}</h2>
           <QueryBoundary>
             <Vitals days={days} />
           </QueryBoundary>

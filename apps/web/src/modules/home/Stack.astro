@@ -1,7 +1,10 @@
 ---
+import { m } from "@orkide/i18n/messages";
 import type { SiteContent } from "@orkide/validators/site";
 
 import SectionHead from "@/shared/components/SectionHead.astro";
+
+import StageIcon from "./StageIcon.astro";
 
 interface Props {
   /** The section's words: the admin's saved section, else the shipped one. */
@@ -9,46 +12,71 @@ interface Props {
 }
 
 const { content } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+const tag = m.home_section_cut({}, options);
 ---
 
 <!--
-  Inside the front panel: the signal chain one request went through, from the edge to the last
-  pixel. Each stage reads how long this very page took to get there, measured in the visitor's
-  browser (`stack.ts`), so the cached HTML stays the same for everyone.
+  Section A–A: a cut through one request, from the edge to the last pixel. Each stage reads how
+  long this very page took to get there, measured in the visitor's browser (`stack.ts`), so the
+  cached HTML stays the same for everyone. With motion, the cutting plane follows the scroll.
 -->
 <section
   id="stack"
   aria-labelledby="stack-title"
-  class="o-wrap py-18"
-  data-section
+  class="o-wrap o-sec"
+  data-reveal
+  data-section-title={`§1 · ${tag}`}
 >
-  <p class="o-eng m-0 mb-3">{content.kicker}</p>
-  <SectionHead number="0.1" id="stack-title" title={content.title} />
-  <ol class="o-chain mt-2" data-chain>
-    <li class="o-chain-signal" aria-hidden="true" hidden data-signal></li>
-    {
-      content.stages.map((stage, index) => (
-        <li class="o-chain-step">
-          <i aria-hidden="true" />
-          <div class="o-chain-read">
-            <div>
-              <span class="o-lamp" data-tone="ok" aria-hidden="true" />
-              <span class="o-eng">{stage.name}</span>
-            </div>
-            <span class="o-counter" data-timing={index}>
-              —
-            </span>
-            <span class="o-eng">{stage.timing}</span>
-          </div>
-          <div class="min-w-0">
-            <h3>{stage.title}</h3>
+  <SectionHead
+    number={1}
+    tag={tag}
+    kicker={content.kicker}
+    id="stack-title"
+    title={content.title}
+  />
+  <div class="o-cutwrap" data-cut>
+    <div class="o-chain" aria-hidden="true">
+      {
+        content.stages.map((_, index) => (
+          <span data-chain={index}>
+            <b>
+              <small>t+</small>
+              <span data-timing={index}>—</span> <small>ms</small>
+            </b>
+          </span>
+        ))
+      }
+    </div>
+    <ol class="o-cut">
+      {
+        content.stages.map((stage, index) => (
+          <li class="o-stage" data-stage={index}>
+            <StageIcon index={index} />
+            <p class="o-stage-name">
+              <span>{stage.name}</span>
+              <i aria-hidden="true">·</i>
+              <span>{stage.timing}</span>
+              <span class="o-stage-time">
+                <span data-timing={index}>—</span> ms
+              </span>
+            </p>
+            <h3 class="o-h3">{stage.title}</h3>
             <p>{stage.text}</p>
-          </div>
-        </li>
-      ))
-    }
-  </ol>
-  <p class="mt-4 mb-0 font-mono text-xs text-ink-2">{content.note}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="o-cutline" aria-hidden="true">
+      <span>A</span><span></span><span>A</span>
+    </div>
+  </div>
+  <p class="o-note-line">
+    <span>{content.note}</span>
+    <span class="o-hand" aria-hidden="true">{m.home_cut_note({}, options)}</span
+    >
+  </p>
 </section>
 
 <script>

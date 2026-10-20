@@ -10,6 +10,7 @@ import type { Alternates } from "@/shared/lib/i18n.ts";
 import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
 
 import CategoryNav from "./CategoryNav.astro";
+import IndexHead from "./IndexHead.astro";
 import Pagination from "./Pagination.astro";
 import PostEntry from "./PostEntry.astro";
 
@@ -39,6 +40,7 @@ const {
 const { locale } = Astro.locals;
 const options = { locale };
 const blogPath = alternates[locale] ?? basePath;
+const kind = m.sheet_index({}, options);
 ---
 
 <BaseLayout
@@ -47,28 +49,27 @@ const blogPath = alternates[locale] ?? basePath;
   description={description}
   alternates={alternates}
   noindex={cursor !== undefined}
-  preloadSpecFonts
   jsonLd={graph(
     locale,
     breadcrumbNode([{ name: m.blog_title({}, options), path: blogPath }])
   )}
+  sheet="G-002"
+  sheetName={kind}
 >
-  <PageHeader
-    section={1}
-    name={m.blog_title({}, options)}
-    title={title}
-    lead={description}
-  >
+  <PageHeader sheet="G-002" kind={kind} title={title} lead={description}>
     <CategoryNav categories={categories} current={currentCategory} />
   </PageHeader>
-  <div class="o-wrap pt-10 pb-24 md:pb-32">
+  <div class="o-wrap pt-6 pb-24 md:pb-32" data-reveal>
     {
       posts.items.length > 0 ? (
-        <ol class="o-entries border-t-2 border-ink">
-          {posts.items.map((post, index) => (
-            <PostEntry post={post} index={index + 1} />
-          ))}
-        </ol>
+        <>
+          <IndexHead />
+          <ol class="o-index">
+            {posts.items.map((post, index) => (
+              <PostEntry post={post} latest={index === 0 && !cursor} />
+            ))}
+          </ol>
+        </>
       ) : (
         <EmptyState message={m.blog_empty({}, options)} />
       )

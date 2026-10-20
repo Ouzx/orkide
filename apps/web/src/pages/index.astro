@@ -2,6 +2,7 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
+import IndexHead from "@/modules/blog/IndexHead.astro";
 import PostEntry from "@/modules/blog/PostEntry.astro";
 import { listPosts } from "@/modules/blog/blog.data.ts";
 import Derive from "@/modules/home/Derive.astro";
@@ -11,12 +12,12 @@ import Stack from "@/modules/home/Stack.astro";
 import { loadSite } from "@/modules/home/site.server.ts";
 import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
 import { listProjects } from "@/modules/portfolio/portfolio.data.ts";
-import TagList from "@/modules/blog/TagList.astro";
 import SectionHead from "@/shared/components/SectionHead.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
 import { graph } from "@/shared/seo/json-ld.ts";
+import { owner } from "@/shared/site.ts";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -28,6 +29,9 @@ const [posts, projects, site] = await Promise.all([
 ]);
 const selectedWork = projects.slice(0, 4);
 const [lead, ...rest] = selectedWork;
+const indexTag = m.home_index({}, options);
+const platesTag = m.home_plates({}, options);
+const rfiTag = m.home_rfi({}, options);
 
 cachePage(Astro, "posts", "projects", "site");
 ---
@@ -37,8 +41,10 @@ cachePage(Astro, "posts", "projects", "site");
   description={m.home_description({}, options)}
   alternates={pageAlternates("/")}
   jsonLd={graph(locale)}
+  sheet="G-001"
+  sheetName={m.sheet_cover({}, options)}
 >
-  <Hero content={site.hero} posts={posts.items} projects={selectedWork} />
+  <Hero content={site.hero} sourceUrl={site.derive.url} />
 
   <Stack content={site.stack} />
 
@@ -49,11 +55,14 @@ cachePage(Astro, "posts", "projects", "site");
       <section
         id="writing"
         aria-labelledby="latest-posts"
-        class="o-wrap py-18"
-        data-section
+        class="o-wrap o-sec"
+        data-reveal
+        data-section-title={`§3 · ${indexTag}`}
       >
         <SectionHead
-          number={1}
+          number={3}
+          tag={indexTag}
+          kicker={m.nav_blog({}, options)}
           id="latest-posts"
           title={m.home_latest_posts({}, options)}
           action={{
@@ -61,11 +70,14 @@ cachePage(Astro, "posts", "projects", "site");
             label: m.home_view_all_posts({}, options),
           }}
         />
-        <ol class="o-entries">
-          {posts.items.map((post, index) => (
-            <PostEntry post={post} index={index + 1} headingLevel={3} />
-          ))}
-        </ol>
+        <div class="mt-7">
+          <IndexHead />
+          <ol class="o-index">
+            {posts.items.map((post, index) => (
+              <PostEntry post={post} headingLevel={3} latest={index === 0} />
+            ))}
+          </ol>
+        </div>
       </section>
     )
   }
@@ -75,11 +87,14 @@ cachePage(Astro, "posts", "projects", "site");
       <section
         id="work"
         aria-labelledby="selected-work"
-        class="o-wrap py-18"
-        data-section
+        class="o-wrap o-sec"
+        data-reveal
+        data-section-title={`§4 · ${platesTag}`}
       >
         <SectionHead
-          number={2}
+          number={4}
+          tag={platesTag}
+          kicker={m.nav_portfolio({}, options)}
           id="selected-work"
           title={m.home_featured_projects({}, options)}
           action={{
@@ -87,51 +102,56 @@ cachePage(Astro, "posts", "projects", "site");
             label: m.home_view_all_projects({}, options),
           }}
         />
-        <div class="mt-7.5 grid items-center gap-10 lg:grid-cols-2">
+        <div class="o-plates">
           <ProjectCard project={lead} decorative />
-          <div class="min-w-0">
+          <div class="o-feat-copy">
             {lead.featured && (
-              <span class="inline-flex items-center gap-2">
-                <span class="o-lamp" data-tone="signal" aria-hidden="true" />
-                <span class="o-eng">{m.portfolio_featured({}, options)}</span>
-              </span>
+              <span class="o-feat">{m.portfolio_featured({}, options)}</span>
             )}
-            <h3 class="o-page-title mt-3 mb-3 normal-case">
-              <a
-                href={localizeHref(`/portfolio/${lead.slug}`, options)}
-                class="text-ink no-underline hover:text-signal-ink"
-              >
+            <h3>
+              <a href={localizeHref(`/portfolio/${lead.slug}`, options)}>
                 {lead.title}
               </a>
             </h3>
-            <p class="m-0">{lead.summary}</p>
+            <p>{lead.summary}</p>
             {lead.tags.length > 0 && (
-              <dl class="o-spec mt-5">
-                <dt>{m.blog_tags({}, options)}</dt>
-                <dd>
-                  <TagList tags={lead.tags} label={m.blog_tags({}, options)} />
-                </dd>
-              </dl>
+              <ul class="o-tags mb-5" aria-label={m.blog_tags({}, options)}>
+                {lead.tags.map((tag) => (
+                  <li class="o-tag">{tag.name}</li>
+                ))}
+              </ul>
             )}
-            <div class="mt-5.5 flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-4">
               <a
                 href={localizeHref(`/portfolio/${lead.slug}`, options)}
-                class="o-key o-key-lg o-key-signal"
+                class="o-btn o-btn-primary"
                 data-magnet
               >
                 {m.portfolio_details({}, options)}
-                <span aria-hidden="true">→</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M2 8 H 13 M 9 4 L 13 8 L 9 12"
+                    fill="none"
+                    stroke="currentColor"
+                  />
+                </svg>
               </a>
               {lead.websiteUrl && (
                 <a
                   href={lead.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="o-key o-key-lg"
+                  class="o-btn"
                   data-magnet
                 >
                   {m.portfolio_visit({}, options)}
-                  <span aria-hidden="true">↗</span>
+                  <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path
+                      d="M4 12 L 12 4 M 6 4 H 12 V 10"
+                      fill="none"
+                      stroke="currentColor"
+                    />
+                  </svg>
                 </a>
               )}
               {lead.repositoryUrl && (
@@ -139,7 +159,7 @@ cachePage(Astro, "posts", "projects", "site");
                   href={lead.repositoryUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="o-key o-key-lg"
+                  class="o-btn"
                   data-magnet
                 >
                   {m.portfolio_source({}, options)}
@@ -147,14 +167,10 @@ cachePage(Astro, "posts", "projects", "site");
               )}
             </div>
           </div>
+          {rest.map((project) => (
+            <ProjectCard project={project} headingLevel={3} />
+          ))}
         </div>
-        {rest.length > 0 && (
-          <div class="mt-12 grid gap-8 md:grid-cols-3">
-            {rest.map((project) => (
-              <ProjectCard project={project} headingLevel={3} />
-            ))}
-          </div>
-        )}
       </section>
     )
   }
@@ -164,35 +180,50 @@ cachePage(Astro, "posts", "projects", "site");
   <section
     id="contact"
     aria-labelledby="contact-teaser"
-    class="o-wrap pt-18 pb-24 md:pb-32"
-    data-section
+    class="o-wrap o-sec"
+    data-reveal
+    data-section-title={`§6 · ${rfiTag}`}
   >
     <SectionHead
-      number={3}
+      number={6}
+      tag={rfiTag}
+      kicker={m.contact_title({}, options)}
       id="contact-teaser"
-      title={m.contact_title({}, options)}
+      title={m.sheet_rfi({}, options)}
     />
-    <div class="mt-7.5 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-      <p class="m-0 max-w-[30em] text-lg text-ink-2">
-        {m.contact_description({}, options)}
-      </p>
-      <div class="o-panel">
-        <span class="o-screw o-screw-tl" aria-hidden="true"></span>
-        <span class="o-screw o-screw-tr" aria-hidden="true"></span>
-        <div class="o-status">
-          <span class="o-lamp" data-tone="ok" aria-hidden="true"></span>
-          <span class="o-mini" aria-hidden="true">
-            {m.contact_ready({}, options)}
-          </span>
+    <div class="mt-7 grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+      <p class="o-lead">{m.contact_description({}, options)}</p>
+      <div class="o-rfi">
+        <dl class="o-rfi-head">
+          <div>
+            <dt>{m.tb_drawing({}, options)}</dt>
+            <dd>G-004</dd>
+          </div>
+          <div>
+            <dt>{m.tb_title({}, options)}</dt>
+            <dd>{m.contact_title({}, options)}</dd>
+          </div>
+          <div>
+            <dt>{m.tb_drawn({}, options)}</dt>
+            <dd>{owner.name}</dd>
+          </div>
+        </dl>
+        <div class="o-rfi-foot pt-5.5">
+          <p>{m.home_rfi_note({}, options)}</p>
+          <a
+            href={localizeHref("/contact", options)}
+            class="o-btn o-btn-primary"
+            data-magnet
+          >
+            {site.hero.contactCta}
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M2 8 H 13 M 9 4 L 13 8 L 9 12"
+                fill="none"
+                stroke="currentColor"></path>
+            </svg>
+          </a>
         </div>
-        <a
-          href={localizeHref("/contact", options)}
-          class="o-key o-key-lg o-key-signal"
-          data-magnet
-        >
-          {site.hero.contactCta}
-          <span aria-hidden="true">→</span>
-        </a>
       </div>
     </div>
   </section>

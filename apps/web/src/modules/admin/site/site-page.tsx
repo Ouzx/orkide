@@ -157,10 +157,10 @@ const SectionEditor = ({
   return (
     <section
       aria-labelledby="site-section"
-      className="o-unit space-y-6 p-5 sm:p-6"
+      className="o-card space-y-6 p-5 sm:p-6"
     >
       <header className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="site-section" className="o-sec-title text-2xl">
+        <h2 id="site-section" className="o-card-title text-2xl">
           {name}
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -247,7 +247,7 @@ export const SitePage = () => {
                 <button
                   type="button"
                   aria-current={key === section ? "true" : undefined}
-                  className="o-bay-link w-full text-left"
+                  className="o-palette-link w-full text-left"
                   onClick={() => {
                     setSection(key);
                   }}

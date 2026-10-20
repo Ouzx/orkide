@@ -20,7 +20,7 @@ export const LiveVisitors = () => {
 
   return (
     <span className="inline-flex items-center gap-2">
-      <span className="o-lamp o-lamp-pulse" data-tone="ok" aria-hidden="true" />
+      <span className="o-dot" data-live aria-hidden="true" />
       <output aria-live="polite">
         {count === undefined ? "–" : number.format(count)}
       </output>

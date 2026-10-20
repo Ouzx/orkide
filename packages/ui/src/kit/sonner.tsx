@@ -5,7 +5,6 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import type { CSSProperties } from "react";
 import { Toaster as Sonner } from "sonner";
 import type { ToasterProps } from "sonner";
 
@@ -13,10 +12,10 @@ import type { ToasterProps } from "sonner";
 // turns that off and the stylesheet ships with the bundle instead.
 import "sonner/dist/styles.css";
 
-/** Toasts read out on a small LED screen (components.md · Toast). */
+/** Toasts as transmittal slips on the sheet (components.md · Toast). */
 const Toaster = (props: ToasterProps) => (
   <Sonner
-    theme="dark"
+    className="o-toaster"
     icons={{
       error: <OctagonXIcon className="size-4" />,
       info: <InfoIcon className="size-4" />,
@@ -24,15 +23,6 @@ const Toaster = (props: ToasterProps) => (
       success: <CircleCheckIcon className="size-4" />,
       warning: <TriangleAlertIcon className="size-4" />,
     }}
-    style={
-      {
-        "--border-radius": "var(--radius-lg)",
-        "--normal-bg": "var(--o-screen)",
-        "--normal-border": "var(--o-deep)",
-        "--normal-text": "var(--o-led)",
-      } as CSSProperties
-    }
-    toastOptions={{ classNames: { toast: "font-led tracking-wide uppercase" } }}
     {...props}
   />
 );

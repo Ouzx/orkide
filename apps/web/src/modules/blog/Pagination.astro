@@ -11,7 +11,6 @@ interface Props {
 
 const { basePath, hasPrevious, nextCursor } = Astro.props;
 const { locale } = Astro.locals;
-const link = "o-key";
 ---
 
 {
@@ -21,7 +20,7 @@ const link = "o-key";
       class="mt-12 flex justify-between gap-4"
     >
       {hasPrevious ? (
-        <a href={basePath} class={link}>
+        <a href={basePath} class="o-btn">
           <span aria-hidden="true">←</span>
           {m.blog_newer({}, { locale })}
         </a>
@@ -32,7 +31,7 @@ const link = "o-key";
         <a
           href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`}
           rel="next"
-          class={link}
+          class="o-btn"
         >
           {m.blog_older({}, { locale })}
           <span aria-hidden="true">→</span>

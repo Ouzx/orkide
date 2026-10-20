@@ -107,7 +107,7 @@ const Dropzone = () => {
       data-dragging={dragging}
       className="group mb-8"
     >
-      <label className="flex cursor-pointer flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-ink-2 bg-panel p-10 text-center text-muted-foreground shadow-recess transition-colors group-data-[dragging=true]:border-primary group-data-[dragging=true]:text-foreground hover:text-foreground">
+      <label className="flex cursor-pointer flex-col items-center gap-3 border-2 border-dashed border-line-2 bg-paper-2 p-10 text-center text-muted-foreground transition-colors group-data-[dragging=true]:border-primary group-data-[dragging=true]:text-foreground hover:text-foreground">
         <UploadCloud aria-hidden="true" className="size-8" />
         <span>{m.admin_media_drop({}, options)}</span>
         <input
@@ -300,7 +300,7 @@ export const MediaGrid = ({
             <button
               type="button"
               onClick={() => onSelect(record)}
-              className="group block w-full overflow-hidden rounded-xl bg-panel text-left shadow-raised transition-transform duration-(--o-dur-spring) ease-spring hover:-translate-y-0.5"
+              className="group block w-full overflow-hidden border border-line bg-paper text-left transition-transform duration-(--o-dur-spring) ease-spring hover:-translate-y-0.5"
             >
               <span className="block aspect-square overflow-hidden">
                 <MediaThumb record={record} />

@@ -5,17 +5,24 @@ const { locale } = Astro.locals;
 ---
 
 <!--
-  Switches the site's motion off and on for this browser (pressed = reduced). Hidden for visitors
-  whose system already asks for reduced motion: the site follows that setting anyway.
+  Switches the site's motion off and on for this browser (pressed = reduced): a single-throw
+  switch, closed while motion runs. Hidden for visitors whose system already asks for reduced
+  motion: the site follows that setting anyway.
 -->
 <button
   type="button"
-  class="o-switch o-switch-inline motion-reduce:hidden"
+  class="o-switch motion-reduce:hidden"
   aria-pressed="false"
+  data-throws="1"
   data-motion-switch
 >
-  <span class="o-slot" aria-hidden="true"><span class="o-thumb"></span></span>
-  <span class="o-eng">{m.motion_reduce({}, { locale })}</span>
+  <svg viewBox="0 0 46 26" aria-hidden="true">
+    <circle data-part="contact" cx="6" cy="13" r="2.6"></circle>
+    <circle data-part="contact" cx="38" cy="13" r="2.6"></circle>
+    <line x1="41" y1="13" x2="46" y2="13"></line>
+    <line data-part="blade" x1="6" y1="13" x2="36" y2="13"></line>
+  </svg>
+  <span>{m.motion_reduce({}, { locale })}</span>
 </button>
 
 <script>

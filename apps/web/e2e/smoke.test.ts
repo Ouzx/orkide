@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 test("unprefixed paths redirect to a locale", async ({ request }) => {
   const response = await request.get("/blog", { maxRedirects: 0 });
@@ -44,17 +45,25 @@ test("the motion switch turns motion off before the next paint", async ({
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
 });
 
-test("the theme switch changes the palette and keeps it", async ({ page }) => {
-  await page.emulateMedia({ colorScheme: "light" });
+/** The print switch sits in the header, or in the menu on phones. */
+const printSwitch = async (page: Page) => {
+  const menu = page.getByRole("button", { exact: true, name: "Menu" });
+  if (await menu.isVisible()) {
+    await menu.click();
+  }
+  return page.getByRole("switch", { name: "White print" });
+};
+
+test("the print switch changes the palette and keeps it", async ({ page }) => {
   await page.goto("/en");
-  const dark = page.getByRole("radio", { name: "Dark" });
-  await page.getByTitle("Dark").click();
-  await expect(dark).toBeChecked();
-  await expect(page.locator("html")).toHaveClass(/\bdark\b/u);
+  const white = await printSwitch(page);
+  await white.click();
+  await expect(white).toBeChecked();
+  await expect(page.locator("html")).toHaveClass(/\blight\b/u);
 
   await page.reload();
-  await expect(page.locator("html")).toHaveClass(/\bdark\b/u);
-  await expect(dark).toBeChecked();
+  await expect(page.locator("html")).toHaveClass(/\blight\b/u);
+  await expect(await printSwitch(page)).toBeChecked();
 });
 
 test("the admin sign-in page is reachable without a session", async ({

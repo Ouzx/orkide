@@ -33,15 +33,15 @@ export const Layout = ({ locale, preview, siteUrl, children }: LayoutProps) => (
         presets: [pixelBasedPreset],
         theme: {
           extend: {
-            // The skin's light theme (packages/ui/src/tokens/tokens.json): email clients take
+            // The skin's white print (packages/ui/src/tokens/tokens.json): email clients take
             // no custom properties, so the values are copied here.
             colors: {
-              accent: "#725300",
-              canvas: "#e7e3d9",
-              ink: "#1d1d1b",
-              muted: "#5b574f",
-              panel: "#dcd7cb",
-              rule: "#ccc6b8",
+              accent: "#b23519",
+              canvas: "#f2f5f9",
+              ink: "#0d3a73",
+              muted: "#4a6892",
+              panel: "#e4eaf3",
+              rule: "#c6d3e5",
             },
           },
         },
@@ -50,7 +50,7 @@ export const Layout = ({ locale, preview, siteUrl, children }: LayoutProps) => (
       <Head />
       <Body className="bg-canvas m-0 font-sans">
         <Preview>{preview}</Preview>
-        <Container className="mx-auto my-8 max-w-[560px] overflow-hidden rounded-lg bg-white">
+        <Container className="border-rule mx-auto my-8 max-w-[560px] overflow-hidden border border-solid bg-white">
           {/* Hosted by the web Worker (`pnpm media`): email clients only load absolute URLs. */}
           <Img
             src={`${siteUrl}/media/email-header.jpg`}

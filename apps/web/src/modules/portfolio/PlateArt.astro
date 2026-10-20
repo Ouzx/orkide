@@ -1,0 +1,65 @@
+---
+import { plateArt } from "./plate-art.ts";
+
+interface Props {
+  /** The project's slug: the same slug always draws the same plate. */
+  seed: string;
+  /** The wider plate beside the featured project's copy. */
+  lead?: boolean;
+}
+
+const { seed, lead = false } = Astro.props;
+const plate = plateArt(seed, lead ? { height: 330, width: 480 } : {});
+---
+
+<svg
+  class="o-plate-art o-art"
+  viewBox={`0 0 ${plate.width} ${plate.height}`}
+  aria-hidden="true"
+  data-plot
+>
+  {
+    plate.shapes.map((shape) =>
+      shape.kind === "line" ? (
+        shape.dash ? (
+          <path
+            data-line
+            data-tone={shape.tone}
+            d={shape.d}
+            stroke-width={shape.width}
+            stroke-dasharray={shape.dash}
+          />
+        ) : (
+          <path
+            data-stroke
+            data-line
+            data-tone={shape.tone}
+            d={shape.d}
+            stroke-width={shape.width}
+            pathLength="1"
+          />
+        )
+      ) : shape.kind === "wash" ? (
+        <path
+          data-wash={shape.fill === "hatch" ? "" : shape.fill}
+          d={shape.d}
+          fill-rule="evenodd"
+        />
+      ) : (
+        <text
+          x={shape.x.toFixed(1)}
+          y={shape.y.toFixed(1)}
+          text-anchor={shape.anchor}
+          data-tone={shape.tone}
+          transform={
+            shape.rotate
+              ? `rotate(${shape.rotate} ${shape.x.toFixed(1)} ${shape.y.toFixed(1)})`
+              : undefined
+          }
+        >
+          {shape.text}
+        </text>
+      )
+    )
+  }
+</svg>

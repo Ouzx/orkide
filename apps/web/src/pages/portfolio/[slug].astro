@@ -43,8 +43,7 @@ Astro.response.headers.set("vary", "accept");
   section="portfolio"
   path={path}
   sectionPath={portfolioPath}
-  runhead={`${m.skin_manual({ site: m.site_name({}, options) }, options)} · §2 ${m.portfolio_title({}, options)}`}
-  backLabel={m.portfolio_back({}, options)}
+  sectionName={m.portfolio_title({}, options)}
   coverClass="aspect-[16/10]"
   jsonLd={graph(
     locale,
@@ -57,25 +56,37 @@ Astro.response.headers.set("vary", "accept");
 >
   {
     project.featured && (
-      <span slot="runhead" class="o-eng">
+      <p slot="runhead" class="o-feat mb-3">
         {m.portfolio_featured({}, options)}
-      </span>
+      </p>
     )
   }
-  {timeline && <span slot="meta">{timeline}</span>}
+  {
+    timeline && (
+      <li slot="meta">
+        <b>{timeline}</b>
+      </li>
+    )
+  }
   {
     (project.websiteUrl || project.repositoryUrl) && (
-      <div slot="actions" class="mt-2 flex flex-wrap gap-3">
+      <div slot="actions" class="mt-6 flex flex-wrap gap-4">
         {project.websiteUrl && (
           <a
             href={project.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="o-key o-key-lg o-key-signal"
+            class="o-btn o-btn-primary"
             data-magnet
           >
             {m.portfolio_visit({}, options)}
-            <span aria-hidden="true">↗</span>
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M4 12 L 12 4 M 6 4 H 12 V 10"
+                fill="none"
+                stroke="currentColor"
+              />
+            </svg>
           </a>
         )}
         {project.repositoryUrl && (
@@ -83,7 +94,7 @@ Astro.response.headers.set("vary", "accept");
             href={project.repositoryUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="o-key o-key-lg"
+            class="o-btn"
             data-magnet
           >
             {m.portfolio_source({}, options)}

@@ -1,79 +1,33 @@
 /*
- * Keyframes of the skin. Timing lives in the tokens (`--o-dur-*`, `--o-ease-*`, `--o-stagger-*`);
- * scripts read the same values from `motion/motion.ts`. Visitors who reduce motion (system setting
- * or `html.calm`) get the resting state: the global rules in globals.css stop every animation.
+ * Page-level motion of the skin. Component keyframes live next to their components in kit.css;
+ * timing lives in the tokens (`--o-dur-*`, `--o-ease-*`, `--o-stagger-*`), and scripts read the
+ * same values from `motion/motion.ts`. Visitors who reduce motion (system setting or `html.calm`)
+ * get the resting state: the global rules in globals.css stop every animation.
  */
 
-/* The front panel powers on. */
-@keyframes o-boot {
-  from {
-    opacity: 0;
-    transform: translateY(40px) rotateX(18deg) scale(0.96);
-  }
-}
-
-/* A lamp breathing (power, inbox, service mode). */
-@keyframes o-pulse {
-  50% {
-    opacity: 0.45;
-  }
-}
-
-/* The display's block caret. */
-@keyframes o-caret {
-  50% {
-    opacity: 0;
-  }
-}
-
-/* A selection wider than its readout. Holds, then scrolls one full width. */
-@keyframes o-marquee {
-  0%,
-  12% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-/* One hole of the speaker grille on a beat. */
-@keyframes o-hole {
-  30% {
-    background: var(--o-signal);
-    transform: scale(1.35);
-  }
-}
-
-/* A manual block rising into view (only for blocks below the fold at load). */
-@keyframes o-rise {
+/* Page changes: the old sheet slides out of the drawer, the new one slides in. */
+@keyframes o-sheet-out {
   to {
-    transform: none;
+    opacity: 0;
+    transform: translateX(-5%);
   }
 }
 
-/* A meter segment lighting. */
-@keyframes o-segment {
+@keyframes o-sheet-in {
   from {
-    background: var(--o-led-off);
-    box-shadow: none;
+    opacity: 0;
+    transform: translateX(7%);
   }
 }
 
-/* Page changes: the old page powers down, the new one powers on. */
-@keyframes o-power-off {
+/* A change of print: the new print is exposed behind the lamp, left to right. */
+@keyframes o-expose {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
   to {
-    filter: brightness(0.6);
-    opacity: 0;
-    transform: scale(0.985);
-  }
-}
-
-@keyframes o-power-on {
-  from {
-    opacity: 0;
-    transform: scale(1.015);
+    clip-path: inset(0 0 0 0);
   }
 }
 
@@ -84,10 +38,38 @@
   }
 }
 
+/* The sheet's border and status line stay put while pages change. */
+.o-frame {
+  view-transition-name: o-frame;
+}
+
+.o-status {
+  view-transition-name: o-status;
+}
+
 ::view-transition-old(root) {
-  animation: var(--o-dur-quick) var(--o-ease-out) both o-power-off;
+  animation: var(--o-dur-sheet-out) var(--o-ease-in-out) both o-sheet-out;
 }
 
 ::view-transition-new(root) {
-  animation: var(--o-dur-hole) var(--o-ease-out) both o-power-on;
+  animation: var(--o-dur-sheet-in) var(--o-ease-out) both o-sheet-in;
+}
+
+/* During a print change everything is exposed at once, so the frame joins the page. */
+.o-exposing .o-frame,
+.o-exposing .o-status {
+  view-transition-name: none;
+}
+
+.o-exposing::view-transition-old(root) {
+  animation: none;
+}
+
+.o-exposing::view-transition-new(root) {
+  animation: var(--o-dur-lamp) var(--o-ease-lamp) both o-expose;
+}
+
+.o-exposing::view-transition-group(o-lamp) {
+  animation-duration: var(--o-dur-lamp);
+  animation-timing-function: var(--o-ease-lamp);
 }

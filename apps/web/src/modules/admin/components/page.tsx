@@ -18,9 +18,9 @@ export const PageHeader = ({
   readonly description?: string;
   readonly actions?: ReactNode;
 }) => (
-  <header className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-4">
+  <header className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4">
     <div className="min-w-0">
-      <h1 className="o-page-title text-section">{title}</h1>
+      <h1 className="o-title text-section">{title}</h1>
       {description ? (
         <p className="mt-2 mb-0 max-w-[40em] text-ink-2">{description}</p>
       ) : null}
@@ -38,17 +38,10 @@ const LoadError = ({
 }) => {
   const { options } = useAdmin();
   return (
-    <div role="alert" className="o-panel grid justify-items-start gap-4">
-      <div className="o-status m-0 w-full">
-        <span
-          className="o-lamp o-lamp-pulse"
-          data-tone="hot"
-          aria-hidden="true"
-        />
-        <span className="o-mini" aria-hidden="true">
-          {m.admin_fault({}, options)}
-        </span>
-      </div>
+    <div role="alert" className="o-card grid justify-items-start gap-4 p-5">
+      <span className="o-badge" data-tone="danger">
+        {m.admin_fault({}, options)}
+      </span>
       <p className="m-0 text-ink-2">{m.admin_load_error({}, options)}</p>
       <Button variant="outline" onClick={resetErrorBoundary}>
         <RotateCcw aria-hidden="true" />
@@ -89,15 +82,12 @@ export const QueryBoundary = ({
 );
 
 export const EmptyRow = ({ children }: { readonly children: ReactNode }) => (
-  <div className="o-display">
-    <p className="o-readout relative m-0 border-0 pt-0">
-      <span aria-hidden="true">▶ ----</span>
-      <span className="o-readout-sel whitespace-normal">{children}</span>
-    </p>
+  <div className="o-empty">
+    <p>{children}</p>
   </div>
 );
 
-/** A unit bolted onto the service panel, with an optional engraved heading. */
+/** A card on the drafting table, with an optional heading. */
 export const Panel = ({
   title,
   children,
@@ -105,16 +95,16 @@ export const Panel = ({
   readonly title?: string;
   readonly children: ReactNode;
 }) => (
-  <section className="o-unit space-y-4 p-5">
-    {title ? <h2 className="o-unit-title">{title}</h2> : null}
+  <section className="o-card space-y-4 p-5">
+    {title ? <h2 className="o-card-title">{title}</h2> : null}
     {children}
   </section>
 );
 
-/** Which lamp a rating lights. */
-const RATING_TONE = { fair: "warn", good: "ok", poor: "hot" } as const;
+/** Which ink a rating's dot takes. */
+const RATING_TONE = { fair: "warn", good: "ok", poor: "mark" } as const;
 
-/** A meter: label, its LCD reading and an optional footnote. `rating` lights its lamp. */
+/** A reading: label, its value and an optional footnote. `rating` colours its dot. */
 export const StatTile = ({
   label,
   children,
@@ -126,16 +116,16 @@ export const StatTile = ({
   readonly hint?: string;
   readonly rating?: "good" | "fair" | "poor";
 }) => (
-  <div className="o-meter">
+  <div className="o-stat">
     <div className="flex items-center justify-between gap-2">
-      <p className="o-eng m-0">{label}</p>
+      <p className="o-label m-0">{label}</p>
       <span
-        className="o-lamp"
+        className="o-dot"
         data-tone={rating ? RATING_TONE[rating] : "ok"}
         aria-hidden="true"
       />
     </div>
-    <p className="o-lcd m-0">{children}</p>
+    <p className="o-stat-value">{children}</p>
     {hint ? <p className="m-0 font-mono text-xs text-ink-2">{hint}</p> : null}
   </div>
 );

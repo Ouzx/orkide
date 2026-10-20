@@ -1,0 +1,79 @@
+---
+import { m } from "@orkide/i18n/messages";
+
+import HatchDefs from "./HatchDefs.astro";
+
+interface Props {
+  /** The drawing number of this page, shown in the status line. */
+  sheet: string;
+  /** The page's name, shown in the status line until a section scrolls into view. */
+  name: string;
+}
+
+const { sheet, name } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+/** Drawing sheets letter their zones without I and O. */
+const columns = [..."ABCDEFGHJKLM"];
+const rows = ["1", "2", "3", "4", "5", "6"];
+---
+
+<!--
+  The sheet: a fixed double-line border with zone rulers, the status line in the bottom border,
+  and the parts the motion layer drives (ruler marks, the CAD cursor, the exposure lamp). All of
+  it is decoration: hidden from assistive technology, and inert until a script uses it.
+-->
+<div class="o-frame" aria-hidden="true">
+  <i class="o-band" data-edge="top"></i>
+  <i class="o-band" data-edge="bottom"></i>
+  <i class="o-band" data-edge="left"></i>
+  <i class="o-band" data-edge="right"></i>
+  <i class="o-frame-border"></i>
+  <i class="o-frame-corner" data-corner="tl"></i>
+  <i class="o-frame-corner" data-corner="br"></i>
+  {
+    (["top", "bottom"] as const).map((edge) => (
+      <div class="o-zones" data-edge={edge} data-zones={edge}>
+        {columns.map((letter) => (
+          <span>{letter}</span>
+        ))}
+      </div>
+    ))
+  }
+  {
+    (["left", "right"] as const).map((edge) => (
+      <div class="o-zones" data-edge={edge}>
+        {rows.map((number) => (
+          <span>{number}</span>
+        ))}
+      </div>
+    ))
+  }
+  <i class="o-ruler-mark" data-axis="x" data-ruler-mark="x"></i>
+  <i class="o-ruler-mark" data-axis="y" data-ruler-mark="y"></i>
+</div>
+
+<div class="o-status" aria-hidden="true">
+  <span>{sheet}</span>
+  <span data-section-name>{name}</span>
+  <span data-xy>X <b>0.0</b> Y <b>0.0</b> mm</span>
+</div>
+
+<div class="o-cad" aria-hidden="true" data-cad><i></i></div>
+<div
+  class="o-osnap"
+  aria-hidden="true"
+  data-osnap
+  data-end={m.cad_end({}, options)}
+  data-mid={m.cad_mid({}, options)}
+  data-cen={m.cad_centre({}, options)}
+>
+  <svg viewBox="0 0 14 14">
+    <rect data-kind="end" x="1" y="1" width="12" height="12"></rect>
+    <path data-kind="mid" d="M7 1 L 13 13 H 1 Z"></path>
+    <circle data-kind="cen" cx="7" cy="7" r="6"></circle>
+  </svg>
+  <span></span>
+</div>
+<div class="o-lamp" aria-hidden="true" data-lamp></div>
+<HatchDefs />

@@ -1,23 +1,45 @@
 ---
 interface Props {
-  /** Its place in the manual: §1, §2, or a sub-section such as §0.1. */
-  number: number | string;
+  /** Its callout number on the sheet. */
+  number: number;
+  /** The sheet the section is on, under the number in the bubble. */
+  sheet?: string;
+  /** What kind of drawing the section is (Section A–A, Schedule, Plates…). */
+  tag: string;
+  kicker: string;
   id: string;
   title: string;
   action?: { href: string; label: string } | undefined;
 }
-const { number, id, title, action } = Astro.props;
+const { number, sheet = "G-001", tag, kicker, id, title, action } = Astro.props;
 ---
 
-<header class="o-sec-head">
-  <span class="o-sec-no" aria-hidden="true">§{number}</span>
-  <h2 id={id} class="o-sec-title">{title}</h2>
-  {
-    action && (
-      <a href={action.href} class="o-link">
-        {action.label}
-        <span aria-hidden="true">→</span>
-      </a>
-    )
-  }
+<header>
+  <div class="o-sh o-rise" aria-hidden="true">
+    <span class="o-bubble">
+      <svg viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r="23" pathLength="1"></circle>
+        <line x1="1" y1="24" x2="47" y2="24" pathLength="1"></line>
+      </svg>
+      <b>{number}</b>
+      <i>{sheet}</i>
+    </span>
+    <span class="o-sh-rule"></span>
+    <span class="o-sh-tag">{tag}</span>
+  </div>
+  <div class="o-sec-top">
+    <div class="min-w-0">
+      <p class="o-kicker o-rise">{kicker}</p>
+      <h2 id={id} class="o-h2 o-rise">{title}</h2>
+    </div>
+    {
+      action && (
+        <a href={action.href} class="o-more o-link">
+          {action.label}
+          <span aria-hidden="true">→</span>
+        </a>
+      )
+    }
+    <slot />
+  </div>
 </header>

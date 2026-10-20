@@ -2,8 +2,10 @@
 import { m } from "@orkide/i18n/messages";
 import { getTextDirection } from "@orkide/i18n/runtime";
 import "@orkide/ui/globals.css";
+import { tokens } from "@orkide/ui/tokens/tokens";
 import { Font } from "astro:assets";
 
+import SheetFrame from "@/shared/components/SheetFrame.astro";
 import SiteFooter from "@/shared/components/SiteFooter.astro";
 import SiteHeader from "@/shared/components/SiteHeader.astro";
 import { languageTag } from "@/shared/lib/i18n.ts";
@@ -12,19 +14,15 @@ import type { Props as SeoProps } from "@/shared/seo/Seo.astro";
 import ThemeScript from "@/shared/theme/ThemeScript.astro";
 
 type Props = SeoProps & {
-  /**
-   * Also preload the label and mono faces, for pages whose first screen is spec lists. Their
-   * metric-matched fallbacks need Arial and Courier New, which Linux and Android lack, so the
-   * lists would shift when the fonts arrive. Off elsewhere: the extra preloads delay the LCP.
-   */
-  preloadSpecFonts?: boolean;
+  /** This page's drawing number: in the title strip, the status line and the title block. */
+  sheet?: string;
+  /** This page's name in the title block and the status line (defaults to its title). */
+  sheetName?: string;
 };
 
-const { preloadSpecFonts = false, ...seo } = Astro.props;
+const { sheet = "G-001", sheetName, ...seo } = Astro.props;
 const { locale } = Astro.locals;
-const specPreload = preloadSpecFonts
-  ? [{ style: "normal", subset: "latin" } as const]
-  : undefined;
+const name = sheetName ?? seo.title;
 ---
 
 <!doctype html>
@@ -35,48 +33,39 @@ const specPreload = preloadSpecFonts
 >
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <ThemeScript />
-    <meta
-      name="theme-color"
-      content="#e7e3d9"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#26272a"
-      media="(prefers-color-scheme: dark)"
-    />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content={tokens.color.blue.paper} />
+    <meta name="color-scheme" content="dark light" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <Font
-      cssVariable="--font-hanken"
+      cssVariable="--font-archivo"
       preload={[{ style: "normal", subset: "latin" }]}
     />
-    <Font cssVariable="--font-saira" preload={specPreload} />
-    <Font
-      cssVariable="--font-doto"
-      preload={[{ style: "normal", subset: "latin" }]}
-    />
-    <Font cssVariable="--font-martian" preload={specPreload} />
+    <Font cssVariable="--font-chivo-mono" />
+    <Font cssVariable="--font-shantell" />
     <Seo {...seo} />
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
       href="#main"
-      class="o-key o-key-signal sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      class="o-btn o-btn-primary sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
     >
       {m.a11y_skip_to_content({}, { locale })}
     </a>
-    <SiteHeader alternates={Astro.props.alternates} />
+    <SheetFrame sheet={sheet} name={name} />
+    <SiteHeader alternates={Astro.props.alternates} sheet={sheet} />
     <main id="main" tabindex="-1" class="flex-1 outline-none">
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter sheet={sheet} name={name} />
     <script>
       import { startBeacon } from "@/shared/analytics/beacon.ts";
       import { joinPresence } from "@/shared/analytics/presence.ts";
@@ -93,7 +82,7 @@ const specPreload = preloadSpecFonts
       const move = () => {
         if (motionAllowed() && !moving) {
           moving = true;
-          void import("@/shared/motion/instrument.ts");
+          void import("@/shared/motion/blueprint.ts");
         }
       };
       afterFirstPaint(move);

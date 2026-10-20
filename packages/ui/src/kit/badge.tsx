@@ -10,17 +10,17 @@ type Variant =
   | "outline"
   | "secondary";
 
-/** Which lamp a badge lights (components.md · Lamp). */
+/** The ink a badge is stamped in (components.md · Badge). */
 const tones: Record<Variant, string | undefined> = {
   default: "ok",
-  destructive: "hot",
+  destructive: "danger",
   ghost: undefined,
   link: undefined,
   outline: undefined,
   secondary: "warn",
 };
 
-/** A status read-out: a lamp and an engraved label. */
+/** A status as a small stamp: draft, published, archived. */
 const Badge = ({
   className,
   variant = "default",
@@ -32,22 +32,14 @@ const Badge = ({
     defaultTagName: "span",
     props: mergeProps<"span">(
       {
-        children: (
-          <>
-            <span
-              className="o-lamp"
-              data-tone={tones[variant]}
-              aria-hidden="true"
-            />
-            {children}
-          </>
-        ),
-        className: cn("o-lampline", className),
+        children,
+        className: cn("o-badge", className),
       },
       props
     ),
     render,
-    state: { slot: "badge", variant },
+    // Base UI renders state as data attributes: `data-tone` picks the ink (kit.css · .o-badge).
+    state: { slot: "badge", tone: tones[variant], variant },
   });
 
 export { Badge };

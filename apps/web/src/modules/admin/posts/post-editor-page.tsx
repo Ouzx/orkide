@@ -87,7 +87,7 @@ const PostEditor = ({ post }: { readonly post: PostRecord | undefined }) => {
             onChange={(event) =>
               setCategoryId(event.currentTarget.value || null)
             }
-            className="o-well"
+            className="o-input"
           >
             <option value="">{m.admin_none({}, options)}</option>
             {taxonomy.categories.map((category) => (

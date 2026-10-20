@@ -1,4 +1,5 @@
 ---
+import { m } from "@orkide/i18n/messages";
 import type { SiteContent } from "@orkide/validators/site";
 
 import SectionHead from "@/shared/components/SectionHead.astro";
@@ -9,44 +10,88 @@ interface Props {
 }
 
 const { content } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+const tag = m.home_assembly({}, options);
 ---
 
-<!-- How to start a product from the template: three steps, each with its command on a screen. -->
+<!-- How to start a product from the template: assembly steps, each with its command. -->
 <section
   id="derive"
   aria-labelledby="derive-title"
-  class="o-wrap py-18"
-  data-section
+  class="o-wrap o-sec"
+  data-reveal
+  data-section-title={`§5 · ${tag}`}
 >
-  <p class="o-eng m-0 mb-3">{content.kicker}</p>
-  <SectionHead number="2.1" id="derive-title" title={content.title} />
-  <p class="o-summary mt-6 text-ink-2">{content.lead}</p>
-  <ol class="m-0 mt-8 grid list-none gap-5 p-0 lg:grid-cols-3">
+  <SectionHead
+    number={5}
+    tag={tag}
+    kicker={content.kicker}
+    id="derive-title"
+    title={content.title}
+  />
+  <p class="o-lead o-rise">{content.lead}</p>
+  <ol class="o-steps" data-steps={content.steps.length}>
     {
       content.steps.map((step, index) => (
-        <li class="o-panel min-w-0">
-          <div class="flex items-baseline gap-3">
-            <span class="o-sec-no text-3xl" aria-hidden="true">
-              {index + 1}
-            </span>
-            <h3 class="o-entry-title m-0 text-xl">{step.title}</h3>
+        <li class="o-step">
+          <span class="o-step-n" aria-hidden="true">
+            {index + 1}
+          </span>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+          <div class="o-cmd">
+            <code>{step.command}</code>
+            <button
+              type="button"
+              class="o-copy"
+              data-copy
+              data-copied={m.copied({}, options)}
+              hidden
+            >
+              {m.copy({}, options)}
+            </button>
           </div>
-          <code class="o-mini mt-4 h-auto py-2 font-mono text-sm wrap-anywhere whitespace-normal normal-case">
-            {step.command}
-          </code>
-          <p class="mt-3 mb-0 text-ink-2">{step.text}</p>
         </li>
       ))
     }
   </ol>
-  <a
-    href={content.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    class="o-key o-key-lg o-key-signal mt-8"
-    data-magnet
-  >
-    {content.cta}
-    <span aria-hidden="true">↗</span>
-  </a>
+  <div class="mt-7 flex justify-end">
+    <a
+      href={content.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="o-btn"
+      data-magnet
+    >
+      {content.cta}
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4 12 L 12 4 M 6 4 H 12 V 10" fill="none" stroke="currentColor"
+        ></path>
+      </svg>
+    </a>
+  </div>
 </section>
+
+<script>
+  // Copy buttons appear only where the clipboard works; the command is selectable text either way.
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    "[data-copy]"
+  )) {
+    const code = button.parentElement?.querySelector("code");
+    if (!(code && navigator.clipboard)) {
+      continue;
+    }
+    button.hidden = false;
+    const label = button.textContent;
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(code.textContent ?? "");
+      button.textContent = button.dataset.copied ?? label;
+      button.dataset.done = "";
+      setTimeout(() => {
+        button.textContent = label;
+        delete button.dataset.done;
+      }, 1600);
+    });
+  }
+</script>

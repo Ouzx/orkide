@@ -7,6 +7,7 @@ import { ContactForm } from "@/modules/contact/contact-form.tsx";
 import { contactLabels } from "@/modules/contact/labels.ts";
 import PageHeader from "@/shared/components/PageHeader.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { owner } from "@/shared/site.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { getFlags } from "@/shared/lib/flags.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
@@ -15,6 +16,7 @@ import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
 const { locale } = Astro.locals;
 const options = { locale };
 const flags = await getFlags();
+const kind = m.sheet_rfi({}, options);
 cachePage(Astro);
 ---
 
@@ -22,6 +24,8 @@ cachePage(Astro);
   title={m.contact_title({}, options)}
   description={m.contact_description({}, options)}
   alternates={pageAlternates("/contact")}
+  sheet="G-004"
+  sheetName={kind}
   jsonLd={graph(
     locale,
     breadcrumbNode([
@@ -33,15 +37,27 @@ cachePage(Astro);
   )}
 >
   <PageHeader
-    section={3}
-    name={m.contact_title({}, options)}
+    sheet="G-004"
+    kind={kind}
     title={m.contact_title({}, options)}
     lead={m.contact_description({}, options)}
   />
-  <div class="o-wrap pt-10 pb-24 md:pb-32">
-    <div class="o-panel max-w-3xl">
-      <span class="o-screw o-screw-tl" aria-hidden="true"></span>
-      <span class="o-screw o-screw-tr" aria-hidden="true"></span>
+  <div class="o-wrap pt-4 pb-24 md:pb-32">
+    <div class="o-rfi max-w-3xl">
+      <dl class="o-rfi-head">
+        <div>
+          <dt>{m.doc_drawing({}, options)}</dt>
+          <dd>G-004</dd>
+        </div>
+        <div>
+          <dt>{m.tb_title({}, options)}</dt>
+          <dd>{kind}</dd>
+        </div>
+        <div>
+          <dt>{m.tb_drawn({}, options)}</dt>
+          <dd>{owner.name}</dd>
+        </div>
+      </dl>
       {
         flags["contact-form"] ? (
           <ContactForm
@@ -51,13 +67,13 @@ cachePage(Astro);
             labels={contactLabels(locale)}
           />
         ) : (
-          <div>
-            <div class="o-status">
-              <span class="o-lamp" data-tone="warn" aria-hidden="true" />
-              <span class="o-mini" aria-hidden="true">
-                {m.contact_offline({}, options)}
-              </span>
-            </div>
+          <div class="o-rfi-body">
+            <span
+              class="o-stamp o-stamp-static justify-self-start"
+              aria-hidden="true"
+            >
+              <b>{m.contact_offline({}, options)}</b>
+            </span>
             <p role="status" class="m-0 text-ink-2">
               {m.contact_disabled({}, options)}
             </p>

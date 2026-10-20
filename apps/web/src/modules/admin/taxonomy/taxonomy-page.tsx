@@ -234,7 +234,7 @@ const TermDialog = ({
                   id="parentId"
                   name="parentId"
                   defaultValue={editing.term?.parentId ?? ""}
-                  className="o-well"
+                  className="o-input"
                 >
                   <option value="">{m.admin_none({}, options)}</option>
                   {categories.flatMap((category) =>

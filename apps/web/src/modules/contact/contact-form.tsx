@@ -32,16 +32,6 @@ const toFieldErrors = (problem: Problem): FormState["fieldErrors"] =>
     (problem.issues ?? []).map((issue) => [issue.path.join("."), issue.message])
   );
 
-/** The panel's status row: a lamp and a small screen reading what the form is doing. */
-const status = (tone: "ok" | "warn", text: string) => (
-  <div className="o-status">
-    <span className="o-lamp" data-tone={tone} aria-hidden="true" />
-    <span className="o-mini" aria-hidden="true">
-      {text}
-    </span>
-  </div>
-);
-
 /**
  * Contact form island. Constraint attributes mirror `contactInputSchema`, so the browser validates
  * (in the visitor's language) before anything is sent; the API re-validates and answers with a
@@ -85,10 +75,12 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
 
   if (state.status === "sent") {
     return (
-      <div aria-live="polite">
-        {status("ok", labels.sentScreen)}
-        <h2 className="o-sec-title m-0 text-2xl">{labels.successTitle}</h2>
-        <p className="mt-2 mb-0 text-ink-2">{labels.successBody}</p>
+      <div className="o-rfi-body relative min-h-64" aria-live="polite">
+        <span className="o-stamp top-1/2 left-1/2" aria-hidden="true">
+          <b>{labels.sentScreen}</b>
+        </span>
+        <h2 className="o-card-title">{labels.successTitle}</h2>
+        <p className="m-0 text-ink-2">{labels.successBody}</p>
       </div>
     );
   }
@@ -126,15 +118,17 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
         <label htmlFor={id} className="o-label">
           {label}
         </label>
-        {control({
-          "aria-describedby": error ? `${id}-error` : undefined,
-          "aria-invalid": error ? true : undefined,
-          className: "o-well",
-          id,
-          name,
-        })}
+        <div className="o-ctl">
+          {control({
+            "aria-describedby": error ? `${id}-error` : undefined,
+            "aria-invalid": error ? true : undefined,
+            className: "o-input",
+            id,
+            name,
+          })}
+        </div>
         {error ? (
-          <p id={`${id}-error`} role="alert" className="o-error">
+          <p id={`${id}-error`} role="alert" className="o-err">
             {error}
           </p>
         ) : null}
@@ -143,9 +137,8 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
   };
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-3.5">
-      {status(pending ? "warn" : "ok", pending ? labels.sending : labels.ready)}
-      <div className="grid gap-3.5 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="o-rfi-body">
+      <div className="grid gap-4.5 sm:grid-cols-2">
         {field("name", labels.name, (props) => (
           <input
             {...props}
@@ -186,7 +179,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
       <div ref={turnstileContainer} />
 
       {state.status === "failed" && state.message ? (
-        <p role="alert" className="o-error">
+        <p role="alert" className="o-err">
           {state.message}
         </p>
       ) : null}
@@ -194,7 +187,7 @@ export const ContactForm = ({ labels, locale, siteKey }: ContactFormProps) => {
       <button
         type="submit"
         disabled={pending || !token}
-        className="o-key o-key-lg o-key-signal justify-self-start"
+        className="o-btn o-btn-primary justify-self-start"
       >
         {submitLabel}
         <span aria-hidden="true">→</span>

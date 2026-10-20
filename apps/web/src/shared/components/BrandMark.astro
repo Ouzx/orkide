@@ -1,0 +1,24 @@
+---
+/** Orkide's mark: an orchid drawn on construction geometry (a dashed circle and a centre mark). */
+interface Props {
+  class?: string;
+}
+const { class: className = "o-brand-mark" } = Astro.props;
+---
+
+<svg class={className} viewBox="0 0 28 28" aria-hidden="true">
+  <circle data-part="circle" cx="14" cy="14" r="12.5"></circle>
+  <path
+    data-part="petal"
+    pathLength="1"
+    d="M14 14 C 10.6 9.6 10.8 4.6 14 2.4 C 17.2 4.6 17.4 9.6 14 14 Z"></path>
+  <path
+    data-part="petal"
+    pathLength="1"
+    d="M14 14 C 19.4 14.8 23.6 18 23.2 21.8 C 19.6 23.4 15.4 20 14 14 Z"></path>
+  <path
+    data-part="petal"
+    pathLength="1"
+    d="M14 14 C 12.6 20 8.4 23.4 4.8 21.8 C 4.4 18 8.6 14.8 14 14 Z"></path>
+  <path data-part="centre" d="M14 10.5 V 17.5 M 10.5 14 H 17.5"></path>
+</svg>

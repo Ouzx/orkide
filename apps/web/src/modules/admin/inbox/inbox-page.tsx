@@ -98,9 +98,9 @@ const MessageDetail = ({ message }: { readonly message: Message }) => {
   )}`;
 
   return (
-    <article className="o-unit space-y-5 p-6">
+    <article className="o-card space-y-5 p-6">
       <header className="space-y-1">
-        <h2 className="o-sec-title text-2xl">
+        <h2 className="o-card-title text-2xl">
           {message.subject ?? message.name}
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -209,7 +209,7 @@ export const InboxPage = () => {
                   type="button"
                   onClick={() => setSelectedId(message.id)}
                   aria-current={message.id === selectedId ? "true" : undefined}
-                  className="flex w-full items-start gap-3 rounded-xl bg-panel p-3 text-left shadow-raised transition hover:bg-case aria-[current]:bg-deep aria-[current]:shadow-recess"
+                  className="flex w-full items-start gap-3 border border-line-2 bg-paper p-3 text-left transition hover:border-line hover:bg-line-3 aria-[current]:border-line aria-[current]:bg-paper-2"
                 >
                   {message.status === "new" ? (
                     <Mail

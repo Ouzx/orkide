@@ -3,7 +3,8 @@ import { expect, test } from "@playwright/test";
 
 import { pages } from "./pages.ts";
 
-const schemes = ["light", "dark"] as const;
+/** The blue print is the default; the white print is the visitor's stored choice. */
+const prints = ["blue", "white"] as const;
 const WCAG_TAGS = [
   "wcag2a",
   "wcag2aa",
@@ -13,14 +14,17 @@ const WCAG_TAGS = [
   "best-practice",
 ];
 
-for (const scheme of schemes) {
-  test.describe(`${scheme} scheme`, () => {
-    test.use({ colorScheme: scheme });
-
+for (const print of prints) {
+  test.describe(`${print} print`, () => {
     for (const { name, path } of pages) {
       test(`${name} has no axe violations and no horizontal scroll`, async ({
         page,
       }) => {
+        if (print === "white") {
+          await page.addInitScript(() =>
+            localStorage.setItem("orkide-theme", "light")
+          );
+        }
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto(path);
         await page.waitForLoadState("load");

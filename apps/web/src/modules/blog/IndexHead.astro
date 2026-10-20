@@ -1,0 +1,15 @@
+---
+import { m } from "@orkide/i18n/messages";
+
+const { locale } = Astro.locals;
+const options = { locale };
+---
+
+<!-- Column labels of the drawing index (each row carries its own text for assistive tech). -->
+<div class="o-index-head" aria-hidden="true">
+  <span>{m.index_drawing({}, options)}</span>
+  <span>{m.index_title({}, options)}</span>
+  <span>{m.index_discipline({}, options)}</span>
+  <span>{m.index_issued({}, options)}</span>
+  <span>{m.index_read({}, options)}</span>
+</div>

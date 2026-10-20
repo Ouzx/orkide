@@ -1,203 +1,207 @@
 ---
+import { locales } from "@orkide/i18n";
 import { m } from "@orkide/i18n/messages";
-import { localizeHref } from "@orkide/i18n/runtime";
-import { knob } from "@orkide/ui/effects/knob";
-import { meters } from "@orkide/ui/effects/meters";
-import type { PostSummary, ProjectSummary } from "@orkide/validators/content";
 import type { SiteContent } from "@orkide/validators/site";
 
+import { resting, VIEW } from "./axo.ts";
+
 interface Props {
-  /** The hero's words: the admin's saved section, else the shipped one. */
+  /** The cover's words: the admin's saved section, else the shipped one. */
   content: SiteContent["hero"];
-  posts: readonly PostSummary[];
-  projects: readonly ProjectSummary[];
+  /** Where "read the source" leads (the derive section's repository). */
+  sourceUrl: string;
 }
 
-const { content, posts, projects } = Astro.props;
+const { content, sourceUrl } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
-
-/** What a knob selects: its items (title, link) and the label its readout starts with. */
-const dials = [
-  {
-    id: "writing",
-    items: posts.map((post) => ({
-      href: localizeHref(`/blog/${post.slug}`, options),
-      title: post.title,
-    })),
-    label: m.home_knob_writing({}, options),
-  },
-  {
-    id: "work",
-    items: projects.map((project) => ({
-      href: localizeHref(`/portfolio/${project.slug}`, options),
-      title: project.title,
-    })),
-    label: m.home_knob_work({}, options),
-  },
-].filter((dial) => dial.items.length > 0);
-
-const pad = (n: number) => n.toString().padStart(2, "0");
-/** The readout line for item `index` of a dial: "WRITING 01 · TITLE". */
-const readout = (dial: (typeof dials)[number], index: number) =>
-  `${dial.label} ${pad(index + 1)} · ${dial.items[index]?.title ?? ""}`;
-
-/** Tick marks around a dial of `count` detents, lit up to the first one. */
-const ticks = (count: number) => {
-  const { sweep, tickStep, majorTolerance, ticks: radius } = knob;
-  const first = count > 1 ? -sweep / 2 : 0;
-  return Array.from({ length: sweep / tickStep + 1 }, (_, step) => {
-    const degrees = -sweep / 2 + step * tickStep;
-    const detent = ((step * tickStep) / sweep) * (count - 1);
-    const major =
-      count > 1 && Math.abs(detent - Math.round(detent)) < majorTolerance;
-    const angle = (degrees * Math.PI) / 180;
-    const inner = major ? radius.innerMajor : radius.inner;
-    return {
-      degrees,
-      lit: degrees <= first + 0.5,
-      x1: 66 + Math.sin(angle) * inner,
-      x2: 66 + Math.sin(angle) * radius.outer,
-      y1: 66 - Math.cos(angle) * inner,
-      y2: 66 - Math.cos(angle) * radius.outer,
-    };
-  });
+const drawing = resting();
+const plotted = import.meta.env.PUBLIC_REVISIONS[0]?.date ?? "—";
+const leader = (balloon: (typeof drawing.balloons)[number]) => {
+  const dx = balloon.bx - balloon.x;
+  const dy = balloon.by - balloon.y;
+  const length = Math.hypot(dx, dy) || 1;
+  const end = (value: number, delta: number) =>
+    (value - (delta / length) * 11.5).toFixed(1);
+  return `M${balloon.x.toFixed(1)} ${balloon.y.toFixed(1)}L${end(balloon.bx, dx)} ${end(balloon.by, dy)}`;
 };
-const holes = meters.grille.columns * meters.grille.rows;
 ---
 
 <!--
-  The front panel. At rest it is a complete, static page: the headline is on the display, the
-  readout names the latest post, the knobs point at their first detent. `panel.ts` adds the
-  motion (power-on, typing, tilt) and makes the knobs turn.
+  The cover sheet. At rest it is complete: the drawing below is a static SVG, plotted in by CSS
+  and readable without JavaScript. `axo-motion.ts` makes it turn when dragged, spread apart as the
+  page scrolls, and shows a request travelling through it.
 -->
-<section aria-labelledby="hero-title" class="o-stage o-wrap pt-10 pb-16">
-  <div class="o-mount">
-    <div class="o-device" data-tilt="panel">
-      <span class="o-screw o-screw-tl" aria-hidden="true"></span>
-      <span class="o-screw o-screw-tr" aria-hidden="true"></span>
-      <span class="o-screw o-screw-bl" aria-hidden="true"></span>
-      <span class="o-screw o-screw-br" aria-hidden="true"></span>
-
-      <div class="mb-4.5 flex items-center justify-between gap-3 px-2">
-        <div class="flex items-center gap-2">
-          <span class="o-lamp o-lamp-pulse" data-tone="ok" aria-hidden="true"
-          ></span>
-          <span class="o-eng" aria-hidden="true"
-            >{m.skin_power({}, options)}</span
-          >
-        </div>
-        {
-          dials.length > 0 && (
-            <span class="o-eng hidden sm:inline" aria-hidden="true">
-              {m.home_panel_note({}, options)}
-            </span>
-          )
-        }
-      </div>
-
-      <div class="grid items-start gap-8.5 lg:grid-cols-[minmax(0,1fr)_auto]">
-        <div class="min-w-0">
-          <div class="o-display">
-            <div class="o-display-top relative">
-              <span>{content.eyebrow}</span>
-              <span aria-hidden="true">{m.home_channel({}, options)}</span>
-            </div>
-            <h1 id="hero-title" class="o-display-title relative">
-              <span data-typed>{content.title}</span><span
-                class="o-caret"
-                aria-hidden="true"></span>
-            </h1>
-            {
-              dials[0] && (
-                <div class="o-readout relative" aria-live="polite">
-                  <span aria-hidden="true">▶</span>
-                  <span class="o-readout-sel" data-readout-line>
-                    <span>{readout(dials[0], 0)}</span>
-                  </span>
-                  <span
-                    class="o-readout-hint"
-                    aria-hidden="true"
-                    hidden
-                    data-hint
-                  >
-                    {m.home_press({}, options)}
-                  </span>
-                </div>
-              )
-            }
-          </div>
-          <p class="mx-1 mt-6 mb-0 max-w-[36em] text-lead">{content.lead}</p>
-          <div class="mx-1 mt-7 flex flex-wrap items-center gap-3.5">
-            <a
-              href={localizeHref("/portfolio", options)}
-              class="o-key o-key-lg o-key-signal"
-              data-magnet
-            >
-              {content.workCta}
-              <span aria-hidden="true">→</span>
-            </a>
-            <a
-              href={localizeHref("/contact", options)}
-              class="o-key o-key-lg"
-              data-magnet
-            >
-              {content.contactCta}
-            </a>
-          </div>
-        </div>
-
-        <div class="o-controls" aria-hidden="true">
-          {
-            dials.map((dial) => (
-              <div class="o-knob-unit">
-                <div class="o-knob-wrap">
-                  <svg viewBox="0 0 132 132">
-                    {ticks(dial.items.length).map((tick) => (
-                      <line
-                        x1={tick.x1.toFixed(2)}
-                        y1={tick.y1.toFixed(2)}
-                        x2={tick.x2.toFixed(2)}
-                        y2={tick.y2.toFixed(2)}
-                        data-degrees={tick.degrees}
-                        data-on={tick.lit ? "" : undefined}
-                      />
-                    ))}
-                  </svg>
-                  <div
-                    class="o-knob"
-                    data-knob={dial.id}
-                    data-label={dial.label}
-                    data-items={JSON.stringify(dial.items)}
-                    data-single={dial.items.length < 2 ? "" : undefined}
-                  />
-                </div>
-                <span class="o-eng">{dial.label}</span>
-                <span class="o-counter" data-counter>
-                  {pad(1)}/{pad(dial.items.length)}
-                </span>
-              </div>
-            ))
-          }
-          <div class="o-grille" data-grille>
-            {Array.from({ length: holes }, () => <i />)}
-          </div>
-          <div class="o-ledbar">
-            <span class="o-eng">{m.home_page_lamps({}, options)}</span>
-            <span data-ledbar>
-              {
-                Array.from({ length: meters.ledBar.count }, () => (
-                  <span class="o-lamp" />
-                ))
-              }
-            </span>
-          </div>
-        </div>
-      </div>
+<section
+  class="o-wrap o-hero"
+  aria-labelledby="hero-title"
+  data-section-title={`G-001 · ${m.sheet_cover({}, options)}`}
+>
+  <div class="o-hero-text">
+    <p class="o-kicker">
+      <b>G-001</b><span>{m.sheet_cover({}, options)} · {content.eyebrow}</span>
+    </p>
+    <h1 id="hero-title" class="o-h1">{content.title}</h1>
+    <p class="o-lead mt-5.5 max-w-[33em]">{content.lead}</p>
+    <div class="o-ctas">
+      <a href="#derive" class="o-btn o-btn-primary" data-magnet>
+        {content.deriveCta}
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M2 8 H 13 M 9 4 L 13 8 L 9 12"
+            fill="none"
+            stroke="currentColor"></path>
+        </svg>
+      </a>
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="o-btn"
+        data-magnet
+      >
+        {content.sourceCta}
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M4 12 L 12 4 M 6 4 H 12 V 10"
+            fill="none"
+            stroke="currentColor"></path>
+        </svg>
+      </a>
     </div>
   </div>
+
+  <div class="o-hero-aside">
+    <table class="o-bom">
+      <caption>{m.home_parts({}, options)}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{m.home_parts_item({}, options)}</th>
+          <th scope="col">{m.home_parts_part({}, options)}</th>
+          <th scope="col">{m.home_parts_qty({}, options)}</th>
+          <th scope="col">{m.home_parts_does({}, options)}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          content.parts.map((part, index) => (
+            <tr data-part={index + 1}>
+              <td>
+                <span class="o-bom-n">{index + 1}</span>
+              </td>
+              <td>{part.name}</td>
+              <td>{part.qty}</td>
+              <td>{part.text}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="o-hero-draw" aria-labelledby="axo-caption">
+    <div class="o-vp" data-axo>
+      <svg
+        class="o-axo"
+        viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
+        role="img"
+        aria-label={m.home_drawing_label({}, options)}
+      >
+        <g data-parts>
+          {
+            drawing.parts.map((part) => (
+              <g data-part={part.id} data-key={part.key}>
+                {part.fills.map((fill) => (
+                  <path data-fill={fill.top ? "top" : "side"} d={fill.d} />
+                ))}
+                <path data-edge d={part.edges} pathLength="1" />
+                {part.deco && <path data-deco d={part.deco} />}
+                {part.hatch && <path data-hatch d={part.hatch} />}
+                {part.pixel && <path data-pixel d={part.pixel} />}
+                {part.label && (
+                  <text data-label transform={part.label.transform}>
+                    {part.label.text}
+                  </text>
+                )}
+              </g>
+            ))
+          }
+        </g>
+        <path data-hidden d={drawing.hidden}></path>
+        <path data-explode d={drawing.explode}></path>
+        <path data-path d={drawing.route}></path>
+        <rect data-packet width="8" height="8" x="-4" y="-4" visibility="hidden"
+        ></rect>
+        <g data-balloons>
+          {
+            drawing.balloons.map((balloon) => (
+              <g data-balloon={balloon.id}>
+                <path data-leader d={leader(balloon)} />
+                <circle
+                  data-anchor
+                  cx={balloon.x.toFixed(1)}
+                  cy={balloon.y.toFixed(1)}
+                  r="2.2"
+                />
+                <circle
+                  data-bubble
+                  cx={balloon.bx.toFixed(1)}
+                  cy={balloon.by.toFixed(1)}
+                  r="11.5"
+                />
+                <text x={balloon.bx.toFixed(1)} y={balloon.by.toFixed(1)}>
+                  {balloon.id}
+                </text>
+              </g>
+            ))
+          }
+        </g>
+      </svg>
+      <div class="o-vp-label" aria-hidden="true">
+        <b>{m.home_view({}, options)}</b>{m.home_view_kind({}, options)}
+      </div>
+      <p class="o-vp-note" aria-hidden="true">
+        <span class="o-hand">{m.home_drag({}, options)}</span>
+        <svg viewBox="0 0 46 34">
+          <path
+            pathLength="1"
+            d="M6 3 C 22 1, 41 9, 37 27 M 31 21 L 37 28 L 43 21"></path>
+        </svg>
+      </p>
+      <div class="o-vp-scale" aria-hidden="true">
+        <span class="o-vp-bar"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <span>0 · 1 · 2 · 3 m</span>
+      </div>
+      <div class="o-vp-tip" aria-hidden="true" data-axo-tip></div>
+    </div>
+    <figcaption class="o-vp-cap" id="axo-caption">
+      <span>{m.home_figure({}, options)}</span>
+      <span aria-hidden="true"
+        >{m.home_scroll({}, options)} · <span data-axo-gap>Δ 30</span></span
+      >
+    </figcaption>
+  </figure>
+
+  <dl class="o-info">
+    <div>
+      <dt>{m.home_info_stack({}, options)}</dt>
+      <dd>Astro · Hono · D1 · R2</dd>
+    </div>
+    <div>
+      <dt>{m.home_info_languages({}, options)}</dt>
+      <dd>{locales.map((code) => code.toUpperCase()).join(" · ")}</dd>
+    </div>
+    <div>
+      <dt>{m.home_info_revision({}, options)}</dt>
+      <dd>{import.meta.env.PUBLIC_BUILD}</dd>
+    </div>
+    <div>
+      <dt>{m.home_info_plotted({}, options)}</dt>
+      <dd data-plot-time>{plotted}</dd>
+    </div>
+  </dl>
 </section>
 
 <script>
-  import "./panel.ts";
+  import "./axo-motion.ts";
 </script>

@@ -1,18 +1,20 @@
 ---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
 import type { PostDetail, ProjectDetail } from "@orkide/validators/content";
 import type { Graph } from "schema-dts";
 
 import TagList from "@/modules/blog/TagList.astro";
-import ReadingDial from "@/shared/components/ReadingDial.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
-import { documentAlternates } from "@/shared/lib/i18n.ts";
+import { documentAlternates, formatDate } from "@/shared/lib/i18n.ts";
+import { sheetNumber } from "@/shared/lib/sheet.ts";
 import MediaImage from "@/shared/media/MediaImage.astro";
-import { m } from "@orkide/i18n/messages";
 
 /**
- * A post or project page: a manual page with a margin column, the title block, cover, body and
- * tags. Slots add what differs: `runhead` (after the section name), `meta` (the margin, after the
- * back link), `actions` (under the summary) and `after` (below the body).
+ * A post or project page: a detail sheet. Its drawing block, the title and summary, the cover, a
+ * contents column built from the body's sections, a reading scale bar, the body and its tags.
+ * Slots add what differs: `runhead` (above the title), `meta` (items of the meta line), `actions`
+ * (under the summary) and `after` (below the body).
  */
 interface Props {
   readonly document: PostDetail | ProjectDetail;
@@ -20,8 +22,8 @@ interface Props {
   /** Localized path of this document and of its section's listing. */
   readonly path: string;
   readonly sectionPath: string;
-  readonly runhead: string;
-  readonly backLabel: string;
+  /** The listing's name, for the crumbs. */
+  readonly sectionName: string;
   /** Aspect-ratio class of the cover. */
   readonly coverClass: string;
   readonly jsonLd: Graph;
@@ -32,13 +34,25 @@ const {
   section,
   path,
   sectionPath,
-  runhead,
-  backLabel,
+  sectionName,
   coverClass,
   jsonLd,
 } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
+const sheet = sheetNumber(section === "blog" ? "D" : "P", document.publishedAt);
+const kind = m.sheet_detail({}, options);
+
+/** The body's sections, numbered like callouts; each heading gets an id for the contents. */
+const contents: { id: string; text: string }[] = [];
+const html = document.html.replaceAll(
+  /<h2>(?<inner>[\s\S]*?)<\/h2>/gu,
+  (_match, inner: string) => {
+    const id = `section-${contents.length + 1}`;
+    contents.push({ id, text: inner.replaceAll(/<[^>]+>/gu, "").trim() });
+    return `<h2 id="${id}">${inner}</h2>`;
+  }
+);
 ---
 
 <BaseLayout
@@ -53,70 +67,163 @@ const options = { locale };
   modifiedTime={document.updatedAt}
   markdown={`${path}.md`}
   jsonLd={jsonLd}
+  sheet={sheet}
+  sheetName={document.title}
 >
-  <article class="o-wrap pt-9 pb-24 md:pb-32">
-    <div class="mx-auto max-w-(--o-page)">
-      <div class="o-runhead">
-        <span class="o-eng">{runhead}</span>
-        <slot name="runhead" />
-      </div>
-      <div
-        class="mt-8 grid gap-x-10 gap-y-6 lg:grid-cols-[170px_minmax(0,1fr)]"
-      >
-        <aside
-          class="o-margin flex flex-wrap content-start gap-x-4 gap-y-1 lg:grid"
-        >
-          <a href={sectionPath} class="o-link mb-2 w-full lg:mb-6">
-            <span aria-hidden="true">←</span>
-            {backLabel}
-          </a>
-          <slot name="meta" />
-        </aside>
-
-        <div class="min-w-0">
-          <header class="grid gap-4">
-            <h1 class="o-page-title">{document.title}</h1>
-            <p class="o-summary">{document.summary}</p>
-            <slot name="actions" />
-          </header>
-
-          {
-            document.cover && (
-              <figure class="mt-8 max-w-(--o-measure)">
-                <MediaImage
-                  media={document.cover}
-                  sizes="(min-width: 768px) 680px, 100vw"
-                  priority
-                  class={`${coverClass} overflow-hidden rounded-xl shadow-raised`}
-                />
-                {document.cover.caption && (
-                  <figcaption class="o-margin mt-2">
-                    {document.cover.caption}
-                  </figcaption>
-                )}
-              </figure>
-            )
-          }
-
-          <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
-          <div class="prose-orkide mt-10" set:html={document.html} />
-
-          <slot name="after" />
-
-          {
-            document.tags.length > 0 && (
-              <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t-2 border-ink pt-5">
-                <span class="o-eng">{m.blog_tags({}, options)}</span>
-                <TagList
-                  tags={document.tags}
-                  label={m.blog_tags({}, options)}
-                />
-              </footer>
-            )
-          }
+  <article class="o-wrap pb-24 md:pb-32" aria-labelledby="document-title">
+    <ol class="o-crumbs">
+      <li>
+        <a href={localizeHref("/", options)}>G-001</a>
+      </li>
+      <li><a href={sectionPath}>{sectionName}</a></li>
+      <li aria-current="page">{sheet}</li>
+    </ol>
+    <header class="o-pagehead" data-section-title={`${sheet} · ${kind}`}>
+      <dl class="o-dwg">
+        <div data-big>
+          <dt>{m.doc_drawing({}, options)}</dt>
+          <dd>{sheet}</dd>
         </div>
+        <div>
+          <dt>{m.tb_title({}, options)}</dt>
+          <dd>{kind}</dd>
+        </div>
+        <div>
+          <dt>{m.tb_revision({}, options)}</dt>
+          <dd>
+            <time datetime={document.updatedAt}>
+              {formatDate(document.updatedAt, locale)}
+            </time>
+          </dd>
+        </div>
+      </dl>
+      <div class="o-pagehead-main">
+        <slot name="runhead" />
+        <h1 id="document-title" class="o-title">{document.title}</h1>
+        <p class="o-lead">{document.summary}</p>
+        <ul class="o-meta">
+          <slot name="meta" />
+        </ul>
+        <slot name="actions" />
+      </div>
+    </header>
+
+    {
+      document.cover && (
+        <figure class="o-docgrid m-0 pt-0 pb-6">
+          <MediaImage
+            media={document.cover}
+            sizes="(min-width: 1080px) 760px, 100vw"
+            priority
+            class={`${coverClass} o-docbody border border-line-2`}
+          />
+          {document.cover.caption && (
+            <figcaption class="o-label o-docbody mt-2">
+              {document.cover.caption}
+            </figcaption>
+          )}
+        </figure>
+      )
+    }
+
+    <div class="o-scalebar" aria-hidden="true" data-scalebar>
+      <span>0</span>
+      <span class="o-scalebar-track"><i></i><b></b></span>
+      <output>0 %</output>
+    </div>
+
+    <div class="o-docgrid">
+      {
+        contents.length > 1 && (
+          <nav class="o-keyplan" aria-labelledby="contents-title">
+            <h2 id="contents-title" class="o-label mt-0 mb-2.5">
+              {m.doc_contents({}, options)}
+            </h2>
+            <ol>
+              {contents.map((entry, index) => (
+                <li>
+                  <a href={`#${entry.id}`} data-contents={entry.id}>
+                    <span>{index + 1}</span>
+                    {entry.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <div class="o-docbody" data-document>
+        <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
+        <div class="prose-orkide" set:html={html} />
+
+        <slot name="after" />
+
+        {
+          document.tags.length > 0 && (
+            <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t border-line pt-5">
+              <span class="o-label">{m.blog_tags({}, options)}</span>
+              <TagList tags={document.tags} label={m.blog_tags({}, options)} />
+            </footer>
+          )
+        }
       </div>
     </div>
-    <ReadingDial />
   </article>
 </BaseLayout>
+
+<script>
+  // Reading progress as a scale bar, and the contents follow the section being read.
+  const bar = document.querySelector<HTMLElement>("[data-scalebar]");
+  const body = document.querySelector<HTMLElement>("[data-document]");
+  const value = bar?.querySelector("output");
+  if (bar && body && value) {
+    let frame = 0;
+    const paint = () => {
+      frame = 0;
+      const box = body.getBoundingClientRect();
+      const progress = Math.min(
+        1,
+        Math.max(
+          0,
+          (innerHeight * 0.3 - box.top) /
+            Math.max(1, box.height - innerHeight * 0.45)
+        )
+      );
+      bar.style.setProperty("--p", progress.toFixed(4));
+      value.textContent = `${Math.round(progress * 100)} %`;
+    };
+    addEventListener(
+      "scroll",
+      () => {
+        frame ||= requestAnimationFrame(paint);
+      },
+      { passive: true }
+    );
+    paint();
+  }
+
+  const links = [...document.querySelectorAll<HTMLElement>("[data-contents]")];
+  if (links.length > 0) {
+    const reading = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            for (const link of links) {
+              link.toggleAttribute(
+                "data-on",
+                link.dataset.contents === entry.target.id
+              );
+            }
+          }
+        }
+      },
+      { rootMargin: "-25% 0px -65% 0px" }
+    );
+    for (const link of links) {
+      const heading = document.querySelector(`#${link.dataset.contents ?? ""}`);
+      if (heading) {
+        reading.observe(heading);
+      }
+    }
+  }
+</script>

@@ -3,6 +3,7 @@ import "@orkide/ui/globals.css";
 import { getTextDirection } from "@orkide/i18n/runtime";
 import { Font } from "astro:assets";
 
+import HatchDefs from "@/shared/components/HatchDefs.astro";
 import { languageTag } from "@/shared/lib/i18n.ts";
 import ThemeScript from "@/shared/theme/ThemeScript.astro";
 
@@ -33,18 +34,16 @@ Astro.response.headers.set("x-robots-tag", "noindex, nofollow");
     <ThemeScript />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <Font
-      cssVariable="--font-hanken"
+      cssVariable="--font-archivo"
       preload={[{ style: "normal", subset: "latin" }]}
     />
-    <Font cssVariable="--font-saira" />
-    <Font
-      cssVariable="--font-doto"
-      preload={[{ style: "normal", subset: "latin" }]}
-    />
-    <Font cssVariable="--font-martian" />
+    <Font cssVariable="--font-chivo-mono" />
+    <Font cssVariable="--font-shantell" />
     <title>{title}</title>
   </head>
-  <body class="min-h-dvh">
+  <!-- The drafting table fills the window: no sheet frame, so no room for it either. -->
+  <body class="min-h-dvh py-0">
+    <HatchDefs />
     <slot />
   </body>
 </html>

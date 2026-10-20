@@ -4,81 +4,56 @@ import { localizeHref } from "@orkide/i18n/runtime";
 import type { PostSummary } from "@orkide/validators/content";
 
 import { formatDate } from "@/shared/lib/i18n.ts";
-
-import TagList from "./TagList.astro";
+import { sheetNumber } from "@/shared/lib/sheet.ts";
 
 interface Props {
   post: PostSummary;
-  /** Its position in the list, from 1: printed as the entry's index. */
-  index: number;
   headingLevel?: 2 | 3;
+  /** The newest sheet in the index: the motion layer draws a revision cloud around it. */
+  latest?: boolean;
 }
 
-const { post, index, headingLevel = 2 } = Astro.props;
+const { post, headingLevel = 2, latest = false } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
 const href = localizeHref(`/blog/${post.slug}`, options);
 const Heading = `h${headingLevel}` as const;
 ---
 
-<!-- A post as an entry of the manual: index, title and summary, and its spec. -->
-<li class="o-entry">
-  <span class="o-lamp" aria-hidden="true"></span>
-  <span class="o-entry-idx" aria-hidden="true">
-    {index.toString().padStart(2, "0")}
+<!-- A post as a row of the drawing index: sheet number, title and summary, discipline, date, length. -->
+<li class="o-row" data-cloud={latest ? "Δ" : undefined}>
+  <span class="o-row-no" aria-hidden="true">
+    {sheetNumber("D", post.publishedAt)}
   </span>
-  <div>
-    <Heading class="o-entry-title"><a href={href}>{post.title}</a></Heading>
-    <p>{post.summary}</p>
+  <div class="min-w-0">
+    <Heading class="o-row-title"><a href={href}>{post.title}</a></Heading>
+    <p class="o-row-sum">{post.summary}</p>
   </div>
-  <dl class="o-spec">
+  <span class="o-row-meta">
     {
       post.category && (
-        <>
-          <dt>{m.spec_category({}, options)}</dt>
-          <dd>
-            <a
-              href={localizeHref(
-                `/blog/category/${post.category.slug}`,
-                options
-              )}
-            >
-              {post.category.name}
-            </a>
-          </dd>
-        </>
+        <a href={localizeHref(`/blog/category/${post.category.slug}`, options)}>
+          {post.category.name}
+        </a>
       )
     }
-    {
-      post.tags.length > 0 && (
-        <>
-          <dt>{m.blog_tags({}, options)}</dt>
-          <dd>
-            <TagList tags={post.tags} label={m.blog_tags({}, options)} />
-          </dd>
-        </>
-      )
-    }
-    <dt>{m.spec_reading({}, options)}</dt>
-    <dd>
-      {
-        m.blog_reading_time(
-          { minutes: post.readingTimeMinutes.toString() },
-          options
-        )
-      }
-    </dd>
+  </span>
+  <span class="o-row-meta">
     {
       post.publishedAt && (
-        <>
-          <dt>{m.blog_published({}, options)}</dt>
-          <dd>
-            <time datetime={post.publishedAt}>
-              {formatDate(post.publishedAt, locale)}
-            </time>
-          </dd>
-        </>
+        <time datetime={post.publishedAt}>
+          {formatDate(post.publishedAt, locale, "medium")}
+        </time>
       )
     }
-  </dl>
+  </span>
+  <span class="o-row-meta">
+    {
+      m.blog_reading_time(
+        { minutes: post.readingTimeMinutes.toString() },
+        options
+      )
+    }
+  </span>
+  <span class="o-row-go" aria-hidden="true">{m.index_open({}, options)} →</span>
 </li>

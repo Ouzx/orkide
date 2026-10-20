@@ -1,19 +1,20 @@
 ---
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
-import { Menu, X } from "lucide-react";
 
+import BrandMark from "@/shared/components/BrandMark.astro";
 import type { Alternates } from "@/shared/lib/i18n.ts";
-import SoundSwitch from "@/shared/sound/SoundSwitch.astro";
 import ThemeSwitch from "@/shared/theme/ThemeSwitch.astro";
 
 import LocaleSwitch from "./LocaleSwitch.astro";
 
 interface Props {
   alternates: Alternates;
+  /** This page's drawing number, beside the wordmark. */
+  sheet: string;
 }
 
-const { alternates } = Astro.props;
+const { alternates, sheet } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
 
@@ -28,106 +29,94 @@ const links = [
   current: path === link.href || path.startsWith(`${link.href}/`),
   localized: localizeHref(link.href, { locale }),
 }));
-// The header's screen names the manual section in view: §1 Blog, §2 Portfolio, §3 Contact.
-const section = links.findIndex((link) => link.current) + 1;
-const readout =
-  section > 0
-    ? `§${section} ${links[section - 1]?.label ?? ""}`
-    : `§0 ${m.skin_panel({}, options)}`;
 ---
 
-<header class="o-head">
-  <div class="o-wrap o-head-row">
-    <a
-      href={localizeHref("/", { locale })}
-      class="o-brand"
-      aria-label={`${m.site_name({}, options)} — ${m.nav_home({}, options)}`}
-    >
-      <b>{m.site_name({}, options)}</b>
-      <span aria-hidden="true" class="hidden sm:inline">
-        {m.skin_model({}, options)}
-      </span>
-    </a>
+<!-- The title strip: the wordmark with this sheet's number, the sections, and the switches. -->
+<header class="o-strip">
+  <div class="o-wrap o-strip-row">
+    <div class="o-grp">
+      <a
+        href={localizeHref("/", { locale })}
+        class="o-brand o-sel"
+        aria-label={`${m.site_name({}, options)} — ${m.nav_home({}, options)}`}
+      >
+        <BrandMark />
+        <span class="o-brand-word">{m.site_name({}, options)}</span>
+      </a>
+      <span class="o-sheetno" aria-hidden="true">{sheet}</span>
+    </div>
 
-    <nav
-      aria-label={m.nav_primary({}, options)}
-      class="ml-auto hidden md:block"
-    >
-      <ul class="flex items-center gap-2">
-        {
-          links.map((link) => (
-            <li>
-              <a
-                href={link.localized}
-                aria-current={link.current ? "page" : undefined}
-                class="o-key"
-              >
-                <span class="o-lamp" aria-hidden="true" />
-                {link.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+    <nav aria-label={m.nav_primary({}, options)} class="o-grp hidden md:flex">
+      {
+        links.map((link) => (
+          <a
+            href={link.localized}
+            aria-current={link.current ? "page" : undefined}
+            class="o-nav-link"
+          >
+            {link.label}
+          </a>
+        ))
+      }
     </nav>
 
-    <div class="o-mini hidden xl:flex" aria-hidden="true" data-readout>
-      {readout}
+    <div class="o-grp ml-auto hidden md:flex">
+      <LocaleSwitch alternates={alternates} />
+      <ThemeSwitch />
     </div>
 
-    <div class="ml-auto flex items-center gap-3.5 md:ml-0">
-      <ThemeSwitch />
-      <SoundSwitch class="hidden sm:inline-grid" />
-      <LocaleSwitch alternates={alternates} />
-      <button
-        type="button"
-        popovertarget="mobile-nav"
-        class="o-key o-key-icon md:hidden"
-      >
-        <Menu aria-hidden="true" />
-        <span class="sr-only">{m.nav_menu({}, options)}</span>
-      </button>
-    </div>
+    <button
+      type="button"
+      popovertarget="mobile-nav"
+      class="o-grp o-tool ml-auto md:hidden"
+    >
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="size-5">
+        <path d="M2 6 H 18 M 2 10 H 18 M 2 14 H 18" stroke="currentColor"
+        ></path>
+      </svg>
+      <span class="sr-only">{m.nav_menu({}, options)}</span>
+    </button>
   </div>
 
-  <!-- Mobile navigation: native popover (light dismiss, Esc, focus handling) — no JavaScript. -->
+  <!-- Phone navigation: native popover (light dismiss, Esc, focus handling), no JavaScript. -->
   <nav
     id="mobile-nav"
     popover
     aria-label={m.nav_primary({}, options)}
-    class="inset-0 m-0 h-dvh w-full max-w-none bg-case text-ink md:hidden"
+    class="o-menu md:hidden"
   >
-    <div class="o-wrap flex h-16 items-center justify-between">
-      <span class="o-eng">{m.nav_menu({}, options)}</span>
+    <div class="o-wrap flex items-center justify-between">
+      <span class="o-label">{m.nav_menu({}, options)}</span>
       <button
         type="button"
         popovertarget="mobile-nav"
         popovertargetaction="hide"
-        class="o-key o-key-icon"
+        class="o-btn o-btn-icon o-btn-sm"
       >
-        <X aria-hidden="true" />
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M5 5 L 15 15 M 15 5 L 5 15" stroke="currentColor"></path>
+        </svg>
         <span class="sr-only">{m.nav_menu({}, options)}</span>
       </button>
     </div>
-    <ul class="o-wrap grid gap-3 pt-6">
+    <ul class="o-wrap mt-8 grid gap-4">
       {
-        links.map((link, index) => (
+        links.map((link) => (
           <li>
             <a
               href={link.localized}
               aria-current={link.current ? "page" : undefined}
-              class="o-key o-key-lg w-full justify-start"
+              class="o-btn w-full justify-start"
             >
-              <span class="o-lamp" aria-hidden="true" />
-              <span class="text-ink-2">§{index + 1}</span>
               {link.label}
             </a>
           </li>
         ))
       }
     </ul>
-    <div class="o-wrap mt-8 flex items-center gap-4 sm:hidden">
-      <SoundSwitch />
+    <div class="o-wrap mt-8 flex flex-wrap items-center gap-4">
+      <div class="o-grp"><LocaleSwitch alternates={alternates} /></div>
+      <div class="o-grp min-h-11"><ThemeSwitch /></div>
     </div>
   </nav>
 </header>

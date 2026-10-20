@@ -30,8 +30,12 @@ export const languageTag = {
   tr: "tr-TR",
 } as const satisfies Record<Locale, string>;
 
-export const formatDate = (iso: string, locale: Locale): string =>
-  new Intl.DateTimeFormat(languageTag[locale], { dateStyle: "long" }).format(
+export const formatDate = (
+  iso: string,
+  locale: Locale,
+  dateStyle: "long" | "medium" = "long"
+): string =>
+  new Intl.DateTimeFormat(languageTag[locale], { dateStyle }).format(
     new Date(iso)
   );
 

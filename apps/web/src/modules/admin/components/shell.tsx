@@ -125,11 +125,10 @@ const Navigation = ({ onNavigate }: { readonly onNavigate?: () => void }) => {
                 to={to}
                 onClick={onNavigate}
                 activeOptions={{ exact: to === "/" }}
-                className="o-bay-link"
+                className="o-palette-link"
               >
-                <i aria-hidden="true" />
+                <Icon className="size-4.5" />
                 <span className="truncate">{label(options)}</span>
-                <Icon className="size-4 text-ink-2" />
               </Link>
             </li>
           )
@@ -157,7 +156,7 @@ const UserMenu = () => {
           <button
             type="button"
             aria-label={`${user.name}, ${role}`}
-            className="flex w-full items-center gap-3 rounded-xl bg-case px-2.5 py-2 text-left shadow-raised transition-transform duration-(--o-dur-spring) ease-spring hover:-translate-y-px"
+            className="flex w-full items-center gap-3 border-t border-line-2 px-4 pt-3.5 pb-1 text-left transition-colors hover:bg-line-3"
           />
         }
       >
@@ -167,7 +166,7 @@ const UserMenu = () => {
         </Avatar>
         <span className="flex min-w-0 flex-col items-start text-left">
           <span className="truncate text-md font-bold">{user.name}</span>
-          <span className="o-eng">{role}</span>
+          <span className="o-label">{role}</span>
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
@@ -198,29 +197,25 @@ const UserMenu = () => {
 const Brand = () => {
   const { options } = useAdmin();
   return (
-    <Link to="/" className="o-brand px-1">
-      <b>{m.site_name({}, options)}</b>
-      <span>{m.admin_title({}, options)}</span>
+    <Link to="/" className="o-brand px-4">
+      <span className="o-brand-word">{m.site_name({}, options)}</span>
+      <span className="o-label">{m.admin_title({}, options)}</span>
     </Link>
   );
 };
 
-/** The service-mode readout under the brand: a breathing amber lamp and a small screen. */
+/** The sheet the dashboard is: the drafting table, A-201. */
 const Mode = () => {
   const { options } = useAdmin();
   return (
-    <div className="o-mode">
-      <span
-        className="o-lamp o-lamp-pulse"
-        data-tone="warn"
-        aria-hidden="true"
-      />
-      {m.admin_service_mode({}, options)}
+    <div className="o-palette-head">
+      <span className="o-label">{m.admin_drafting_table({}, options)}</span>
+      <span className="font-mono text-2xs text-mark-ink">A-201</span>
     </div>
   );
 };
 
-/** Service mode: a patch bay on large screens, a drawer on small ones. */
+/** The drafting table: a tool palette on large screens, a drawer on small ones. */
 export const Shell = () => {
   const { options } = useAdmin();
   const pathname = useRouterState({
@@ -234,7 +229,7 @@ export const Shell = () => {
 
   return (
     <div className="flex min-h-dvh">
-      <aside className="o-bay sticky top-0 hidden h-dvh w-(--o-bay) shrink-0 grid-rows-[auto_auto_1fr_auto] lg:grid">
+      <aside className="o-palette sticky top-0 hidden h-dvh w-(--o-palette) shrink-0 lg:grid">
         <Brand />
         <Mode />
         <div className="flex-1 overflow-y-auto">
@@ -245,7 +240,7 @@ export const Shell = () => {
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent side="left" className="lg:hidden">
-          <div className="o-bay flex h-full min-h-0 flex-col">
+          <div className="o-palette flex h-full min-h-0 flex-col border-r-0">
             <SheetTitle className="sr-only">
               {m.nav_menu({}, options)}
             </SheetTitle>
@@ -273,7 +268,7 @@ export const Shell = () => {
       </Sheet>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="o-head flex h-14 items-center gap-3 px-4 lg:hidden">
+        <header className="o-appbar lg:hidden">
           <Button
             variant="ghost"
             size="icon-sm"

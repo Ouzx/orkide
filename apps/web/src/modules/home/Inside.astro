@@ -1,4 +1,5 @@
 ---
+import { m } from "@orkide/i18n/messages";
 import type { SiteContent } from "@orkide/validators/site";
 
 import SectionHead from "@/shared/components/SectionHead.astro";
@@ -9,46 +10,74 @@ interface Props {
 }
 
 const { content } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+const tag = m.home_schedule({}, options);
+const pad = (n: number) => n.toString().padStart(2, "0");
 ---
 
-<!-- What the site is made of: a row of meters, then its features as modules on the panel. -->
+<!-- What the site is made of: a schedule of quantities, then its features as general notes. -->
 <section
   id="inside"
   aria-labelledby="inside-title"
-  class="o-wrap py-18"
-  data-section
+  class="o-wrap o-sec"
+  data-reveal
+  data-section-title={`§2 · ${tag}`}
 >
-  <p class="o-eng m-0 mb-3">{content.kicker}</p>
-  <SectionHead number="0.2" id="inside-title" title={content.title} />
-  <p class="o-summary mt-6 text-ink-2">{content.lead}</p>
-  <dl class="m-0 mt-8 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-    {
-      content.meters.map((meter) => (
-        <div class="o-meter">
-          <dt class="flex items-center justify-between gap-2">
-            <span class="o-eng">{meter.label}</span>
-            <span class="o-lamp" data-tone="ok" aria-hidden="true" />
-          </dt>
-          <dd class="o-lcd m-0">
-            <span data-roll>{meter.value}</span>
-            {meter.unit && <small>{meter.unit}</small>}
-          </dd>
-        </div>
-      ))
-    }
-  </dl>
-  <ul class="m-0 mt-8 grid list-none gap-5 p-0 md:grid-cols-2 lg:grid-cols-3">
-    {
-      content.features.map((feature) => (
-        <li class="o-unit p-5">
-          <div class="flex items-center gap-2">
-            <span class="o-lamp" data-tone="signal" aria-hidden="true" />
-            <span class="o-eng">{feature.name}</span>
-          </div>
-          <h3 class="o-entry-title mt-3 text-xl">{feature.title}</h3>
-          <p class="m-0 text-ink-2">{feature.text}</p>
-        </li>
-      ))
-    }
-  </ul>
+  <SectionHead
+    number={2}
+    tag={tag}
+    kicker={content.kicker}
+    id="inside-title"
+    title={content.title}
+  />
+  <div class="o-sched">
+    <div>
+      <p class="o-lead">{content.lead}</p>
+      <div class="o-qty-head" aria-hidden="true">
+        <span>#</span><span>{m.home_qty({}, options)}</span><span
+          >{m.home_item({}, options)}</span
+        >
+      </div>
+      <ul class="o-qtys">
+        {
+          content.meters.map((meter, index) => (
+            <li class="o-qty">
+              <span class="o-qty-i" aria-hidden="true">
+                {pad(index + 1)}
+              </span>
+              <span class="o-qty-v">
+                <span
+                  data-count={
+                    /^\d+$/u.test(meter.value) ? meter.value : undefined
+                  }
+                >
+                  {meter.value}
+                </span>
+                {meter.unit && <small>{meter.unit}</small>}
+              </span>
+              <span class="o-qty-l">{meter.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h3 class="o-label mt-0 mb-3.5">{m.home_notes({}, options)}</h3>
+      <ol class="o-notes">
+        {
+          content.features.map((feature, index) => (
+            <li class="o-note">
+              <span class="o-note-n" aria-hidden="true">
+                {index + 1}
+              </span>
+              <span class="o-note-k">{feature.name}</span>
+              <h4 class="o-h3">{feature.title}</h4>
+              <p>{feature.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
 </section>

@@ -19,6 +19,8 @@ Astro.response.status = 500;
   description={m.error_page_body({}, options)}
   alternates={pageAlternates("/")}
   noindex
+  sheet="X-500"
+  sheetName={m.sheet_void({}, options)}
 >
   <ErrorPanel
     code="500"

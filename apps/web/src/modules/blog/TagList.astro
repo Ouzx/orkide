@@ -13,15 +13,12 @@ const { locale } = Astro.locals;
 
 {
   tags.length > 0 && (
-    <ul
-      class="relative z-10 m-0 inline-flex list-none flex-wrap gap-x-3 gap-y-1 p-0"
-      aria-label={label}
-    >
+    <ul class="o-tags" aria-label={label}>
       {tags.map((tag) => (
         <li>
           <a
             href={localizeHref(`/blog/tag/${tag.slug}`, { locale })}
-            class="font-mono text-sm text-ink no-underline hover:text-signal-ink"
+            class="o-tag"
           >
             #{tag.name}
           </a>

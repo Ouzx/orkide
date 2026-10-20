@@ -46,7 +46,7 @@ export const DocumentTable = ({
     return <EmptyRow>{m.admin_empty({}, options)}</EmptyRow>;
   }
   return (
-    <div className="o-unit">
+    <div className="o-card">
       <Table>
         <TableHeader>
           <TableRow>

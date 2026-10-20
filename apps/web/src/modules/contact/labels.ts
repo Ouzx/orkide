@@ -13,7 +13,6 @@ export const contactLabels = (locale: Locale) => {
     failed: m.error_internal({}, options),
     name: m.contact_name({}, options),
     optional: m.contact_optional({}, options),
-    ready: m.contact_ready({}, options),
     sending: m.contact_sending({}, options),
     sentScreen: m.contact_sent_screen({}, options),
     subject: m.contact_subject({}, options),

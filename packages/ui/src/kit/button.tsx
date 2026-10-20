@@ -20,26 +20,26 @@ type Size =
   | "xs";
 
 const variants: Record<Variant, string> = {
-  default: "o-key o-key-signal",
-  destructive: "o-key o-key-danger",
-  ghost: "o-key o-key-ghost",
+  default: "o-btn o-btn-primary",
+  destructive: "o-btn o-btn-danger",
+  ghost: "o-btn o-btn-ghost",
   link: "o-link",
-  outline: "o-key",
-  secondary: "o-key",
+  outline: "o-btn",
+  secondary: "o-btn",
 };
 const sizes: Record<Size, string> = {
   default: "",
-  icon: "o-key-icon",
-  "icon-lg": "o-key-icon",
-  "icon-sm": "o-key-icon o-key-sm",
-  "icon-xs": "o-key-icon o-key-sm",
+  icon: "o-btn-icon",
+  "icon-lg": "o-btn-icon",
+  "icon-sm": "o-btn-icon o-btn-sm",
+  "icon-xs": "o-btn-icon o-btn-sm",
   lg: "",
   pill: "",
-  sm: "o-key-sm",
-  xs: "o-key-sm",
+  sm: "o-btn-sm",
+  xs: "o-btn-sm",
 };
 
-/** A keycap (packages/ui/components.md · Key). `default` is the signal key. */
+/** A button: a slip over its hatched shadow (packages/ui/components.md · Button). `default` is the primary one. */
 const buttonVariants = ({
   className,
   size = "default",

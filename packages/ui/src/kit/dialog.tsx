@@ -84,7 +84,7 @@ const DialogFooter = ({ className, ...props }: ComponentProps<"div">) => (
 const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => (
   <DialogPrimitive.Title
     data-slot="dialog-title"
-    className={cn("o-unit-title text-lg", className)}
+    className={cn("o-card-title", className)}
     {...props}
   />
 );

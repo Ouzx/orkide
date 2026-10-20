@@ -17,6 +17,7 @@ const FIELD_LABELS: Record<string, Label> = {
   command: m.admin_site_f_command,
   contactCta: m.admin_site_f_contact_cta,
   cta: m.admin_site_f_cta,
+  deriveCta: m.admin_site_f_derive_cta,
   eyebrow: m.admin_site_f_eyebrow,
   features: m.admin_site_f_features,
   kicker: m.admin_site_f_kicker,
@@ -25,6 +26,9 @@ const FIELD_LABELS: Record<string, Label> = {
   meters: m.admin_site_f_meters,
   name: m.admin_site_f_name,
   note: m.admin_site_f_note,
+  parts: m.admin_site_f_parts,
+  qty: m.admin_site_f_qty,
+  sourceCta: m.admin_site_f_source_cta,
   stages: m.admin_site_f_stages,
   steps: m.admin_site_f_steps,
   text: m.admin_site_f_text,
@@ -33,7 +37,6 @@ const FIELD_LABELS: Record<string, Label> = {
   unit: m.admin_site_f_unit,
   url: m.admin_site_f_url,
   value: m.admin_site_f_value,
-  workCta: m.admin_site_f_work_cta,
 };
 
 export const fieldLabel = (

@@ -1,14 +1,17 @@
 ---
+import { m } from "@orkide/i18n/messages";
+
 interface Props {
   message: string;
 }
 const { message } = Astro.props;
+const { locale } = Astro.locals;
 ---
 
-<!-- An empty listing: the display shows a blank reading. -->
-<div class="o-display my-6 max-w-xl">
-  <p class="o-readout relative m-0 border-0 pt-0">
-    <span aria-hidden="true">▶ ----</span>
-    <span class="o-readout-sel whitespace-normal">{message}</span>
-  </p>
+<!-- An empty listing: a blank sheet, stamped as not issued yet. -->
+<div class="o-empty">
+  <span class="o-stamp o-stamp-static" aria-hidden="true">
+    <b>{m.sheet_not_issued({}, { locale })}</b>
+  </span>
+  <p>{message}</p>
 </div>

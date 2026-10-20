@@ -60,7 +60,7 @@ interface Form {
 }
 
 /** A native `<select>` in the same well as the `Input` primitive. */
-const selectClass = "o-well";
+const selectClass = "o-input";
 
 const FormContext = createContext<Form | null>(null);
 
@@ -241,7 +241,7 @@ const ObjectField = ({ schema, value, onChange, path, label }: FieldProps) => {
     body
   ) : (
     <fieldset className="space-y-4 rounded-xl border p-3 sm:p-4">
-      <legend className="o-eng px-1">{label}</legend>
+      <legend className="o-label px-1">{label}</legend>
       {body}
     </fieldset>
   );
@@ -279,7 +279,7 @@ const ListField = ({ schema, value, onChange, path, label }: FieldProps) => {
   };
   return (
     <fieldset className="space-y-3 rounded-xl border p-3 sm:p-4">
-      <legend className="o-eng px-1">{label}</legend>
+      <legend className="o-label px-1">{label}</legend>
       <Issue path={path} />
       {items.map((entry, index) => {
         const name = m.admin_site_item({ label, n: index + 1 }, options);
@@ -366,7 +366,7 @@ const TupleField = ({ schema, value, onChange, path, label }: FieldProps) => {
   const items = Array.isArray(value) ? value : [];
   return (
     <fieldset className="space-y-3 rounded-xl border p-3 sm:p-4">
-      <legend className="o-eng px-1">{label}</legend>
+      <legend className="o-label px-1">{label}</legend>
       {schema.prefixItems?.map((child, index) => {
         // A fixed position is the item itself.
         const position = `${path.join(".")}#${index}`;

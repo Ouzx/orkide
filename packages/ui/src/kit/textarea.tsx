@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 const Textarea = ({ className, ...props }: ComponentProps<"textarea">) => (
   <textarea
     data-slot="textarea"
-    className={cn("o-well", className)}
+    className={cn("o-input", className)}
     {...props}
   />
 );

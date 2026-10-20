@@ -9,10 +9,16 @@ import {
 
 const hero = {
   contactCta: "Say hello",
+  deriveCta: "Derive",
   eyebrow: "Engineer",
   lead: "I build things for the web.",
+  parts: Array.from({ length: 9 }, (_, index) => ({
+    name: `Part ${index + 1}`,
+    qty: "1",
+    text: "Does one thing well.",
+  })),
+  sourceCta: "Source",
   title: "Hello, web.",
-  workCta: "Work",
 };
 
 describe("site content", () => {
@@ -60,7 +66,7 @@ describe("site content", () => {
       schema: { properties: { stages: { maxItems: 5, minItems: 5 } } },
     });
     expect(sections.hero).toMatchObject({
-      content: { workCta: "İşleri gör" },
+      content: { deriveCta: "Ürün türet" },
       savedAt: null,
       schema: { properties: { title: { type: "string" } }, type: "object" },
     });
