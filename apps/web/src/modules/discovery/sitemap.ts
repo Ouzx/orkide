@@ -18,7 +18,13 @@ const escapeXml = (value: string): string =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const STATIC_PAGES = ["/", "/blog", "/portfolio", "/contact"] as const;
+const STATIC_PAGES = [
+  "/",
+  "/blog",
+  "/portfolio",
+  "/atlas",
+  "/contact",
+] as const;
 
 const collectEntries = (inventory: readonly LocaleInventory[]): Entry[] => {
   const entries: Entry[] = STATIC_PAGES.map((path) => ({

@@ -1,0 +1,177 @@
+/* MO-05 Micro-interactions: a toggle, a like and a send button, each answering on a 3 s loop. */
+.st-micro-interactions {
+  background: #edf0f6;
+}
+
+.st-micro-interactions-row {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7cqw;
+}
+
+.st-micro-interactions-toggle {
+  position: relative;
+  width: 16cqw;
+  height: 9cqw;
+  border-radius: 99px;
+  background: #c6ccd8;
+  animation: st-micro-interactions-track 3s infinite;
+}
+
+.st-micro-interactions-toggle i {
+  position: absolute;
+  top: 1cqw;
+  left: 1cqw;
+  width: 7cqw;
+  height: 7cqw;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  animation: st-micro-interactions-knob 3s cubic-bezier(0.5, 1.7, 0.5, 0.8)
+    infinite;
+}
+
+.st-micro-interactions-like {
+  color: #c6ccd8;
+  font-size: 11cqw;
+  line-height: 1;
+  animation: st-micro-interactions-like 3s infinite;
+}
+
+.st-micro-interactions-send {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  width: 24cqw;
+  height: 10cqw;
+  place-items: center;
+  border-radius: 99px;
+  background: #121420;
+  color: #ffffff;
+  font: 600 3.6cqw var(--o-font-text);
+  animation: st-micro-interactions-send 3s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+.st-micro-interactions-send em,
+.st-micro-interactions-send b {
+  grid-area: 1 / 1;
+  font-style: normal;
+}
+
+.st-micro-interactions-send em {
+  animation: st-micro-interactions-label 3s infinite;
+}
+
+.st-micro-interactions-send b {
+  font-size: 5cqw;
+  opacity: 0;
+  animation: st-micro-interactions-check 3s infinite;
+}
+
+@keyframes st-micro-interactions-knob {
+  0%,
+  45% {
+    transform: translateX(0);
+  }
+
+  50%,
+  95% {
+    transform: translateX(7cqw);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes st-micro-interactions-track {
+  0%,
+  45%,
+  100% {
+    background: #c6ccd8;
+  }
+
+  50%,
+  95% {
+    background: #2f45e8;
+  }
+}
+
+@keyframes st-micro-interactions-like {
+  0%,
+  20% {
+    color: #c6ccd8;
+    transform: scale(1);
+  }
+
+  26% {
+    color: #ff3d6e;
+    transform: scale(1.45);
+  }
+
+  32%,
+  90% {
+    color: #ff3d6e;
+    transform: scale(1);
+  }
+
+  100% {
+    color: #c6ccd8;
+  }
+}
+
+@keyframes st-micro-interactions-send {
+  0%,
+  55% {
+    width: 24cqw;
+    background: #121420;
+  }
+
+  65%,
+  92% {
+    width: 10cqw;
+    background: #11a57b;
+  }
+
+  100% {
+    width: 24cqw;
+    background: #121420;
+  }
+}
+
+@keyframes st-micro-interactions-check {
+  0%,
+  62% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+
+  70%,
+  92% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes st-micro-interactions-label {
+  0%,
+  55% {
+    opacity: 1;
+  }
+
+  60%,
+  95% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

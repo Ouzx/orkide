@@ -1,0 +1,77 @@
+/* AE-05 Swiss editorial: a strict grid, a giant numeral and one red block that wipes in. */
+.st-swiss-editorial {
+  background: #f5f5f2;
+  color: #111111;
+}
+
+.st-swiss-editorial-page {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0 2cqw;
+  padding: 4cqw;
+}
+
+.st-swiss-editorial-numeral {
+  grid-column: 1 / 5;
+  grid-row: 1 / 4;
+  align-self: end;
+  font:
+    700 40cqw/0.8 "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+  letter-spacing: -0.07em;
+}
+
+.st-swiss-editorial-block {
+  grid-column: 5 / 7;
+  grid-row: 1 / 2;
+  background: #e3241b;
+  transform-origin: left;
+  animation: st-swiss-editorial-wipe 5s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+}
+
+.st-swiss-editorial-page p {
+  grid-column: 5 / 7;
+  grid-row: 2 / 4;
+  align-self: end;
+  margin: 0;
+  font:
+    700 3.6cqw/1.15 "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+.st-swiss-editorial-page small {
+  display: flex;
+  grid-column: 1 / 7;
+  grid-row: 4;
+  align-self: end;
+  justify-content: space-between;
+  padding-top: 1.5cqw;
+  border-top: 2px solid #111111;
+  font:
+    500 2.6cqw/1.3 "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+@keyframes st-swiss-editorial-wipe {
+  0% {
+    transform: scaleX(0);
+  }
+
+  25%,
+  85% {
+    transform: scaleX(1);
+  }
+
+  100% {
+    transform: scaleX(0);
+  }
+}

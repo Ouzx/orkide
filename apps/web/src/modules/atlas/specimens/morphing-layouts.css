@@ -1,0 +1,129 @@
+/* MO-02 Morphing layouts: four tiles glide between a grid and a detail view with a row below it. */
+.st-morphing-layouts {
+  background: #11151b;
+}
+
+.st-morphing-layouts-board {
+  position: absolute;
+  inset: 0;
+}
+
+.st-morphing-layouts-board i {
+  position: absolute;
+  border-radius: 2.5cqw;
+  animation: 7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.st-morphing-layouts-board i:nth-child(1) {
+  top: 10%;
+  left: 8%;
+  width: 40%;
+  height: 36%;
+  background: #7cf3c4;
+  animation-name: st-morphing-layouts-one;
+}
+
+.st-morphing-layouts-board i:nth-child(2) {
+  top: 10%;
+  left: 52%;
+  width: 40%;
+  height: 36%;
+  background: #ff8a5b;
+  animation-name: st-morphing-layouts-two;
+}
+
+.st-morphing-layouts-board i:nth-child(3) {
+  top: 50%;
+  left: 8%;
+  width: 40%;
+  height: 40%;
+  background: #8c99ff;
+  animation-name: st-morphing-layouts-three;
+}
+
+.st-morphing-layouts-board i:nth-child(4) {
+  top: 50%;
+  left: 52%;
+  width: 40%;
+  height: 40%;
+  background: #f7e35a;
+  animation-name: st-morphing-layouts-four;
+}
+
+@keyframes st-morphing-layouts-one {
+  0%,
+  40%,
+  100% {
+    top: 10%;
+    left: 8%;
+    width: 40%;
+    height: 36%;
+    border-radius: 2.5cqw;
+  }
+
+  50%,
+  90% {
+    top: 10%;
+    left: 8%;
+    width: 84%;
+    height: 48%;
+    border-radius: 6.5cqw;
+  }
+}
+
+@keyframes st-morphing-layouts-two {
+  0%,
+  40%,
+  100% {
+    top: 10%;
+    left: 52%;
+    width: 40%;
+    height: 36%;
+  }
+
+  50%,
+  90% {
+    top: 62%;
+    left: 8%;
+    width: 26%;
+    height: 28%;
+  }
+}
+
+@keyframes st-morphing-layouts-three {
+  0%,
+  40%,
+  100% {
+    top: 50%;
+    left: 8%;
+    width: 40%;
+    height: 40%;
+  }
+
+  50%,
+  90% {
+    top: 62%;
+    left: 37%;
+    width: 26%;
+    height: 28%;
+  }
+}
+
+@keyframes st-morphing-layouts-four {
+  0%,
+  40%,
+  100% {
+    top: 50%;
+    left: 52%;
+    width: 40%;
+    height: 40%;
+  }
+
+  50%,
+  90% {
+    top: 62%;
+    left: 66%;
+    width: 26%;
+    height: 28%;
+  }
+}

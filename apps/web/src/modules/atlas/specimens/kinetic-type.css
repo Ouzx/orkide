@@ -1,0 +1,42 @@
+/* MO-03 Kinetic typography: Archivo's width and weight axes wave through the word. */
+.st-kinetic-type {
+  background: #effc5c;
+}
+
+.st-kinetic-type-word {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111111;
+  font-family: var(--o-font-display);
+  font-size: 15cqw;
+  line-height: 1;
+}
+
+.st-kinetic-type-word span {
+  display: inline-block;
+  font-variation-settings:
+    "wdth" 100,
+    "wght" 500;
+  animation: st-kinetic-type-wave 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.2s);
+}
+
+@keyframes st-kinetic-type-wave {
+  0%,
+  100% {
+    font-variation-settings:
+      "wdth" 62,
+      "wght" 300;
+    transform: translateY(7%);
+  }
+
+  50% {
+    font-variation-settings:
+      "wdth" 125,
+      "wght" 900;
+    transform: translateY(-7%);
+  }
+}

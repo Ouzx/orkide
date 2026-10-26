@@ -1,0 +1,117 @@
+/* MO-01 Scroll-driven story: a phone scrolls through three scenes while its progress rail fills. */
+.st-scroll-story {
+  background: #dce2ff;
+}
+
+.st-scroll-story-phone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+  width: 40%;
+  height: 84%;
+  border-radius: 4cqw;
+  background: #0e1020;
+  box-shadow: 0 2.5cqw 7.5cqw rgba(20, 30, 90, 0.35);
+  transform: translate(-50%, -50%);
+}
+
+.st-scroll-story-rail {
+  position: absolute;
+  z-index: 2;
+  top: 2.5cqw;
+  bottom: 2.5cqw;
+  left: 1.75cqw;
+  overflow: hidden;
+  width: 0.75cqw;
+  border-radius: 0.75cqw;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.st-scroll-story-rail i {
+  display: block;
+  width: 100%;
+  height: 12%;
+  background: #ffd43b;
+  animation: st-scroll-story-progress 6s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+}
+
+.st-scroll-story-track {
+  height: 300%;
+  animation: st-scroll-story-scroll 6s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+}
+
+.st-scroll-story-track > div {
+  display: grid;
+  height: 33.333%;
+  place-content: center;
+  gap: 1cqw;
+  color: #ffffff;
+  text-align: center;
+}
+
+.st-scroll-story-track > div:nth-child(1) {
+  background: #2f45e8;
+}
+
+.st-scroll-story-track > div:nth-child(2) {
+  background: #e8501a;
+}
+
+.st-scroll-story-track > div:nth-child(3) {
+  background: #11a57b;
+}
+
+.st-scroll-story-track b {
+  font: 700 11cqw / 1 var(--o-font-display);
+  font-stretch: 125%;
+}
+
+.st-scroll-story-track span {
+  font: 600 2.6cqw var(--o-font-mono);
+  letter-spacing: 0.14em;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+@keyframes st-scroll-story-progress {
+  0%,
+  24% {
+    height: 12%;
+  }
+
+  33%,
+  57% {
+    height: 50%;
+  }
+
+  66%,
+  90% {
+    height: 100%;
+  }
+
+  100% {
+    height: 12%;
+  }
+}
+
+@keyframes st-scroll-story-scroll {
+  0%,
+  24% {
+    transform: translateY(0);
+  }
+
+  33%,
+  57% {
+    transform: translateY(-33.333%);
+  }
+
+  66%,
+  90% {
+    transform: translateY(-66.666%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}

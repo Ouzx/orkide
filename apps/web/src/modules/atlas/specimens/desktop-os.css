@@ -1,0 +1,123 @@
+/* SP-02 Desktop OS metaphor: a retro desktop whose windows drag by their title bars. */
+.st-desktop-os {
+  background: #2e7d7a;
+}
+
+.st-desktop-os-desk {
+  position: absolute;
+  inset: 0;
+}
+
+.st-desktop-os-icons {
+  position: absolute;
+  top: 4cqw;
+  left: 4cqw;
+  display: grid;
+  gap: 3cqw;
+}
+
+.st-desktop-os-icons span {
+  display: grid;
+  justify-items: center;
+  gap: 1cqw;
+  color: #ffffff;
+  font:
+    2.75cqw Tahoma,
+    Verdana,
+    sans-serif;
+  text-shadow: 0 1px 0 #000000;
+}
+
+.st-desktop-os-icons i {
+  width: 7cqw;
+  height: 6cqw;
+  border: 1px solid #000000;
+  background: #f4e36b;
+}
+
+.st-desktop-os-icons .st-desktop-os-folder {
+  border-radius: 2px 6px 2px 2px;
+  background: #f2b33d;
+}
+
+.st-desktop-os-icons .st-desktop-os-bin {
+  border-radius: 0 0 4px 4px;
+  background: #d9d9d9;
+}
+
+.st-desktop-os-win {
+  position: absolute;
+  width: 46%;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #d4d0c8;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  color: #000000;
+  font:
+    2.75cqw Tahoma,
+    Verdana,
+    sans-serif;
+}
+
+.st-desktop-os-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5cqw 1cqw;
+  background: linear-gradient(90deg, #0a246a, #3a6ea5);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+}
+
+.st-desktop-os-bar b {
+  display: grid;
+  place-items: center;
+  width: 3.5cqw;
+  height: 3cqw;
+  border: 1px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #d4d0c8;
+  color: #000000;
+  font-size: 2.5cqw;
+  line-height: 1;
+}
+
+.st-desktop-os-win p {
+  margin: 1.5cqw 2cqw;
+}
+
+.st-desktop-os-button {
+  display: inline-block;
+  margin: 0 2cqw 2cqw;
+  padding: 0.5cqw 3cqw;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #d4d0c8;
+  color: #000000;
+}
+
+.st-desktop-os-task {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  height: 5.5cqw;
+  padding: 0 1cqw;
+  border-top: 2px solid #ffffff;
+  background: #d4d0c8;
+  color: #000000;
+  font:
+    700 2.75cqw Tahoma,
+    Verdana,
+    sans-serif;
+}
+
+.st-desktop-os-task span {
+  padding: 0 1.5cqw;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+}

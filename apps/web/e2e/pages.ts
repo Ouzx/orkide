@@ -7,6 +7,8 @@ export const pages = [
   { name: "blog post (tr)", path: "/tr/blog/uc-oncelikli-mimari" },
   { name: "contact", path: "/en/contact" },
   { name: "portfolio", path: "/en/portfolio" },
+  { name: "atlas", path: "/en/atlas" },
+  { name: "atlas (tr)", path: "/tr/atlas" },
   { name: "404", path: "/en/this-page-does-not-exist" },
   { name: "admin sign-in", path: "/en/admin" },
 ] as const;

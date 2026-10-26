@@ -1,0 +1,136 @@
+---
+import { m } from "@orkide/i18n/messages";
+
+import { explodeAxis, faceMatrix, layers } from "./anatomy.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+
+/** The parts list, in the drawing's balloon order (1 is the hero, on top). */
+const parts = [
+  {
+    name: m.atlas_role_hero({}, options),
+    part: 1,
+    qty: "1",
+    text: m.atlas_role_hero_text({}, options),
+  },
+  {
+    name: m.atlas_role_support({}, options),
+    part: 2,
+    qty: "1–2",
+    text: m.atlas_role_support_text({}, options),
+  },
+  {
+    name: m.atlas_role_aesthetic({}, options),
+    part: 3,
+    qty: "1",
+    text: m.atlas_role_aesthetic_text({}, options),
+  },
+  {
+    name: m.atlas_role_content({}, options),
+    part: 4,
+    qty: m.atlas_qty_all({}, options),
+    text: m.atlas_role_content_text({}, options),
+  },
+] as const;
+const nameOf = (part: number) =>
+  parts.find((entry) => entry.part === part)?.name ?? "";
+---
+
+<!-- A mix as an exploded drawing beside its parts list: hovering a row, a balloon or a slab lights it in both. -->
+<div class="o-anatomy" data-parts-set>
+  <figure class="o-vp o-atlas-vp">
+    <svg
+      class="o-axo"
+      viewBox="0 0 600 520"
+      role="img"
+      aria-label={m.atlas_mix_drawing({}, options)}
+      data-plotted
+      data-plot
+    >
+      <path data-explode d={explodeAxis}></path>
+      <g data-parts>
+        {
+          layers.map((layer) => (
+            <g data-part={layer.part}>
+              <polygon data-fill points={layer.right} />
+              <polygon data-fill points={layer.left} />
+              <polygon data-fill="top" points={layer.top} />
+              {layer.hatch && <polygon data-hatch points={layer.hatch} />}
+              {layer.deco.map((deco) => (
+                <path data-deco d={deco} />
+              ))}
+              <path data-edge data-stroke pathLength="1" d={layer.edge} />
+              <text
+                data-label
+                transform={faceMatrix(layer.label)}
+                text-anchor="middle"
+              >
+                {nameOf(layer.part)}
+              </text>
+            </g>
+          ))
+        }
+      </g>
+      <g data-balloons>
+        {
+          layers.toReversed().map(({ balloon, part }) => (
+            <g data-balloon={part}>
+              <path
+                data-leader
+                d={`M${balloon.anchor[0].toFixed(1)} ${balloon.anchor[1].toFixed(1)} L${(balloon.bubble[0] - 30).toFixed(1)} ${balloon.bubble[1].toFixed(1)} L${(balloon.bubble[0] - 12).toFixed(1)} ${balloon.bubble[1].toFixed(1)}`}
+              />
+              <circle
+                data-anchor
+                cx={balloon.anchor[0].toFixed(1)}
+                cy={balloon.anchor[1].toFixed(1)}
+                r="2.2"
+              />
+              <circle
+                data-bubble
+                cx={balloon.bubble[0]}
+                cy={balloon.bubble[1].toFixed(1)}
+                r="12"
+              />
+              <text x={balloon.bubble[0]} y={balloon.bubble[1].toFixed(1)}>
+                {part}
+              </text>
+            </g>
+          ))
+        }
+      </g>
+    </svg>
+    <div class="o-vp-label" aria-hidden="true">
+      <b>{m.home_view({}, options)}</b>{m.home_view_kind({}, options)}
+    </div>
+    <div class="o-vp-scale" aria-hidden="true">
+      <span class="o-vp-bar"><i></i><i></i><i></i><i></i></span>
+    </div>
+  </figure>
+  <table class="o-bom">
+    <caption>{m.atlas_parts_caption({}, options)}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{m.home_parts_item({}, options)}</th>
+        <th scope="col">{m.home_parts_part({}, options)}</th>
+        <th scope="col">{m.home_parts_qty({}, options)}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        parts.map((entry) => (
+          <tr data-part={entry.part} tabindex="0">
+            <td>
+              <span class="o-bom-n">{entry.part}</span>
+            </td>
+            <td>
+              <b>{entry.name}</b>
+              <span class="o-atlas-part-text">{entry.text}</span>
+            </td>
+            <td>{entry.qty}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

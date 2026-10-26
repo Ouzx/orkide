@@ -1,0 +1,41 @@
+/* SN-03 Cursor spotlight: a second layer shows only through a soft circle at the pointer. */
+.st-cursor-spotlight {
+  background: #0b0b10;
+}
+
+.st-cursor-spotlight-layers {
+  position: absolute;
+  inset: 0;
+}
+
+.st-cursor-spotlight-layers > div {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  padding: 6cqw;
+  text-align: center;
+}
+
+.st-cursor-spotlight-dark {
+  color: #3a3d4a;
+  font: 700 10cqw/1 var(--o-font-display);
+  font-stretch: 125%;
+}
+
+.st-cursor-spotlight-lit {
+  background: #ff6a33;
+  color: #140a05;
+  font: 700 8cqw/1.02 var(--o-font-display);
+  font-stretch: 125%;
+  -webkit-mask-image: radial-gradient(
+    circle 16cqw at var(--x, 50%) var(--y, 50%),
+    #000000 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 16cqw at var(--x, 50%) var(--y, 50%),
+    #000000 55%,
+    transparent 100%
+  );
+}

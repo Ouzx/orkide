@@ -1,0 +1,62 @@
+/* SP-04 Tilt & holo cards: a pass leans toward the pointer and a glare slides across it. */
+.st-tilt-cards {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, #2c3058, #0b0c18);
+}
+
+.st-tilt-cards-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  width: 34cqw;
+  aspect-ratio: 5 / 7;
+  padding: 4cqw;
+  overflow: hidden;
+  border-radius: 4cqw;
+  background: linear-gradient(135deg, #ff6a33, #ff2e88 45%, #5b3cff);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  will-change: transform;
+}
+
+/* Condensed, not expanded: at 125% "TEMPLATE" is half again wider than the card. */
+.st-tilt-cards-card b {
+  font: 700 6cqw/1 var(--o-font-display);
+  font-stretch: 75%;
+}
+
+.st-tilt-cards-card span {
+  margin-top: 1.2cqw;
+  font: 600 2.3cqw var(--o-font-mono);
+  letter-spacing: 0.1em;
+}
+
+.st-tilt-cards-card em {
+  position: absolute;
+  top: 4cqw;
+  right: 4cqw;
+  font: 600 2.3cqw var(--o-font-mono);
+  font-style: normal;
+  opacity: 0.85;
+}
+
+.st-tilt-cards-shine {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.65),
+      transparent 45%
+    ),
+    repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 0 6px,
+      rgba(255, 255, 255, 0.1) 6px 8px
+    );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}

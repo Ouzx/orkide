@@ -5,6 +5,7 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
+    "./atlas": "./src/atlas.ts",
     "./common": "./src/common.ts",
     "./contact": "./src/contact.ts",
     "./content": "./src/content.ts",

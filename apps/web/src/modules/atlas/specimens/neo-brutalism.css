@@ -1,0 +1,76 @@
+/* AE-01 Neo-brutalism: loud yellow, a ticker, oversized type and a button that presses in. */
+.st-neo-brutalism {
+  background: #ffe600;
+  color: #000000;
+}
+
+.st-neo-brutalism-poster {
+  position: absolute;
+  inset: 0;
+}
+
+.st-neo-brutalism-ticker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: 1.8cqw 0;
+  overflow: hidden;
+  background: #000000;
+  color: #ffe600;
+  font: 700 3.2cqw/1 var(--o-font-mono);
+  white-space: nowrap;
+}
+
+.st-neo-brutalism-ticker span {
+  display: inline-block;
+  animation: st-neo-brutalism-ticker 9s linear infinite;
+}
+
+.st-neo-brutalism-headline {
+  position: absolute;
+  top: 13cqw;
+  left: 5cqw;
+  font:
+    900 13cqw/0.86 "Arial Black",
+    Impact,
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.st-neo-brutalism-button {
+  position: absolute;
+  right: 6cqw;
+  bottom: 7cqw;
+  padding: 2cqw 4cqw;
+  border: 3px solid #000000;
+  background: #ff4fd8;
+  box-shadow: 6px 6px 0 #000000;
+  color: #000000;
+  font:
+    900 4.4cqw "Arial Black",
+    Impact,
+    sans-serif;
+  rotate: -4deg;
+  animation: st-neo-brutalism-press 2.4s infinite;
+}
+
+@keyframes st-neo-brutalism-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes st-neo-brutalism-press {
+  0%,
+  70%,
+  100% {
+    box-shadow: 6px 6px 0 #000000;
+    translate: 0 0;
+  }
+
+  80% {
+    box-shadow: 0 0 0 #000000;
+    translate: 6px 6px;
+  }
+}

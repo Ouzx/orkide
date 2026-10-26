@@ -1,0 +1,116 @@
+/* AE-02 Y2K chrome: liquid-chrome lettering over candy blobs, with sparkles. */
+.st-y2k-chrome {
+  background: linear-gradient(160deg, #ffb8e6, #b9c6ff 55%, #c8fff1);
+}
+
+.st-y2k-chrome-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.st-y2k-chrome-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(6px);
+  animation: st-y2k-chrome-drift 6s ease-in-out infinite alternate;
+}
+
+.st-y2k-chrome-b1 {
+  top: -10cqw;
+  left: -8cqw;
+  width: 40cqw;
+  height: 40cqw;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #ff5fc8 60%);
+}
+
+.st-y2k-chrome-b2 {
+  right: -6cqw;
+  bottom: -8cqw;
+  width: 34cqw;
+  height: 34cqw;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #6c7bff 60%);
+  animation-delay: -3s;
+}
+
+.st-y2k-chrome-title {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #9aa6c9 38%,
+    #2c2f45 50%,
+    #c6d0f0 62%,
+    #ffffff 100%
+  );
+  background-size: 100% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0.8cqw 0 rgba(255, 80, 190, 0.55));
+  font:
+    italic 900 14cqw/0.92 "Arial Black",
+    Impact,
+    sans-serif;
+  text-align: center;
+  -webkit-text-stroke: 0.3cqw rgba(40, 30, 80, 0.45);
+  animation: st-y2k-chrome-shine 3s ease-in-out infinite alternate;
+}
+
+.st-y2k-chrome-spark {
+  position: absolute;
+  color: #ffffff;
+  font-size: 6cqw;
+  line-height: 1;
+  text-shadow: 0 0 8px #ff5fc8;
+  animation: st-y2k-chrome-twinkle 1.8s ease-in-out infinite;
+}
+
+.st-y2k-chrome-s1 {
+  top: 18%;
+  left: 16%;
+}
+
+.st-y2k-chrome-s2 {
+  top: 22%;
+  right: 18%;
+  font-size: 4cqw;
+  animation-delay: -0.6s;
+}
+
+.st-y2k-chrome-s3 {
+  bottom: 15%;
+  left: 26%;
+  animation-delay: -1.2s;
+}
+
+@keyframes st-y2k-chrome-drift {
+  to {
+    transform: translate(6cqw, 4cqw) scale(1.1);
+  }
+}
+
+@keyframes st-y2k-chrome-shine {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes st-y2k-chrome-twinkle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.6) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(45deg);
+  }
+}

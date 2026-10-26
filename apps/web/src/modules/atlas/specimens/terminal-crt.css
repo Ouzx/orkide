@@ -1,0 +1,49 @@
+/* AE-06 Terminal / CRT: phosphor text types itself behind scanlines, with a faint flicker. */
+.st-terminal-crt {
+  background: #030803;
+}
+
+.st-terminal-crt-tube {
+  position: absolute;
+  inset: 3cqw;
+  overflow: hidden;
+  border-radius: 5cqw / 6cqw;
+  background: radial-gradient(ellipse at center, #0b2a12 0%, #041006 80%);
+  box-shadow: inset 0 0 6cqw rgba(0, 0, 0, 0.9);
+  animation: st-terminal-crt-flicker 3s steps(1) infinite;
+}
+
+.st-terminal-crt-tube pre {
+  margin: 0;
+  padding: 5cqw;
+  color: #7cff9b;
+  font: 500 3.3cqw/1.45 var(--o-font-mono);
+  text-shadow: 0 0 6px rgba(80, 255, 130, 0.7);
+  white-space: pre-wrap;
+}
+
+.st-terminal-crt-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.35) 0 1px,
+    transparent 1px 3px
+  );
+  pointer-events: none;
+}
+
+@keyframes st-terminal-crt-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  48% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

@@ -14,6 +14,7 @@ const unlocalized = [
   "/robots.txt",
   "/llms.txt",
   "/llms-full.txt",
+  "/atlas.json",
   "/sitemap.xml",
   "/favicon.svg",
   "/favicon.ico",

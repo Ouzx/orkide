@@ -1,0 +1,28 @@
+/* AE-03 Collage & texture: torn paper, halftone, tape and grain, all drawn in SVG. */
+.st-collage {
+  background: #e9dfcb;
+}
+
+.st-collage-piece {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: st-collage-sway 5s ease-in-out infinite alternate;
+}
+
+.st-collage-piece:nth-of-type(2) {
+  animation-delay: -1.5s;
+}
+
+.st-collage-piece:nth-of-type(3) {
+  animation-delay: -3s;
+}
+
+@keyframes st-collage-sway {
+  from {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+
+  to {
+    transform: rotate(1.5deg) translateY(-3px);
+  }
+}

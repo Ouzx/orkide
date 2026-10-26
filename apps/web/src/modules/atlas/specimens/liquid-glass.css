@@ -1,0 +1,82 @@
+/* AE-04 Liquid glass: a frosted panel over drifting colour, with a bright glass edge. */
+.st-liquid-glass {
+  background: #0e1030;
+}
+
+.st-liquid-glass-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.st-liquid-glass-blob {
+  position: absolute;
+  border-radius: 50%;
+  animation: st-liquid-glass-drift 8s ease-in-out infinite alternate;
+}
+
+.st-liquid-glass-a {
+  top: 6%;
+  left: 6%;
+  width: 42cqw;
+  height: 42cqw;
+  background: #ff5a36;
+}
+
+.st-liquid-glass-b {
+  top: 26%;
+  right: 4%;
+  width: 36cqw;
+  height: 36cqw;
+  background: #2bd9a8;
+  animation-delay: -4s;
+}
+
+.st-liquid-glass-c {
+  bottom: -8%;
+  left: 34%;
+  width: 30cqw;
+  height: 30cqw;
+  background: #7c5cff;
+  animation-delay: -2s;
+}
+
+.st-liquid-glass-panel {
+  position: absolute;
+  inset: 20% 14%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5cqw;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 5cqw;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 30px rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  backdrop-filter: blur(16px) saturate(1.6);
+}
+
+.st-liquid-glass-panel small {
+  font: 600 2.5cqw var(--o-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.st-liquid-glass-panel strong {
+  font: 600 6cqw/1.05 var(--o-font-display);
+  font-stretch: 125%;
+}
+
+.st-liquid-glass-panel span {
+  font: 500 3cqw var(--o-font-text);
+  opacity: 0.9;
+}
+
+@keyframes st-liquid-glass-drift {
+  to {
+    transform: translate(8cqw, -6cqw) scale(1.15);
+  }
+}

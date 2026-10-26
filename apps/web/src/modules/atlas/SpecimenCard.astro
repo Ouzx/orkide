@@ -1,0 +1,157 @@
+---
+import { m } from "@orkide/i18n/messages";
+import type { Specimen } from "@orkide/validators/atlas";
+
+import {
+  costName,
+  costText,
+  familyName,
+  fitName,
+  fitText,
+  hintText,
+} from "./labels.ts";
+
+interface Props {
+  specimen: Specimen;
+  /** Every specimen by ID, to name the ones this one pairs with. */
+  byId: ReadonlyMap<string, Specimen>;
+}
+
+const { specimen, byId } = Astro.props;
+const { locale } = Astro.locals;
+const options = { locale };
+const pairs = specimen.pairs.flatMap((id) => byId.get(id) ?? []);
+const family = familyName(specimen.family, locale);
+// What the search box matches: names in both the page's language and English, tags, family, ID.
+const search = [
+  specimen.id,
+  specimen.name[locale],
+  specimen.name.en,
+  specimen.desc[locale],
+  family,
+  ...specimen.tags,
+]
+  .join(" ")
+  .toLocaleLowerCase(locale);
+---
+
+<!-- A specimen as a plate: its live preview in a drawn frame, its title strip, then the spec. -->
+<li
+  class="o-plate o-spec"
+  id={specimen.slug}
+  data-spec={specimen.id}
+  data-family={specimen.family}
+  data-pairs={specimen.pairs.join(" ")}
+  data-name={specimen.name.en}
+  data-search={search}
+>
+  <figure class="o-spec-vp" data-cad-text>
+    <div
+      class={`o-spec-stage st-${specimen.slug}`}
+      data-stage={specimen.slug}
+      data-drag={specimen.drag ? "" : undefined}
+      data-fallback={m.atlas_no_preview({}, options)}
+    >
+    </div>
+    <span class="o-stamp o-spec-stamp" data-size="sm" aria-hidden="true" hidden>
+      <b>{m.atlas_picked({}, options)}</b>
+    </span>
+    <figcaption class="o-vp-cap o-spec-cap" aria-hidden="true">
+      <span class="o-vp-bar"><i></i><i></i><i></i><i></i></span>
+      {
+        specimen.hint && (
+          <span class="o-hand o-spec-hint">
+            {hintText(specimen.hint, locale)}
+            <svg viewBox="0 0 30 20">
+              <path
+                pathLength="1"
+                d="M2 16 C 10 16 20 12 24 4 M 19 6 L 24 3 L 26 9"
+              />
+            </svg>
+          </span>
+        )
+      }
+    </figcaption>
+  </figure>
+  <div class="o-plate-tb">
+    <span>{specimen.id}</span>
+    <span>{family}</span>
+    <span title={fitText(specimen.fit, locale)} data-fit={specimen.fit}>
+      {fitName(specimen.fit, locale)}
+    </span>
+    <span title={costText(specimen.cost, locale)} data-cost={specimen.cost}>
+      <span class="sr-only">{m.atlas_weight({}, options)}:</span>
+      {costName(specimen.cost, locale)}
+    </span>
+  </div>
+  <div class="o-plate-body o-spec-body">
+    <h3>{specimen.name[locale]}</h3>
+    <p>{specimen.desc[locale]}</p>
+    <ul class="o-tags">
+      {specimen.tags.map((tag) => <li class="o-tag">{tag}</li>)}
+    </ul>
+    <dl class="o-spec-facts">
+      <div>
+        <dt class="o-label">{m.atlas_refs({}, options)}</dt>
+        <dd>
+          {
+            specimen.refs.map((ref) => (
+              <a class="o-link" href={ref.url}>
+                {ref.label}
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))
+          }
+        </dd>
+      </div>
+      {
+        pairs.length > 0 && (
+          <div>
+            <dt class="o-label">{m.atlas_pairs({}, options)}</dt>
+            <dd>
+              {pairs.map((pair) => (
+                <a
+                  class="o-tag"
+                  href={`#${pair.slug}`}
+                  title={pair.name[locale]}
+                  data-pair={pair.id}
+                >
+                  {pair.id}
+                  <span class="sr-only">{pair.name[locale]}</span>
+                </a>
+              ))}
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+    <details class="o-spec-prompt">
+      <summary class="o-label">{m.atlas_prompt({}, options)}</summary>
+      <p data-prompt>{specimen.prompt}</p>
+    </details>
+    <div class="o-spec-actions">
+      <button
+        type="button"
+        class="o-btn o-btn-sm"
+        data-copy-prompt
+        data-copied={m.copied({}, options)}
+        hidden
+      >
+        {m.atlas_copy_prompt({}, options)}
+      </button>
+      <button
+        type="button"
+        class="o-btn o-btn-sm o-spec-pick"
+        data-pick
+        aria-pressed="false"
+        hidden
+      >
+        <span data-when="off">{m.atlas_pick({}, options)}</span>
+        <span data-when="on">{m.atlas_picked({}, options)}</span>
+      </button>
+      <span class="o-badge o-spec-pairs" data-tone="mark">
+        {m.atlas_pairs_mix({}, options)}
+      </span>
+    </div>
+  </div>
+</li>

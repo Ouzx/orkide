@@ -1,0 +1,25 @@
+/*
+ * PH-03 Playable explainer: the stiffness slider, a real control over the live plot. It keeps
+ * pixel sizes, like the canvas text above it, so it stays legible and easy to grab at any width.
+ */
+.st-playable-explainer-ui {
+  position: absolute;
+  z-index: 5;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #121420;
+  font: 600 11px var(--o-font-mono);
+}
+
+.st-playable-explainer-ui input {
+  flex: 1;
+  min-width: 0;
+  accent-color: #2f45e8;
+}

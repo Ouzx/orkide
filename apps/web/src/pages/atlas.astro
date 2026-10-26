@@ -1,0 +1,267 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { localizeHref } from "@orkide/i18n/runtime";
+import { atlasFamilies } from "@orkide/validators/atlas";
+
+import "@/modules/atlas/atlas.css";
+import AtlasLegend from "@/modules/atlas/AtlasLegend.astro";
+import {
+  catalog,
+  familyCounts,
+  latestAddition,
+} from "@/modules/atlas/catalog.ts";
+import { familyName } from "@/modules/atlas/labels.ts";
+import MixAnatomy from "@/modules/atlas/MixAnatomy.astro";
+import SpecimenCard from "@/modules/atlas/SpecimenCard.astro";
+import { loadSite } from "@/modules/home/site.server.ts";
+import EmptyState from "@/shared/components/EmptyState.astro";
+import HatchDefs from "@/shared/components/HatchDefs.astro";
+import PageHeader from "@/shared/components/PageHeader.astro";
+import SectionHead from "@/shared/components/SectionHead.astro";
+import BaseLayout from "@/shared/layouts/BaseLayout.astro";
+import { cachePage } from "@/shared/lib/cache.ts";
+import { languageTag, pageAlternates } from "@/shared/lib/i18n.ts";
+import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+
+// Every specimen's own stage styles (`specimens/<slug>.css`), on this page only.
+import.meta.glob("@/modules/atlas/specimens/*.css", { eager: true });
+
+const { locale } = Astro.locals;
+const options = { locale };
+const site = await loadSite(locale);
+const kind = m.sheet_atlas({}, options);
+const sheet = "G-005";
+const counts = familyCounts();
+const byId = new Map(catalog.map((specimen) => [specimen.id, specimen]));
+const latest = latestAddition();
+const month = new Intl.DateTimeFormat(languageTag[locale], {
+  month: "long",
+  year: "numeric",
+}).format(new Date(`${latest}-15T12:00:00Z`));
+const agentsTag = m.footer_for_agents({}, options);
+const sourceUrl = `${site.derive.url}/tree/main/apps/web/src/modules/atlas/specimens`;
+cachePage(Astro, "site");
+---
+
+<BaseLayout
+  title={m.atlas_title({}, options)}
+  description={m.atlas_description({}, options)}
+  alternates={pageAlternates("/atlas")}
+  sheet={sheet}
+  sheetName={kind}
+  jsonLd={graph(
+    locale,
+    breadcrumbNode([
+      {
+        name: m.atlas_title({}, options),
+        path: localizeHref("/atlas", options),
+      },
+    ])
+  )}
+>
+  <HatchDefs />
+  <PageHeader
+    sheet={sheet}
+    kind={kind}
+    title={m.atlas_heading({}, options)}
+    accent={m.atlas_heading_accent({}, options)}
+    lead={m.atlas_description({}, options)}
+  >
+    <ul class="o-meta">
+      <li>
+        <b>{m.atlas_count({ count: catalog.length.toString() }, options)}</b>
+      </li>
+      <li>
+        {
+          m.atlas_families_count(
+            { count: atlasFamilies.length.toString() },
+            options
+          )
+        }
+      </li>
+      <li>
+        <time datetime={latest}>{m.atlas_latest({ month }, options)}</time>
+      </li>
+    </ul>
+  </PageHeader>
+
+  <section
+    id="specimens"
+    aria-labelledby="specimens-title"
+    class="o-wrap o-sec o-atlas"
+    data-reveal
+    data-section-title={`§1 · ${m.atlas_catalog_tag({}, options)}`}
+  >
+    <SectionHead
+      number={1}
+      sheet={sheet}
+      tag={m.atlas_catalog_tag({}, options)}
+      kicker={m.atlas_catalog_kicker({}, options)}
+      id="specimens-title"
+      title={m.atlas_catalog_title({}, options)}
+    />
+    <!-- Filters work with script only, so they appear with it. -->
+    <div class="o-atlas-bar" data-atlas-bar hidden>
+      <div
+        class="o-atlas-chips"
+        role="group"
+        aria-label={m.atlas_filter({}, options)}
+      >
+        <button
+          type="button"
+          class="o-chip"
+          data-family-filter="all"
+          aria-pressed="true"
+        >
+          {m.atlas_all({}, options)}<small>{catalog.length}</small>
+        </button>
+        {
+          atlasFamilies.map((family) => (
+            <button
+              type="button"
+              class="o-chip"
+              data-family-filter={family}
+              aria-pressed="false"
+            >
+              {familyName(family, locale)}
+              <small>{counts[family]}</small>
+            </button>
+          ))
+        }
+      </div>
+      <label class="o-atlas-search">
+        <span class="sr-only">{m.atlas_search({}, options)}</span>
+        <input
+          class="o-input"
+          type="search"
+          autocomplete="off"
+          placeholder={m.atlas_search_placeholder({}, options)}
+          data-atlas-search
+        />
+      </label>
+    </div>
+    <ol class="o-plates o-atlas-grid">
+      {
+        catalog.map((specimen) => (
+          <SpecimenCard specimen={specimen} byId={byId} />
+        ))
+      }
+    </ol>
+    <div data-atlas-empty hidden>
+      <EmptyState message={m.atlas_empty({}, options)} />
+    </div>
+  </section>
+
+  <section
+    id="mix"
+    aria-labelledby="mix-title"
+    class="o-wrap o-sec"
+    data-reveal
+    data-section-title={`§2 · ${m.atlas_mix_tag({}, options)}`}
+  >
+    <SectionHead
+      number={2}
+      sheet={sheet}
+      tag={m.atlas_mix_tag({}, options)}
+      kicker={m.atlas_mix_kicker({}, options)}
+      id="mix-title"
+      title={m.atlas_mix_title({}, options)}
+    />
+    <p class="o-lead o-atlas-lead">{m.atlas_mix_lead({}, options)}</p>
+    <MixAnatomy />
+    <AtlasLegend />
+  </section>
+
+  <section
+    id="agents"
+    aria-labelledby="agents-title"
+    class="o-wrap o-sec o-atlas-agents"
+    data-reveal
+    data-section-title={`§3 · ${agentsTag}`}
+  >
+    <SectionHead
+      number={3}
+      sheet={sheet}
+      tag={agentsTag}
+      kicker={agentsTag}
+      id="agents-title"
+      title={m.atlas_agents_title({}, options)}
+    />
+    <div class="o-two" data-split="7-5">
+      <p class="o-lead">{m.atlas_agents_text({}, options)}</p>
+      <div class="o-ctas">
+        <a class="o-btn o-btn-primary" href="/atlas.json" data-magnet>
+          atlas.json
+        </a>
+        <a class="o-link" href={sourceUrl}>{m.atlas_source({}, options)}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The mix: the picked specimens, in order (the first is the hero), and what to do with them. -->
+  <aside
+    class="o-grp o-atlas-tray"
+    aria-label={m.atlas_mix({}, options)}
+    data-atlas-tray
+    data-role-hero={m.atlas_role_hero({}, options)}
+    data-role-support={m.atlas_role_support({}, options)}
+    data-role-aesthetic={m.atlas_role_aesthetic({}, options)}
+    hidden
+  >
+    <span class="o-tool o-atlas-tray-count">
+      <b data-mix-count>0</b>
+      {m.atlas_mix({}, options)}
+    </span>
+    <ol class="o-atlas-picks" data-mix-list></ol>
+    <button type="button" class="o-tool" data-mix-clear>
+      {m.atlas_clear({}, options)}
+    </button>
+    <button
+      type="button"
+      class="o-tool"
+      data-mix-link
+      data-copied={m.copied({}, options)}
+      hidden
+    >
+      {m.atlas_copy_link({}, options)}
+    </button>
+    <button
+      type="button"
+      class="o-tool o-atlas-brief"
+      data-mix-brief
+      data-copied={m.copied({}, options)}
+      hidden
+    >
+      {m.atlas_copy_brief({}, options)}
+    </button>
+  </aside>
+  <template data-mix-item>
+    <li class="o-atlas-pick">
+      <button
+        type="button"
+        class="o-atlas-pick-name"
+        data-mix-lead
+        title={m.atlas_make_hero({}, options)}
+      >
+        <small data-mix-role></small>
+        <b data-mix-name></b>
+      </button>
+      <button
+        type="button"
+        class="o-atlas-pick-x"
+        data-mix-remove
+        aria-label={m.atlas_remove({}, options)}
+      >
+        ×
+      </button>
+    </li>
+  </template>
+</BaseLayout>
+
+<script>
+  import "@/modules/atlas/atlas-previews.ts";
+  import "@/modules/atlas/atlas-mix.ts";
+  import { linkPartsSets } from "@/shared/lib/parts-set.ts";
+
+  linkPartsSets();
+</script>

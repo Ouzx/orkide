@@ -64,6 +64,14 @@ export const buildLlmsTxt = (
       options
     ),
     "",
+    m.llms_atlas(
+      {
+        atlas: absoluteUrl(localizeHref("/atlas", options)),
+        json: absoluteUrl("/atlas.json"),
+      },
+      options
+    ),
+    "",
     ordered.map(section).join("\n\n"),
     "",
   ].join("\n");

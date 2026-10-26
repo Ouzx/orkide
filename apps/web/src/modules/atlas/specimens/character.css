@@ -1,0 +1,69 @@
+/* MO-04 Character animation: the mascot squashes, hops, stretches and blinks; its shadow breathes. */
+.st-character {
+  background: #ffe2eb;
+}
+
+.st-character-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: st-character-hop 1.6s cubic-bezier(0.3, 0, 0.3, 1) infinite;
+}
+
+.st-character-shadow {
+  opacity: 0.35;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: st-character-pulse 1.6s cubic-bezier(0.3, 0, 0.3, 1) infinite;
+}
+
+.st-character-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: st-character-blink 3.2s infinite;
+}
+
+/* Lengths inside the SVG are user units of its 200 × 150 view box, so they scale with it. */
+@keyframes st-character-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.16, 0.86);
+  }
+
+  14% {
+    transform: translateY(0) scale(0.92, 1.1);
+  }
+
+  50% {
+    transform: translateY(-34px) scale(0.96, 1.05);
+  }
+
+  86% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+}
+
+@keyframes st-character-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1.15);
+  }
+
+  50% {
+    opacity: 0.14;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes st-character-blink {
+  0%,
+  45%,
+  51%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  48% {
+    transform: scaleY(0.1);
+  }
+}

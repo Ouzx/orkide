@@ -25,8 +25,16 @@
     "limit": "55 kB"
   },
   {
+    "name": "Design atlas (page script and preview helpers, /atlas only; specimens count in the total)",
+    "path": [
+      "dist/client/_astro/atlas.astro_*.js",
+      "dist/client/_astro/preview-kit.*.js"
+    ],
+    "limit": "6 kB"
+  },
+  {
     "name": "All client JavaScript",
     "path": "dist/client/_astro/*.js",
-    "limit": "380 kB"
+    "limit": "400 kB"
   }
 ]

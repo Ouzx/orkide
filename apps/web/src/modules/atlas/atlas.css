@@ -1,0 +1,574 @@
+/*
+ * The atlas page (G-005): specimen plates, the filter strip and the mix tray. Loaded on that page
+ * only. Values come from tokens; inside a stage every specimen paints its own world
+ * (`specimens/<slug>.css`, classes and keyframes prefixed `st-<slug>`).
+ *
+ * Unlayered on purpose, like the specimens' sheets: the page bundles them before the global
+ * stylesheet, so a layer here would fix the layers' order too early (the base would beat the kit),
+ * and inside the kit's layer these rules would lose every tie to it. They style only their own
+ * classes, and the global reduced-motion rules (important, in the base layer) still win.
+ */
+/* ── Stage: a live specimen inside its drawn frame ─────────────────────────────────────────── */
+.o-spec-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  isolation: isolate;
+  background: #111111;
+  container-type: inline-size;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.o-spec-stage[data-drag] {
+  touch-action: none;
+}
+
+.o-spec-stage > canvas,
+.o-spec-stage > svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* A stage that could not start shows why, in place of the specimen. */
+.o-spec-stage[data-failed]::after {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: var(--o-paper-2);
+  color: var(--o-ink-2);
+  content: attr(data-fallback);
+  font: var(--font-weight-medium) var(--text-2xs) / 1.4 var(--o-font-mono);
+  letter-spacing: var(--tracking-wide);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ── Specimen plates: three to a row, a drawn frame around each live stage ─────────────────── */
+.o-atlas-grid {
+  margin-top: 22px;
+}
+
+.o-atlas-grid > .o-spec {
+  display: flex;
+  flex-direction: column;
+  grid-column: span 4;
+}
+
+.o-spec-vp {
+  position: relative;
+  margin: 10px 10px 0;
+}
+
+/* The frame's corner ticks, as on every viewport. */
+.o-spec-vp::before,
+.o-spec-vp::after {
+  position: absolute;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--o-line);
+  content: "";
+  pointer-events: none;
+}
+
+.o-spec-vp::before {
+  top: -5px;
+  left: -5px;
+  border-width: 1.5px 0 0 1.5px;
+}
+
+.o-spec-vp::after {
+  right: -5px;
+  bottom: 24px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+.o-spec-cap {
+  align-items: center;
+  min-height: 30px;
+  margin: 0;
+}
+
+.o-spec-hint {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: var(--text-sm);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.o-spec-hint svg {
+  width: 26px;
+  height: 18px;
+  overflow: visible;
+}
+
+.o-spec-hint path {
+  fill: none;
+  stroke: var(--o-mark);
+  stroke-width: 1.4;
+}
+
+.o-moving .o-spec-hint path {
+  stroke-dasharray: 1;
+  animation: o-redraw var(--o-dur-draw) var(--o-ease-out) 1.2s backwards;
+}
+
+/* Picking a specimen stamps its stage. */
+.o-spec-stamp {
+  top: 26px;
+  right: 8px;
+  translate: 0 0;
+}
+
+.o-spec .o-plate-tb [data-fit="strong"] {
+  color: var(--o-ok);
+}
+
+.o-spec .o-plate-tb [data-fit="tune"] {
+  color: var(--o-warn);
+}
+
+.o-spec-body {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 12px;
+}
+
+.o-spec-body > h3,
+.o-spec-body > p {
+  margin: 0;
+}
+
+.o-spec-facts {
+  display: grid;
+  gap: 10px;
+  margin: 2px 0 0;
+}
+
+.o-spec-facts > div {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.o-spec-facts dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.o-spec-facts .o-tag {
+  position: relative;
+  z-index: 1;
+}
+
+.o-spec-prompt summary {
+  cursor: pointer;
+}
+
+.o-spec-prompt summary:hover {
+  color: var(--o-ink);
+}
+
+.o-spec-prompt p {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--o-line-3);
+  background: var(--o-paper-2);
+  color: var(--o-ink);
+  font: var(--font-weight-medium) var(--text-xs) / 1.6 var(--o-font-mono);
+  overflow-wrap: anywhere;
+}
+
+.o-spec-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.o-spec-pick [data-when="on"],
+.o-spec-pick[aria-pressed="true"] [data-when="off"] {
+  display: none;
+}
+
+.o-spec-pick[aria-pressed="true"] [data-when="on"] {
+  display: inline;
+}
+
+/* Picked: the button takes the primary face (the kit draws a button's face on ::after). */
+.o-spec-pick[aria-pressed="true"] {
+  --o-face: var(--o-mark-fill);
+  --o-edge: var(--o-mark-fill);
+  --o-hatch: var(--o-mark);
+  color: var(--o-on-mark);
+}
+
+/* A specimen in the mix is redlined; one that pairs with the mix is marked with a dashed rule. */
+.o-spec[data-picked] {
+  border-color: var(--o-mark);
+}
+
+.o-spec-pairs {
+  display: none;
+}
+
+.o-spec[data-pairs-mix] {
+  outline: 1.5px dashed var(--o-mark);
+  outline-offset: 5px;
+}
+
+.o-spec[data-pairs-mix] .o-spec-pairs {
+  display: inline-flex;
+}
+
+.o-moving .o-spec[data-pairs-mix] .o-spec-pairs {
+  animation: o-land var(--o-dur-stamp) var(--o-ease-bounce) backwards;
+}
+
+/* ── Filter strip: sticks under the title strip while the plates scroll by ────────────────── */
+.o-atlas-bar {
+  position: sticky;
+  top: calc(
+    env(safe-area-inset-top, 0px) + var(--o-frame) + var(--o-ruler) +
+      var(--o-header)
+  );
+  z-index: calc(var(--o-z-header) - 1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  margin-top: 28px;
+  padding-block: 10px;
+  border-block: 1px solid var(--o-line-2);
+  background: var(--o-paper);
+}
+
+.o-atlas-bar[hidden] {
+  display: none;
+}
+
+.o-atlas-chips {
+  display: flex;
+  flex: 1 1 480px;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.o-atlas-chips .o-chip {
+  flex: none;
+  white-space: nowrap;
+}
+
+.o-atlas-chips small {
+  color: inherit;
+  font-size: var(--text-3xs);
+  opacity: 0.7;
+}
+
+.o-atlas-search {
+  flex: 0 1 260px;
+  min-width: 0;
+}
+
+.o-atlas-search .o-input {
+  width: 100%;
+}
+
+/* Filtering: the plates on screen glide, the rest of the page holds still. */
+.o-filtering::view-transition-old(root),
+.o-filtering::view-transition-new(root) {
+  animation: none;
+}
+
+.o-filtering .o-frame,
+.o-filtering .o-status {
+  view-transition-name: none;
+}
+
+.o-filtering::view-transition-group(*) {
+  animation-duration: var(--o-dur-spring);
+  animation-timing-function: var(--o-ease-spring);
+}
+
+/* ── The mix: a tray of picks along the bottom of the sheet ───────────────────────────────── */
+.o-atlas-tray {
+  position: fixed;
+  bottom: calc(
+    var(--o-frame) + var(--o-ruler) + env(safe-area-inset-bottom, 0px) + 10px
+  );
+  left: 50%;
+  z-index: var(--o-z-float);
+  max-width: calc(100vw - 2 * (var(--o-frame) + var(--o-ruler)) - 24px);
+  min-height: 44px;
+  box-shadow: var(--o-shadow-slip);
+  translate: -50% 0;
+}
+
+.o-atlas-tray[hidden] {
+  display: none;
+}
+
+/* While the tray is out, the sheet keeps room under its last line. */
+body:has(.o-atlas-tray:not([hidden])) {
+  padding-bottom: 76px;
+}
+
+.o-moving .o-atlas-tray:not([hidden]) {
+  animation: o-arrive var(--o-dur-spring) var(--o-ease-out);
+}
+
+.o-atlas-tray-count b {
+  display: inline-block;
+  color: var(--o-mark-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.o-moving .o-atlas-tray-count b[data-flip] {
+  animation: o-flip 0.45s var(--o-ease-bounce);
+}
+
+.o-atlas-picks {
+  display: flex;
+  min-width: 0;
+  margin: 0;
+  padding: 0 6px;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.o-atlas-pick {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.o-atlas-pick + .o-atlas-pick {
+  border-left: 1px dashed var(--o-line-3);
+}
+
+.o-atlas-pick button {
+  border: 0;
+  background: none;
+  color: var(--o-ink);
+  cursor: pointer;
+}
+
+.o-atlas-pick-name {
+  display: grid;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.o-atlas-pick-name small {
+  color: var(--o-ink-2);
+  font: var(--font-weight-semibold) var(--text-3xs) / 1.2 var(--o-font-mono);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+}
+
+.o-atlas-pick[data-role="hero"] small {
+  color: var(--o-mark-ink);
+}
+
+.o-atlas-pick-name b {
+  font: var(--font-weight-semibold) var(--text-xs) / 1.3 var(--o-font-text);
+  white-space: nowrap;
+}
+
+.o-atlas-pick-name:hover b {
+  color: var(--o-mark-ink);
+}
+
+.o-atlas-pick-x {
+  padding: 4px 8px;
+  font-size: var(--text-md);
+}
+
+.o-atlas-pick-x:hover {
+  color: var(--o-mark-ink);
+}
+
+.o-atlas-brief {
+  background: var(--o-mark-fill);
+  color: var(--o-on-mark);
+}
+
+.o-atlas-brief:hover {
+  background: var(--o-mark);
+}
+
+.o-atlas-tray [data-done] {
+  color: var(--o-mark-ink);
+}
+
+.o-atlas-brief[data-done] {
+  color: var(--o-on-mark);
+}
+
+/* ── How a mix is built ────────────────────────────────────────────────────────────────── */
+.o-atlas-lead {
+  margin-top: 18px;
+}
+
+.o-atlas-vp {
+  aspect-ratio: 600 / 520;
+}
+
+.o-anatomy {
+  margin-top: 28px;
+}
+
+.o-atlas-part-text {
+  display: block;
+  margin-top: 3px;
+  color: var(--o-ink);
+  font-size: var(--text-sm);
+}
+
+/* The layers of a mix drift apart and back, slowly, as if the drawing were breathing. */
+.o-moving .o-atlas-vp [data-part] {
+  animation: o-atlas-drift 6s var(--o-ease-in-out) infinite alternate;
+}
+
+.o-moving .o-atlas-vp [data-part="1"] {
+  --o-drift: -10px;
+}
+
+.o-moving .o-atlas-vp [data-part="2"] {
+  --o-drift: -6px;
+}
+
+.o-moving .o-atlas-vp [data-part="3"] {
+  --o-drift: -3px;
+}
+
+.o-moving .o-atlas-vp [data-part="4"] {
+  animation: none;
+}
+
+@keyframes o-atlas-drift {
+  to {
+    transform: translateY(var(--o-drift, 0));
+  }
+}
+
+.o-atlas-legend {
+  margin-top: 36px;
+}
+
+.o-atlas-legend-head {
+  margin: 0 0 14px;
+}
+
+.o-atlas-legend-head + .o-meters,
+.o-atlas-terms + .o-atlas-legend-head {
+  margin-top: 22px;
+}
+
+.o-atlas-terms {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.o-atlas-terms > div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.o-atlas-terms dd {
+  margin: 0;
+  color: var(--o-ink);
+  font-size: var(--text-sm);
+}
+
+.o-atlas-agents .o-ctas {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+
+@keyframes o-flip {
+  from {
+    transform: translateY(-8px) rotateX(70deg);
+  }
+}
+
+@media (width < 1080px) {
+  .o-atlas-grid > .o-spec {
+    grid-column: span 6;
+  }
+}
+
+@media (width < 720px) {
+  .o-atlas-grid > .o-spec {
+    grid-column: 1 / -1;
+  }
+
+  .o-atlas-bar {
+    position: static;
+  }
+
+  .o-atlas-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  /* On phones the picks take the tray's first row and the actions share the second. */
+  .o-atlas-tray {
+    right: calc(var(--o-frame) + var(--o-ruler) + 8px);
+    left: calc(var(--o-frame) + var(--o-ruler) + 8px);
+    flex-wrap: wrap;
+    max-width: none;
+    translate: none;
+  }
+
+  .o-atlas-picks {
+    flex: 1 0 100%;
+    order: -1;
+    padding-block: 2px;
+    border-bottom: 1px solid var(--o-line-2);
+  }
+
+  .o-atlas-tray > .o-atlas-picks {
+    border-left: 0;
+  }
+
+  .o-atlas-tray > .o-tool {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 40px;
+    padding-inline: 8px;
+    text-align: center;
+  }
+
+  .o-atlas-tray > .o-atlas-tray-count {
+    flex: 0 0 auto;
+    border-left: 0;
+  }
+
+  .o-spec-facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}

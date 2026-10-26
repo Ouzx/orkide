@@ -23,6 +23,7 @@ const path = Astro.url.pathname;
 const links = [
   { href: "/blog", label: m.nav_blog({}, options) },
   { href: "/portfolio", label: m.nav_portfolio({}, options) },
+  { href: "/atlas", label: m.nav_atlas({}, options) },
   { href: "/contact", label: m.nav_contact({}, options) },
 ].map((link) => ({
   ...link,

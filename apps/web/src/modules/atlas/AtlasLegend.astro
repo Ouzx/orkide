@@ -1,0 +1,68 @@
+---
+import { m } from "@orkide/i18n/messages";
+import { atlasCosts, atlasFamilies, atlasFits } from "@orkide/validators/atlas";
+
+import { familyCounts } from "./catalog.ts";
+import { costName, costText, familyName, fitName, fitText } from "./labels.ts";
+
+const { locale } = Astro.locals;
+const options = { locale };
+const counts = familyCounts();
+const most = Math.max(1, ...Object.values(counts));
+const tones = { good: undefined, strong: "ok", tune: "warn" } as const;
+---
+
+<!-- The catalog at a glance: specimens per family as hatched bars, then what fit and weight mean. -->
+<div class="o-two o-atlas-legend">
+  <div>
+    <h3 class="o-label o-atlas-legend-head">{m.atlas_meters({}, options)}</h3>
+    <ul class="o-meters">
+      {
+        atlasFamilies.map((family) => (
+          <li>
+            <span>{familyName(family, locale)}</span>
+            <svg aria-hidden="true">
+              <rect data-track width="100%" height="100%" />
+              <rect
+                data-bar
+                width={`${((100 * counts[family]) / most).toFixed(1)}%`}
+                height="100%"
+              />
+            </svg>
+            <b>{counts[family]}</b>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <div>
+    <h3 class="o-label o-atlas-legend-head">{m.atlas_fit({}, options)}</h3>
+    <dl class="o-atlas-terms">
+      {
+        atlasFits.map((fit) => (
+          <div>
+            <dt>
+              <span class="o-badge" data-tone={tones[fit]}>
+                {fitName(fit, locale)}
+              </span>
+            </dt>
+            <dd>{fitText(fit, locale)}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <h3 class="o-label o-atlas-legend-head">{m.atlas_weight({}, options)}</h3>
+    <dl class="o-atlas-terms">
+      {
+        atlasCosts.map((cost) => (
+          <div>
+            <dt>
+              <span class="o-tag">{costName(cost, locale)}</span>
+            </dt>
+            <dd>{costText(cost, locale)}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</div>
