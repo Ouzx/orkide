@@ -21,12 +21,14 @@ const Heading = `h${headingLevel}` as const;
 ---
 
 <!-- A post as a row of the drawing index: sheet number, title and summary, discipline, date, length. -->
-<li class="o-row" data-cloud={latest ? "Δ" : undefined}>
-  <span class="o-row-no" aria-hidden="true">
+<li class="o-row" data-cloud={latest ? "Δ" : undefined} data-morph-href={href}>
+  <span class="o-row-no" aria-hidden="true" data-morph="no">
     {sheetNumber("D", post.publishedAt)}
   </span>
   <div class="min-w-0">
-    <Heading class="o-row-title"><a href={href}>{post.title}</a></Heading>
+    <Heading class="o-row-title"
+      ><a href={href} data-morph="title">{post.title}</a></Heading
+    >
     <p class="o-row-sum">{post.summary}</p>
   </div>
   <span class="o-row-meta">

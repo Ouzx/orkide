@@ -19,7 +19,7 @@
 | `sonner` | `o-toaster` | sonner |
 | `avatar`, `skeleton` | `o-avatar`, `o-skeleton` | — |
 
-Public pages use the classes directly: the sheet (`o-frame`, `o-status`), the title strip (`o-strip`), section heads (`o-sh`), the cover drawing (`o-axo`, `o-bom`), Section A–A (`o-cut`), the schedule (`o-qty`, `o-notes`), the drawing index (`o-index`, `o-row`), plates (`o-plate`), the assembly (`o-steps`), the RFI sheet (`o-rfi`, `o-field`), stamps (`o-stamp`), revision clouds (`o-cloud`), the title block (`o-tb`, `o-block`) and inner-page heads (`o-pagehead`, `o-dwg`, `o-scalebar`, `o-keyplan`).
+Public pages use the classes directly: the sheet (`o-frame`, `o-status`), the title strip (`o-strip`), section heads (`o-sh`), the cover drawing (`o-axo`, `o-bom`), Section A–A (`o-cut`), the schedule (`o-qty`, `o-notes`), the drawing index (`o-index`, `o-row`), plates (`o-plate`), the assembly (`o-steps`), the RFI sheet (`o-rfi`, `o-field`), stamps (`o-stamp`), revision clouds (`o-cloud`), the title block (`o-tb`, `o-block`), inner-page heads (`o-pagehead`, `o-dwg`, `o-scalebar`, `o-keyplan`), comparisons and meters (`o-two`, `o-case`, `o-meters`) and exploded drawings beside their parts list (`o-anatomy`, `data-parts-set`).
 
 ## Shared states
 
@@ -62,7 +62,9 @@ A slip of paper over its hatched shadow (`o-btn`): one element, the shadow and t
 
 ## Section head
 
-A callout bubble (section number over the sheet number), a rule and a tag (`o-sh`, `o-bubble`, `o-sh-rule`, `o-sh-tag`), then a kicker and the title. With motion the rule draws and the bubble rings in when the section arrives.
+A callout bubble (section number over the sheet number), a rule and a tag (`o-sh`, `o-bubble`, `o-sh-rule`, `o-sh-tag`), then a kicker and the title. A title's `<em>` is the sheet's one redline accent: redline ink over a red rule (`PageHeader`'s `accent`).
+
+- **Arrival** (a section scrolled into view gets `data-in="arrived"`; one on screen at load is already drawn): the rule draws, the bubble rings in, the kicker's rule extends, the accent's rule is drawn, list parts (notes, rows, stages, quantities, steps, plates, cases, meters, parts-list rows, info cells) arrive one after another (`o-arrive`: a rise behind a wipe, delayed by `--o-i` × `stagger.list`, set by `shared/motion/blueprint.ts` from `arrivals` in `motion/motion.ts`), and badges land like stamps (`o-land`, no fade).
 
 ## Cover drawing
 
@@ -72,20 +74,20 @@ A callout bubble (section number over the sheet number), a rule and a tag (`o-sh
 
 ## Section A–A, schedule and notes
 
-- **Section A–A** (`o-cut`): the request's stages as a section through the stack, each with a drawn icon, the stage and its reading from this page load (`performance` entries, so the cached HTML is the same for everyone). With motion a cutting plane follows the scroll, hatches each stage it reaches and counts its reading up.
+- **Section A–A** (`o-cut`): the request's stages as a section through the stack, each with a drawn icon, the stage and its reading from this page load (`performance` entries, so the cached HTML is the same for everyone). With motion a cutting plane follows the scroll, hatches each stage it reaches and counts its reading up; once it reaches the last stage, a request keeps travelling down the chain (`o-travel`, a quiet 7 s loop).
 - **Schedule** (`o-qty`): quantities in a table, counted up when they arrive. **General notes** (`o-notes`): numbered notes in two columns.
 
 ## Drawing index
 
-Posts as rows of an index (`o-index-head`, `o-index`, `o-row`): sheet number (`D-YYMMDD`), title and summary, discipline, issue date, length. Hover washes the row in `line-3`. With motion the newest row gets a revision cloud with a delta (`shared/motion/cloud.ts`).
+Posts as rows of an index (`o-index-head`, `o-index`, `o-row`): sheet number (`D-YYMMDD`), title and summary, discipline, issue date, length. Hover washes the row in `line-3` and steps its number forward. With motion the newest row gets a revision cloud with a delta (`shared/motion/cloud.ts`). Opening a row morphs its number and title into the detail sheet's header (Page changes).
 
 ## Plate
 
-A project as a plate (`o-plate`): generated line art (`modules/portfolio/plate-art.ts`, seeded by the slug: truss, plan, flange or section, with dimensions and hatching) over a title block. The lead plate puts its copy beside the art (`data-lead`). With motion the art is plotted stroke by stroke when it arrives (`effects/plot`).
+A project as a plate (`o-plate`): generated line art (`modules/portfolio/plate-art.ts`, seeded by the slug: truss, plan, flange or section, with dimensions and hatching) over a title block. The lead plate puts its copy beside the art (`data-lead`). Hover lifts it off the sheet like a slip of paper (`shadow-slip`). With motion the art is plotted stroke by stroke when it arrives (`effects/plot`); opening a plate morphs its sheet number and title into the detail sheet.
 
 ## Assembly steps
 
-The derive steps (`o-steps`, `data-steps` = their count, 3–6): a numbered box, the title, the text and a command with a copy button (shown only where the clipboard works). Arrows join the steps.
+The derive steps (`o-steps`, `data-steps` = their count, 3–6): a numbered box, the title, the text and a command with a copy button (shown only where the clipboard works). Arrows join the steps. With motion the last command's cursor blinks slowly, waiting for the visitor.
 
 ## RFI sheet and fields
 
@@ -104,7 +106,25 @@ The sheet's title block (`o-tb`): the wordmark, link groups, a block of cells (`
 
 - **Page head** (`o-pagehead`): crumbs (`o-crumbs`), the drawing-number block (`o-dwg`: drawing, title, revision) and the title.
 - **Detail sheet** (`o-docgrid`): a key plan of the sections (`o-keyplan`, sticky, the current one marked), the body (`prose-orkide`: numbered h2 bubbles, dimension-line links, redline blockquotes), a scale bar for reading progress (`o-scalebar`) and the pager.
-- **Empty and error sheets:** a NOT ISSUED stamp (`o-empty`), a VOID stamp on X-404 and X-500.
+- **Empty and error sheets:** a NOT ISSUED stamp (`o-empty`), a VOID stamp on X-404 and X-500 that lands as the page loads.
+- **Load sequence:** every sheet's header arrives as the page loads, in CSS so it starts with the first paint and hides nothing (transforms only): crumbs, the drawing block's cells, then the title (its accent's rule drawn) and the lead.
+
+## Page changes
+
+Cross-document view transitions (`styles/motion.css`), directed by the pre-paint head script (`shared/theme/theme-script.ts`), since only a script that runs before first paint sees `pagereveal`:
+
+- **Forward:** the old sheet slides out to the left, the new one in from the right; the frame and the status line stay put.
+- **Back** (history back, or up to a parent sheet: a post to the index, any sheet to the cover): the `back` type slides them the other way.
+- **List → detail:** opening a post row or a plate names its sheet number and title (`data-morph` inside `[data-morph-href]`), the detail sheet names its own (`data-morph` inside `[data-morph-target]`, parsed before first paint by `<link rel="expect">`), and they glide into place (`o-morph-no`, `o-morph-title`). Skipped when motion is reduced.
+- **Status line:** the section name flashes in redline ink when it changes.
+- Reduced motion cross-fades the page in 150 ms; same-page transitions use `viewTransition()` (`shared/motion/motion.ts`), which gives up on the animation when the page draws no frames.
+
+## Comparisons, meters and exploded drawings
+
+- **Two-up** (`o-two`, `data-split="5-7"` or `"7-5"`): two parts side by side, one column below 1080 px.
+- **Case** (`o-card o-case`): what happens now, or (`data-was`) what used to happen, dashed and hatched with its text in `ink-2`. Lifts on hover.
+- **Meters** (`o-meters`): a quantity per row as a hatched bar; each bar is an SVG `rect` whose width the server sets (`data-track`, `data-bar`), so it is right without script. With motion the bars grow in when their section arrives.
+- **Exploded drawing and its parts list** (`o-anatomy`): an `o-axo` drawing beside an `o-bom`. Wrapped in `data-parts-set`, pointing at or focusing a part (`data-part`), a balloon (`data-balloon`) or a row (`data-part`) lights the same number everywhere (`shared/lib/parts-set.ts`, with motion off too).
 
 ## Admin (the drafting table)
 

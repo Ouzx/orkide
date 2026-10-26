@@ -20,6 +20,21 @@
   }
 }
 
+/* Going back (in history, or up to a parent sheet) slides the other way. */
+@keyframes o-sheet-out-back {
+  to {
+    opacity: 0;
+    transform: translateX(5%);
+  }
+}
+
+@keyframes o-sheet-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-7%);
+  }
+}
+
 /* A change of print: the new print is exposed behind the lamp, left to right. */
 @keyframes o-expose {
   from {
@@ -53,6 +68,29 @@
 
 ::view-transition-new(root) {
   animation: var(--o-dur-sheet-in) var(--o-ease-out) both o-sheet-in;
+}
+
+/* The `back` type is added by the head script (shared/theme/theme-script.ts). */
+:root:active-view-transition-type(back)::view-transition-old(root) {
+  animation-name: o-sheet-out-back;
+}
+
+:root:active-view-transition-type(back)::view-transition-new(root) {
+  animation-name: o-sheet-in-back;
+}
+
+/* An opened list item's sheet number and title glide into the new sheet's header. */
+::view-transition-group(o-morph-no),
+::view-transition-group(o-morph-title) {
+  animation-duration: var(--o-dur-sheet-in);
+  animation-timing-function: var(--o-ease-out);
+}
+
+/* Text scales with the group's height and keeps its proportions, anchored at the left. */
+::view-transition-old(o-morph-title),
+::view-transition-new(o-morph-title) {
+  width: auto;
+  height: 100%;
 }
 
 /* During a print change everything is exposed at once, so the frame joins the page. */

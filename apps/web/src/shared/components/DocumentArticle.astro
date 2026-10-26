@@ -83,6 +83,8 @@ const html = document.html.replaceAll(
   sheet={sheet}
   sheetName={document.title}
 >
+  <!-- The header must be parsed before first paint, so an opened list item can morph into it. -->
+  <link slot="head" rel="expect" href="#document-title" blocking="render" />
   <article class="o-wrap pb-24 md:pb-32" aria-labelledby="document-title">
     <ol class="o-crumbs">
       <li>
@@ -91,11 +93,15 @@ const html = document.html.replaceAll(
       <li><a href={sectionPath}>{sectionName}</a></li>
       <li aria-current="page">{sheet}</li>
     </ol>
-    <header class="o-pagehead" data-section-title={`${sheet} · ${kind}`}>
+    <header
+      class="o-pagehead"
+      data-section-title={`${sheet} · ${kind}`}
+      data-morph-target
+    >
       <dl class="o-dwg">
         <div data-big>
           <dt>{m.doc_drawing({}, options)}</dt>
-          <dd>{sheet}</dd>
+          <dd data-morph="no">{sheet}</dd>
         </div>
         <div>
           <dt>{m.tb_title({}, options)}</dt>
@@ -112,7 +118,9 @@ const html = document.html.replaceAll(
       </dl>
       <div class="o-pagehead-main">
         <slot name="runhead" />
-        <h1 id="document-title" class="o-title">{document.title}</h1>
+        <h1 id="document-title" class="o-title" data-morph="title">
+          {document.title}
+        </h1>
         <p class="o-lead">{document.summary}</p>
         <ul class="o-meta">
           <slot name="meta" />

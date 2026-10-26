@@ -33,7 +33,7 @@ const options = { locale };
 </button>
 
 <script>
-  import { motionAllowed } from "@/shared/motion/motion.ts";
+  import { motionAllowed, viewTransition } from "@/shared/motion/motion.ts";
 
   import { readWhite, storeWhite } from "./theme.ts";
 
@@ -71,7 +71,7 @@ const options = { locale };
       const root = document.documentElement;
       root.classList.add("o-exposing");
       lamp.toggleAttribute("data-on", true);
-      const transition = document.startViewTransition(() => {
+      const transition = viewTransition(() => {
         apply();
         lamp.toggleAttribute("data-end", true);
       });

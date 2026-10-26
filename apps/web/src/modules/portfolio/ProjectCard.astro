@@ -35,17 +35,19 @@ const year = project.publishedAt?.slice(0, 4) ?? "—";
       </div>
     </div>
   ) : (
-    <article class="o-plate" data-dim>
+    <article class="o-plate" data-dim data-morph-href={href}>
       <PlateArt seed={project.slug} />
       <div class="o-plate-tb" aria-hidden="true">
-        <span>{sheet}</span>
+        <span data-morph="no">{sheet}</span>
         <span>{project.title}</span>
         <span>{m.plate_scale({}, options)}</span>
         <span>{year}</span>
       </div>
       <div class="o-plate-body">
         <Heading>
-          <a href={href}>{project.title}</a>
+          <a href={href} data-morph="title">
+            {project.title}
+          </a>
         </Heading>
         <p>{project.summary}</p>
         {project.tags.length > 0 && (

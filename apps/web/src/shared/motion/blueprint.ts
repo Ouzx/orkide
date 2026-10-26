@@ -1,6 +1,7 @@
 import { cad } from "@orkide/ui/effects/cad";
 import { magnet } from "@orkide/ui/effects/magnet";
 import {
+  arrivals,
   duration,
   easeOutQuart,
   springs,
@@ -58,8 +59,19 @@ const plot = (art: Element, delay: number) => {
 };
 
 /* ── Arrivals ───────────────────────────────────────────────────────────────────────────── */
+/** Each part that arrives in a list gets its place in it, so the parts come in one by one. */
+const number = (scope: Element) => {
+  for (const part of scope.querySelectorAll<HTMLElement>(arrivals)) {
+    const index = part.parentElement
+      ? [...part.parentElement.children].indexOf(part)
+      : 0;
+    part.style.setProperty("--o-i", String(index));
+  }
+};
+
 const arrive = (element: HTMLElement | SVGElement, order: number) => {
-  element.dataset.in = "";
+  number(element);
+  element.dataset.in = "arrived";
   undraw(element.querySelectorAll<SVGElement>(".o-bubble svg *"));
   for (const counter of element.querySelectorAll<HTMLElement>("[data-count]")) {
     countUp(counter);
@@ -182,14 +194,18 @@ document.addEventListener(
 );
 
 /* ── The status line names the section in view ──────────────────────────────────────────── */
-const sectionName = document.querySelector("[data-section-name]");
+const sectionName = document.querySelector<HTMLElement>("[data-section-name]");
 if (sectionName) {
   const spy = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         const name = (entry.target as HTMLElement).dataset.sectionTitle;
-        if (entry.isIntersecting && name) {
+        if (entry.isIntersecting && name && sectionName.textContent !== name) {
+          // The name flashes in redline ink when it changes (restarted by a reflow).
           sectionName.textContent = name;
+          delete sectionName.dataset.flash;
+          sectionName.getBoundingClientRect();
+          sectionName.dataset.flash = "";
         }
       }
     },

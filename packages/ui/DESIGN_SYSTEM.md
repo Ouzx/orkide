@@ -87,8 +87,8 @@ Ratios are computed by `scripts/tokens.ts` from the tokens (WCAG 2.2; translucen
 | `ink` on `paper` | Body text, headings | 4.5:1 | 9.58 | 10.27 |
 | `ink` on `paper-2` | Text in wells | 4.5:1 | 11.46 | 9.29 |
 | `ink` on `paper-3` | Text on raised sheets | 4.5:1 | 8.35 | 11.23 |
-| `ink-2` on `paper` | Secondary text, labels | 4.5:1 | 5.76 | 5.21 |
-| `ink-2` on `paper-3` | Labels on raised sheets | 4.5:1 | 5.02 | 5.70 |
+| `ink-2` on `paper` | Secondary text, labels | 4.5:1 | 7.10 | 7.07 |
+| `ink-2` on `paper-3` | Labels on raised sheets | 4.5:1 | 6.19 | 7.73 |
 | `placeholder` on `paper-2` | Placeholders in wells | 4.5:1 | 6.89 | 4.71 |
 | `mark-ink` on `paper` | Sheet numbers, kickers, hand notes | 4.5:1 | 5.35 | 5.62 |
 | `mark-ink` on `paper-3` | Accent text on raised sheets | 4.5:1 | 4.66 | 6.15 |

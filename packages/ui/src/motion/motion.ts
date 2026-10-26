@@ -16,6 +16,13 @@ export const springs = {
   snap: { lerp: 0.4 },
 } as const;
 
+/**
+ * Parts of a section that arrive one after another when it scrolls in (`o-arrive` in kit.css):
+ * the motion script gives each its place in its list as `--o-i`, the delay multiplier.
+ */
+export const arrivals =
+  ".o-note, .o-row, .o-stage, .o-qty, .o-step, .o-plate, .o-case, .o-meters > li, .o-bom tbody tr, .o-info > div, .o-badge";
+
 /** The cover sheet's load sequence, in milliseconds after the motion layer starts. */
 export const choreography = {
   /** Balloons pop one after another once the drawing is plotted. */

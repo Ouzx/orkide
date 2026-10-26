@@ -48,3 +48,32 @@ export const afterFirstPaint = (start: () => void): void => {
   }
   addEventListener("load", () => setTimeout(once, 300), { once: true });
 };
+
+/** Awaits a promise that rejects on purpose (a skipped transition's `ready`), ignoring that. */
+const settle = async (promise: Promise<unknown>) => {
+  try {
+    await promise;
+  } catch {
+    // A skipped transition rejects `ready`: the update still ran, nothing to do.
+  }
+};
+
+/**
+ * A same-document view transition whose update always lands: a page that draws no frames (a tab
+ * or pane in the background) would hold the update until its next frame, so the animation is
+ * skipped after 200 ms. A second transition started quickly skips the first, which is expected.
+ */
+export const viewTransition = (update: () => void): ViewTransition => {
+  let updated = false;
+  const transition = document.startViewTransition(() => {
+    updated = true;
+    update();
+  });
+  void settle(transition.ready);
+  setTimeout(() => {
+    if (!updated) {
+      transition.skipTransition();
+    }
+  }, 200);
+  return transition;
+};

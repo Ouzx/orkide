@@ -8,9 +8,11 @@ interface Props {
   /** What kind of sheet it is, for the drawing block and the crumbs. */
   kind: string;
   title: string;
+  /** The title's accent, drawn after it in redline ink over a red rule (one per sheet). */
+  accent?: string | undefined;
   lead?: string | undefined;
 }
-const { sheet, kind, title, lead } = Astro.props;
+const { sheet, kind, title, accent, lead } = Astro.props;
 const { locale } = Astro.locals;
 const options = { locale };
 ---
@@ -40,7 +42,16 @@ const options = { locale };
       </div>
     </dl>
     <div class="o-pagehead-main">
-      <h1 class="o-title">{title}</h1>
+      <h1 class="o-title">
+        {title}{
+          accent && (
+            <>
+              {" "}
+              <em>{accent}</em>
+            </>
+          )
+        }
+      </h1>
       {lead && <p class="o-lead">{lead}</p>}
       <slot />
     </div>

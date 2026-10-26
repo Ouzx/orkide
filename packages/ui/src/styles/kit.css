@@ -301,6 +301,14 @@
     stroke: var(--o-mark);
   }
 
+  .o-moving .o-brand:hover .o-brand-mark [data-part="petal"] {
+    animation: o-redraw 0.9s var(--o-ease-out) both;
+  }
+
+  .o-moving .o-brand:hover .o-brand-mark [data-part="petal"]:nth-of-type(2) {
+    animation-delay: 0.12s;
+  }
+
   .o-brand-word {
     font: var(--font-weight-extrabold) 15px / 1 var(--o-font-display);
     font-stretch: var(--o-stretch-expanded);
@@ -409,6 +417,11 @@
     height: 1px;
     background: var(--o-mark);
     content: "";
+    transform-origin: left;
+  }
+
+  .o-moving [data-in="arrived"] .o-kicker::before {
+    animation: o-grow var(--o-dur-draw) var(--o-ease-out) 200ms backwards;
   }
 
   .o-kicker b {
@@ -469,7 +482,7 @@
   .o-lead {
     max-width: 36em;
     margin: 0;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font-size: var(--text-lead);
     line-height: var(--leading-normal);
     text-wrap: pretty;
@@ -479,6 +492,15 @@
     color: var(--o-mark-ink);
     font: var(--font-weight-medium) var(--text-md) / 1.2 var(--o-font-hand);
     rotate: -2deg;
+  }
+
+  /* A title's accent: one word or phrase in redline ink over a red rule (one accent per sheet). */
+  :is(.o-h1, .o-h2, .o-title) em {
+    padding-bottom: 0.04em;
+    background: linear-gradient(var(--o-mark), var(--o-mark)) 0 100% / 100% 2px
+      no-repeat;
+    color: var(--o-mark-ink);
+    font-style: normal;
   }
 
   /* ── Buttons ─────────────────────────────────────────────────────────────────────────────── */
@@ -1134,6 +1156,38 @@
     transform: translateY(18px);
   }
 
+  /*
+   * A section that arrives on scroll (data-in="arrived") brings its parts in one after another
+   * (--o-i is each part's place in its list, set by the motion script), its badges land like
+   * stamps and a title's accent gets its rule drawn. Sections on screen at load are already drawn.
+   */
+  .o-moving
+    [data-in="arrived"]
+    :is(
+      .o-note,
+      .o-row,
+      .o-stage,
+      .o-qty,
+      .o-step,
+      .o-plate,
+      .o-case,
+      .o-meters > li,
+      .o-bom tbody tr,
+      .o-info > div
+    ) {
+    animation: o-arrive var(--o-dur-rise) var(--o-ease-out) backwards;
+    animation-delay: calc(var(--o-i, 0) * var(--o-stagger-list) + 140ms);
+  }
+
+  .o-moving [data-in="arrived"] .o-badge {
+    animation: o-land var(--o-dur-stamp) var(--o-ease-bounce) backwards;
+    animation-delay: calc(var(--o-i, 0) * var(--o-stagger-list) + 520ms);
+  }
+
+  .o-moving [data-in="arrived"] :is(.o-h1, .o-h2, .o-title) em {
+    animation: o-underline var(--o-dur-draw) var(--o-ease-out) 380ms backwards;
+  }
+
   .o-sec-top {
     display: flex;
     flex-wrap: wrap;
@@ -1785,9 +1839,28 @@
   }
 
   .o-chain {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     margin-bottom: 10px;
+  }
+
+  .o-chain::after {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    background: var(--o-line);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    rotate: 45deg;
+  }
+
+  .o-moving .o-chain:has(> span:last-child[data-on])::after {
+    animation: o-travel 7s var(--o-ease-in-out) 0.6s infinite backwards;
   }
 
   .o-chain > span {
@@ -1939,7 +2012,7 @@
 
   .o-stage p {
     margin: 0;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font-size: var(--text-sm);
     line-height: 1.55;
   }
@@ -2065,7 +2138,7 @@
   }
 
   .o-qty-l {
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font-size: var(--text-sm);
   }
 
@@ -2118,7 +2191,7 @@
 
   .o-note p {
     margin: 0;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font-size: var(--text-sm);
     line-height: 1.55;
   }
@@ -2165,8 +2238,14 @@
   }
 
   .o-row-no {
+    display: inline-block;
     color: var(--o-mark-ink);
     font: var(--font-weight-semibold) var(--text-sm) / 1 var(--o-font-mono);
+    transition: transform var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-row:hover .o-row-no {
+    transform: translateX(4px);
   }
 
   .o-row-title {
@@ -2190,7 +2269,7 @@
   .o-row-sum {
     display: block;
     margin: 4px 0 0;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font: var(--font-weight-normal) var(--text-sm) / 1.45 var(--o-font-text);
   }
 
@@ -2259,11 +2338,15 @@
     min-width: 0;
     border: 1.5px solid var(--o-line);
     background: var(--o-paper);
-    transition: transform var(--o-dur-spring) var(--o-ease-spring);
+    transition:
+      transform var(--o-dur-spring) var(--o-ease-spring),
+      box-shadow var(--o-dur-spring) var(--o-ease-spring);
   }
 
+  /* Plates and cases lift off the sheet like a slip of paper. */
   .o-plate:hover {
-    transform: translateY(-3px);
+    box-shadow: var(--o-shadow-slip);
+    transform: translate(-2px, -2px);
   }
 
   .o-plate[data-lead] {
@@ -2335,7 +2418,7 @@
 
   .o-plate-body p {
     margin: 0 0 12px;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font-size: var(--text-sm);
   }
 
@@ -2370,7 +2453,7 @@
   .o-feat-copy > p {
     max-width: 30em;
     margin: 0 0 16px;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
   }
 
   .o-feat {
@@ -2617,7 +2700,7 @@
 
   .o-step p {
     margin: 0;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
     font-size: var(--text-sm);
     line-height: 1.55;
   }
@@ -2646,6 +2729,17 @@
   .o-cmd code::before {
     color: var(--o-mark-ink);
     content: "$ ";
+  }
+
+  .o-moving .o-step:last-child .o-cmd code::after {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.15em;
+    margin-left: 3px;
+    background: var(--o-line-2);
+    content: "";
+    vertical-align: -0.2em;
+    animation: o-blink 2.2s steps(1) infinite;
   }
 
   .o-copy {
@@ -2900,6 +2994,11 @@
     display: inline-grid;
     translate: none;
     rotate: -6deg;
+  }
+
+  /* A sheet that was never issued: its stamp lands as the page loads. */
+  .o-pagehead-main > .o-stamp-static:first-child {
+    animation: o-land var(--o-dur-stamp) var(--o-ease-bounce) 300ms backwards;
   }
 
   .o-moving .o-stamp:not(.o-stamp-static) {
@@ -3183,6 +3282,10 @@
     text-overflow: ellipsis;
   }
 
+  .o-moving .o-status [data-section-name][data-flash] {
+    animation: o-flash 0.9s var(--o-ease-out);
+  }
+
   .o-status [data-xy] {
     min-width: 152px;
     color: var(--o-ink-2);
@@ -3397,6 +3500,37 @@
     min-width: 0;
   }
 
+  /* Every sheet's header arrives as the page loads: crumbs, drawing block, then title and lead. */
+  .o-crumbs,
+  .o-dwg > div,
+  .o-pagehead-main > * {
+    animation: o-up var(--o-dur-rise) var(--o-ease-out) backwards;
+  }
+
+  .o-dwg > div:nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  .o-dwg > div:nth-child(3) {
+    animation-delay: 120ms;
+  }
+
+  .o-pagehead-main > :nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .o-pagehead-main > :nth-child(2) {
+    animation-delay: 160ms;
+  }
+
+  .o-pagehead-main > :nth-child(n + 3) {
+    animation-delay: 240ms;
+  }
+
+  .o-pagehead .o-title em {
+    animation: o-underline var(--o-dur-draw) var(--o-ease-out) 520ms backwards;
+  }
+
   .o-pagehead-main > .o-lead {
     margin-top: 18px;
   }
@@ -3583,7 +3717,7 @@
 
   .o-empty p {
     margin: 0;
-    color: var(--o-ink-2);
+    color: var(--o-ink);
   }
 
   /* ── Cards, tables, tabs, menus, dialogs (admin and islands) ─────────────────────────────── */
@@ -3878,6 +4012,136 @@
     background: var(--o-paper);
   }
 
+  /* ── Comparisons, meters, exploded drawings ──────────────────────────────────────────────── */
+  /* Two parts side by side: before and now, or a drawing and its notes. */
+  .o-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    align-items: stretch;
+  }
+
+  .o-two[data-split="5-7"] {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+  }
+
+  .o-two[data-split="7-5"] {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+  }
+
+  /* A case on a card: what happens now, or (data-was) what used to happen, dashed and hatched. */
+  .o-case {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 22px 24px 24px;
+    transition:
+      transform var(--o-dur-spring) var(--o-ease-spring),
+      box-shadow var(--o-dur-spring) var(--o-ease-spring);
+  }
+
+  .o-case:hover {
+    box-shadow: var(--o-shadow-slip);
+    transform: translate(-2px, -2px);
+  }
+
+  .o-case p {
+    margin: 0;
+    color: var(--o-ink);
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .o-case[data-was] {
+    --o-was-hatch: color-mix(in srgb, var(--o-line-3) 50%, transparent);
+    border-style: dashed;
+    background: linear-gradient(
+        135deg,
+        var(--o-was-hatch) 4%,
+        transparent 4% 50%,
+        var(--o-was-hatch) 50% 54%,
+        transparent 54%
+      )
+      0 0 / 12px 12px;
+  }
+
+  .o-case[data-was] p {
+    color: var(--o-ink-2);
+  }
+
+  /* Meters: a quantity per row as a hatched bar (the bar is an SVG rect sized by the server). */
+  .o-meters {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .o-meters > li {
+    display: grid;
+    grid-template-columns: minmax(7rem, auto) minmax(0, 1fr) 3ch;
+    gap: 12px;
+    align-items: center;
+    color: var(--o-ink-2);
+    font: var(--font-weight-medium) var(--text-2xs) / 1 var(--o-font-mono);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .o-meters svg {
+    display: block;
+    width: 100%;
+    height: 10px;
+    overflow: visible;
+  }
+
+  .o-meters [data-track] {
+    fill: none;
+    stroke: var(--o-line-2);
+    vector-effect: non-scaling-stroke;
+  }
+
+  .o-meters [data-bar] {
+    fill: url(#o-hatch);
+    stroke: var(--o-line);
+    vector-effect: non-scaling-stroke;
+    transform-box: fill-box;
+    transform-origin: left;
+  }
+
+  .o-meters b {
+    color: var(--o-ink);
+    font-weight: var(--font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .o-moving [data-in="arrived"] .o-meters [data-bar] {
+    animation: o-grow var(--o-dur-plot) var(--o-ease-out) backwards;
+    animation-delay: calc(var(--o-i, 0) * var(--o-stagger-list) + 300ms);
+  }
+
+  /* An exploded drawing beside its parts list; data-parts-set lights a part in both. */
+  .o-anatomy {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 28px 40px;
+    align-items: center;
+  }
+
+  .o-anatomy .o-vp {
+    max-height: none;
+    margin: 0;
+  }
+
+  [data-parts-set] .o-bom tbody tr {
+    cursor: default;
+  }
+
   /* ── Keyframes ───────────────────────────────────────────────────────────────────────────── */
   @keyframes o-draw {
     to {
@@ -3951,6 +4215,81 @@
     }
   }
 
+  /* A part arrives: it rises while a wipe uncovers it from the top. */
+  @keyframes o-arrive {
+    from {
+      clip-path: inset(0 0 100% 0);
+      transform: translateY(16px);
+    }
+
+    to {
+      clip-path: inset(-40px);
+    }
+  }
+
+  /* A badge lands like a stamp (no fade, so its contrast is never measured half-drawn). */
+  @keyframes o-land {
+    from {
+      transform: rotate(-10deg) scale(1.7);
+    }
+  }
+
+  @keyframes o-underline {
+    from {
+      background-size: 0 2px;
+    }
+  }
+
+  @keyframes o-redraw {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes o-flash {
+    from {
+      color: var(--o-mark-ink);
+    }
+  }
+
+  /* A request travelling down the signal chain, then gone until the next one. */
+  @keyframes o-travel {
+    0% {
+      left: 0;
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 0.8;
+    }
+
+    80% {
+      left: 100%;
+      opacity: 0.8;
+    }
+
+    100% {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes o-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes o-grow {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
   @keyframes o-stamp {
     0% {
       opacity: 0;
@@ -3970,6 +4309,12 @@
 
   /* ── Phones and tablets ──────────────────────────────────────────────────────────────────── */
   @media (width < 1080px) {
+    .o-two,
+    .o-two[data-split],
+    .o-anatomy {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .o-zones[data-edge="top"],
     .o-zones[data-edge="bottom"] {
       grid-template-columns: repeat(8, 1fr);
