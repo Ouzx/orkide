@@ -11,4 +11,4 @@ This repository is **public**. The shared stack, rules and commands are in the w
 - **Admin:** `/admin`, signing in with GitHub OAuth (`GITHUB_CLIENT_*` in `apps/api/.dev.vars`) or a passkey.
 - **Languages:** English is the base locale (`baseLocale: en`), Turkish under `/tr` with translated slugs.
 - **Design:** the Blueprint skin (ADR-032): every page is a sheet of a drawing set. Tokens, kit classes, motion and effects live in `packages/ui` (`DESIGN_SYSTEM.md`, `components.md`); edit `src/tokens/tokens.json` and run `pnpm --filter @orkide/ui tokens`, never the generated `tokens.css`/`tokens.ts`. Imagery is drawn in code; brand files come from `pnpm --filter @orkide/web brand` then `media` (`add-media-asset`). Two prints: blue (the default) and white (`html.light`).
-- **Deslop:** before designing or reviewing a page, read `docs/deslop.md` (what makes a design read as AI-made, and the test for what stays).
+- **Deslop:** `docs/deslop.md` lists what makes a design read as AI-made and the test for what stays. Use it only on a finished design, and only when the user asks for a deslop pass; details that carry the design's soul stay.

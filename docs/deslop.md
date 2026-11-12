@@ -1,8 +1,10 @@
 # Deslop: what makes a design read as AI-made
 
-Research and review from 2026-11-12. Use it when designing or reviewing a page: it lists what visitors notice, not a style to follow. Deslop checklists applied wholesale flatten a design; the test here is narrower.
+> [!IMPORTANT] **Never use this doc on a design that isn't finished.** Design every page and component first. Deslopping comes after, it is optional, and it runs only when the user asks for it specifically. Don't apply these recommendations while designing, and don't start a deslop pass on your own.
 
-**The test:** does this element carry information on this page? A grid, a label, a lamp or a number that tells the visitor something stays, even if it appears on a list below. One that only decorates, repeats or pretends goes.
+Research and review from 2026-11-12: what visitors notice, not a style to follow. Deslop checklists applied wholesale flatten a design; the test here is narrow.
+
+**The test:** does this element carry information on this page, or the design's soul? Not everything has to be functional. A lamp that never changes, a grille, an engraved label or an accent colour can carry the theme itself, and that is a reason to keep it. What goes is what only repeats, pretends or fills: the same label twice in one view, a second copy of a title block, a value that pretends to be data and changes on every load, filler copy.
 
 ## The tells (2025–2026)
 
@@ -23,7 +25,7 @@ Mostly agency and tool blogs: signals that add up when several appear together, 
 | 11 | Motion with no purpose | The same fade on every block; effects that answer nothing the visitor did | [Canatselis](https://world.hey.com/kostac/spot-the-slop-a-ui-designer-s-guide-to-fixing-ai-defaults-4c448c9c), [Utsubo](https://www.utsubo.com/blog/built-with-ai-trust-signals-2026), [925Studios](https://www.925studios.co/blog/ai-slop-web-design-guide) |
 | 12 | Copy tells | Em dashes as filler, "not X, it's Y" contrasts, buzzwords ("seamless", "crafted"), headlines that would fit any product | [Utsubo](https://www.utsubo.com/blog/built-with-ai-trust-signals-2026), [Impeccable](https://impeccable.style/slop), [Wikipedia](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), [Canatselis](https://world.hey.com/kostac/spot-the-slop-a-ui-designer-s-guide-to-fixing-ai-defaults-4c448c9c) |
 
-The same lists also flag grid backgrounds, hard offset shadows, tracked-caps mono labels and a blinking cursor. In a skin with a reason for them (Blueprint's paper, slips, drafting lettering and derive command) they are identity, not slop: apply the test above.
+The same lists also flag grid backgrounds, hard offset shadows, tracked-caps mono labels and a blinking cursor. In a skin with a reason for them (Blueprint's paper, slips, drafting lettering and derive command) they are identity, not slop: apply the test above. Tells 4 and 9 (lamps, glows) in particular are often a skin's soul.
 
 ## Review of the Blueprint skin (2026-11-12)
 
@@ -35,7 +37,7 @@ Blueprint has none of tells 1, 2, 8 or 10. Its incidents come from 3, 5, 7 and 1
 | 2 | The sheet number appeared 4 times in the first screen (tab beside the wordmark, crumbs, drawing block, status line) | `shared/components/SiteHeader.astro` | Fix: drop the tab beside the wordmark |
 | 3 | The contact sheet stacked two title blocks; "Request for information" appeared 4 times | `pages/contact.astro` | Fix: one title block |
 | 4 | Section kickers that only repeat the menu ("BLOG", "PORTFOLIO", "CONTACT") over the section title | `pages/index.astro` | Fix: kickers optional, drop these three |
-| 5 | The six general-note labels in the accent colour, against "one redline per view" | `packages/ui/src/styles/kit.css` | Fix: labels in `ink-2` |
+| 5 | The six general-note labels in the accent colour, against "one redline per view" | `packages/ui/src/styles/kit.css` | Keep: the redline carries the sheet's character (the owner's call) |
 | 6 | "Plotted" showed the revision date, then a script replaced it with the visitor's clock | `modules/home/axo-motion.ts` | Fix: keep the date |
 | 7 | "Send a message — I read every one." | `packages/i18n/messages/*.json` | Fix: a full stop |
 | 8 | Random loads and spans on project plates ("P = 14.4 kN") | `modules/portfolio/plate-art.ts` | Keep: reads as part of the drawing |
