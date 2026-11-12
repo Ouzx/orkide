@@ -4125,23 +4125,6 @@
     animation-delay: calc(var(--o-i, 0) * var(--o-stagger-list) + 300ms);
   }
 
-  /* An exploded drawing beside its parts list; data-parts-set lights a part in both. */
-  .o-anatomy {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 28px 40px;
-    align-items: center;
-  }
-
-  .o-anatomy .o-vp {
-    max-height: none;
-    margin: 0;
-  }
-
-  [data-parts-set] .o-bom tbody tr {
-    cursor: default;
-  }
-
   /* ── Keyframes ───────────────────────────────────────────────────────────────────────────── */
   @keyframes o-draw {
     to {
@@ -4310,8 +4293,7 @@
   /* ── Phones and tablets ──────────────────────────────────────────────────────────────────── */
   @media (width < 1080px) {
     .o-two,
-    .o-two[data-split],
-    .o-anatomy {
+    .o-two[data-split] {
       grid-template-columns: minmax(0, 1fr);
     }
 

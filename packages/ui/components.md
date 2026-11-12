@@ -19,7 +19,7 @@
 | `sonner` | `o-toaster` | sonner |
 | `avatar`, `skeleton` | `o-avatar`, `o-skeleton` | — |
 
-Public pages use the classes directly: the sheet (`o-frame`, `o-status`), the title strip (`o-strip`), section heads (`o-sh`), the cover drawing (`o-axo`, `o-bom`), Section A–A (`o-cut`), the schedule (`o-qty`, `o-notes`), the drawing index (`o-index`, `o-row`), plates (`o-plate`), the assembly (`o-steps`), the RFI sheet (`o-rfi`, `o-field`), stamps (`o-stamp`), revision clouds (`o-cloud`), the title block (`o-tb`, `o-block`), inner-page heads (`o-pagehead`, `o-dwg`, `o-scalebar`, `o-keyplan`), comparisons and meters (`o-two`, `o-case`, `o-meters`), exploded drawings beside their parts list (`o-anatomy`, `data-parts-set`) and the atlas's specimen plates (`o-spec`, styled by the atlas module).
+Public pages use the classes directly: the sheet (`o-frame`, `o-status`), the title strip (`o-strip`), section heads (`o-sh`), the cover drawing (`o-axo`, `o-bom`), Section A–A (`o-cut`), the schedule (`o-qty`, `o-notes`), the drawing index (`o-index`, `o-row`), plates (`o-plate`), the assembly (`o-steps`), the RFI sheet (`o-rfi`, `o-field`), stamps (`o-stamp`), revision clouds (`o-cloud`), the title block (`o-tb`, `o-block`), inner-page heads (`o-pagehead`, `o-dwg`, `o-scalebar`, `o-keyplan`) and comparisons and meters (`o-two`, `o-case`, `o-meters`).
 
 ## Shared states
 
@@ -124,11 +124,6 @@ Cross-document view transitions (`styles/motion.css`), directed by the pre-paint
 - **Two-up** (`o-two`, `data-split="5-7"` or `"7-5"`): two parts side by side, one column below 1080 px.
 - **Case** (`o-card o-case`): what happens now, or (`data-was`) what used to happen, dashed and hatched with its text in `ink-2`. Lifts on hover.
 - **Meters** (`o-meters`): a quantity per row as a hatched bar; each bar is an SVG `rect` whose width the server sets (`data-track`, `data-bar`), so it is right without script. With motion the bars grow in when their section arrives.
-- **Exploded drawing and its parts list** (`o-anatomy`): an `o-axo` drawing beside an `o-bom`. Wrapped in `data-parts-set`, pointing at or focusing a part (`data-part`), a balloon (`data-balloon`) or a row (`data-part`) lights the same number everywhere (`shared/lib/parts-set.ts`, with motion off too).
-
-## Atlas (G-005)
-
-The design atlas (`modules/atlas`, its own stylesheet `atlas.css`): specimen plates (`o-plate o-spec`): a live stage in a drawn frame with its hint, the title strip (ID, family, fit, weight), the spec (tags, references, pairings, the prompt starter) and Copy prompt / Pick. Each stage paints its own world (`specimens/<slug>.css`, unlayered and prefixed `st-<slug>`); previews load as their stage nears the screen, draw on the one animation loop while visible, and draw a still when motion is off. A sticky filter strip (family chips that morph the plates, search) and the mix tray (picks in order, the first is the hero; copy a link or the brief) appear with script. Picking stamps the stage; plates that pair with the mix get a dashed redline.
 
 ## Admin (the drafting table)
 
