@@ -7,20 +7,32 @@ import { secureHeaders } from "hono/secure-headers";
 import { trimTrailingSlash } from "hono/trailing-slash";
 
 import { forwardToApi } from "@/shared/lib/forward.ts";
-import { siteUrl } from "@/shared/site.ts";
+import { onSite } from "@/shared/site.ts";
 
 /**
  * Web Worker entry. Hono sits in front of Astro so the Worker owns every request:
  *
- * 1. `/api/*` is forwarded to the API Worker through the Service Binding (same origin for the
+ * 1. Requests on the Worker's own workers.dev address (`WORKERS_DEV_HOST`) move permanently to the
+ *    public origin (`site`), API calls included, so old links keep working and nothing reaches the
+ *    API around the zone's WAF and rate-limiting rules.
+ * 2. `/api/*` is forwarded to the API Worker through the Service Binding (same origin for the
  *    browser, no CORS, no extra network hop). When an admin write reports the cache tags it
  *    touched, the rendered pages carrying those tags are purged from this Worker's cache —
  *    Workers Cache is per Worker, so the API cannot purge them itself.
- * 2. Pages asked for on the Worker's own workers.dev address (`WORKERS_DEV_HOST`) move permanently
- *    to the public origin (`site`), so old links keep working once a custom domain is attached.
  * 3. Everything else goes through the Astro pipeline (static assets, middleware, pages).
  */
 const app = new Hono<{ Bindings: Env }>();
+
+app.use((c, next) => {
+  const url = new URL(c.req.url);
+  if (!c.env.WORKERS_DEV_HOST || url.hostname !== c.env.WORKERS_DEV_HOST) {
+    return next();
+  }
+  // Never cached: Workers Cache keys by path alone, so a cached redirect would loop the domain.
+  c.header("cache-control", "private, no-store");
+  const safe = c.req.method === "GET" || c.req.method === "HEAD";
+  return c.redirect(onSite(url), safe ? 301 : 308);
+});
 
 app.all("/api/*", async (c) => {
   const response = await c.env.API.fetch(forwardToApi(c.req.raw));
@@ -38,16 +50,6 @@ app.all("/api/*", async (c) => {
     status: response.status,
     statusText: response.statusText,
   });
-});
-
-app.on(["GET", "HEAD"], "*", (c, next) => {
-  const url = new URL(c.req.url);
-  if (c.env.WORKERS_DEV_HOST && url.hostname === c.env.WORKERS_DEV_HOST) {
-    // Never cached: Workers Cache keys by path alone, so a cached redirect would loop the domain.
-    c.header("cache-control", "private, no-store");
-    return c.redirect(new URL(`${url.pathname}${url.search}`, siteUrl), 301);
-  }
-  return next();
 });
 
 // Pages only: API responses carry their own headers (and are immutable once fetched).

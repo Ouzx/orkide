@@ -4,8 +4,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-09-30",
   "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": true,
-  "preview_urls": true,
+  "workers_dev": false,
+  "preview_urls": false,
   // Run next to D1 rather than next to the visitor: most requests make several sequential queries.
   "placement": { "mode": "smart" },
   "observability": {

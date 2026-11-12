@@ -1,6 +1,6 @@
 # Operations
 
-Production is `https://orkide.ouzx.me`, a custom domain of the web Worker (`routes` in `apps/web/wrangler.jsonc`); its workers.dev address `https://orkide-web.ouzx.workers.dev` redirects there (`WORKERS_DEV_HOST`). The API Worker (`https://orkide-api.ouzx.workers.dev`) is reached only through the Service Binding: the browser only talks to web, and `/api/*` is forwarded. Decisions behind this setup: ADR-019 to ADR-021.
+Production is `https://orkide.ouzx.me`, a custom domain of the web Worker (`routes` in `apps/web/wrangler.jsonc`); its workers.dev address `https://orkide-web.ouzx.workers.dev` redirects there (`WORKERS_DEV_HOST`). The API Worker has no public address (no workers.dev, no preview URLs, ADR-035) and is reached only through the Service Binding: the browser only talks to web, and `/api/*` is forwarded. Decisions behind this setup: ADR-019 to ADR-021.
 
 ## Local setup
 
