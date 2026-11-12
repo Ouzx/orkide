@@ -2,16 +2,16 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
+import { listPosts } from "@/modules/blog/blog.data.ts";
 import IndexHead from "@/modules/blog/IndexHead.astro";
 import PostEntry from "@/modules/blog/PostEntry.astro";
-import { listPosts } from "@/modules/blog/blog.data.ts";
 import Derive from "@/modules/home/Derive.astro";
 import Hero from "@/modules/home/Hero.astro";
 import Inside from "@/modules/home/Inside.astro";
-import Stack from "@/modules/home/Stack.astro";
 import { loadSite } from "@/modules/home/site.server.ts";
-import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
+import Stack from "@/modules/home/Stack.astro";
 import { listProjects } from "@/modules/portfolio/portfolio.data.ts";
+import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
 import SectionHead from "@/shared/components/SectionHead.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
@@ -50,130 +50,126 @@ cachePage(Astro, "posts", "projects", "site");
 
   <Inside content={site.inside} />
 
-  {
-    posts.items.length > 0 && (
-      <section
-        id="writing"
-        aria-labelledby="latest-posts"
-        class="o-wrap o-sec"
-        data-reveal
-        data-section-title={`§3 · ${indexTag}`}
-      >
-        <SectionHead
-          number={3}
-          tag={indexTag}
-          kicker={m.nav_blog({}, options)}
-          id="latest-posts"
-          title={m.home_latest_posts({}, options)}
-          action={{
-            href: localizeHref("/blog", options),
-            label: m.home_view_all_posts({}, options),
-          }}
-        />
-        <div class="mt-7">
-          <IndexHead />
-          <ol class="o-index">
-            {posts.items.map((post, index) => (
-              <PostEntry post={post} headingLevel={3} latest={index === 0} />
-            ))}
-          </ol>
-        </div>
-      </section>
-    )
-  }
+  {posts.items.length > 0 && (
+    <section
+      id="writing"
+      aria-labelledby="latest-posts"
+      class="o-wrap o-sec"
+      data-reveal
+      data-section-title={`§3 · ${indexTag}`}
+    >
+      <SectionHead
+        number={3}
+        tag={indexTag}
+        kicker={m.nav_blog({}, options)}
+        id="latest-posts"
+        title={m.home_latest_posts({}, options)}
+        action={{
+          href: localizeHref("/blog", options),
+          label: m.home_view_all_posts({}, options),
+        }}
+      />
+      <div class="mt-7">
+        <IndexHead />
+        <ol class="o-index">
+          {posts.items.map((post, index) => (
+            <PostEntry post={post} headingLevel={3} latest={index === 0} />
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
 
-  {
-    lead && (
-      <section
-        id="work"
-        aria-labelledby="selected-work"
-        class="o-wrap o-sec"
-        data-reveal
-        data-section-title={`§4 · ${platesTag}`}
-      >
-        <SectionHead
-          number={4}
-          tag={platesTag}
-          kicker={m.nav_portfolio({}, options)}
-          id="selected-work"
-          title={m.home_featured_projects({}, options)}
-          action={{
-            href: localizeHref("/portfolio", options),
-            label: m.home_view_all_projects({}, options),
-          }}
-        />
-        <div class="o-plates">
-          <ProjectCard project={lead} decorative />
-          <div class="o-feat-copy">
-            {lead.featured && (
-              <span class="o-feat">{m.portfolio_featured({}, options)}</span>
-            )}
-            <h3>
-              <a href={localizeHref(`/portfolio/${lead.slug}`, options)}>
-                {lead.title}
-              </a>
-            </h3>
-            <p>{lead.summary}</p>
-            {lead.tags.length > 0 && (
-              <ul class="o-tags mb-5" aria-label={m.blog_tags({}, options)}>
-                {lead.tags.map((tag) => (
-                  <li class="o-tag">{tag.name}</li>
-                ))}
-              </ul>
-            )}
-            <div class="flex flex-wrap gap-4">
+  {lead && (
+    <section
+      id="work"
+      aria-labelledby="selected-work"
+      class="o-wrap o-sec"
+      data-reveal
+      data-section-title={`§4 · ${platesTag}`}
+    >
+      <SectionHead
+        number={4}
+        tag={platesTag}
+        kicker={m.nav_portfolio({}, options)}
+        id="selected-work"
+        title={m.home_featured_projects({}, options)}
+        action={{
+          href: localizeHref("/portfolio", options),
+          label: m.home_view_all_projects({}, options),
+        }}
+      />
+      <div class="o-plates">
+        <ProjectCard project={lead} decorative />
+        <div class="o-feat-copy">
+          {lead.featured && (
+            <span class="o-feat">{m.portfolio_featured({}, options)}</span>
+          )}
+          <h3>
+            <a href={localizeHref(`/portfolio/${lead.slug}`, options)}>
+              {lead.title}
+            </a>
+          </h3>
+          <p>{lead.summary}</p>
+          {lead.tags.length > 0 && (
+            <ul class="o-tags mb-5" aria-label={m.blog_tags({}, options)}>
+              {lead.tags.map((tag) => (
+                <li class="o-tag">{tag.name}</li>
+              ))}
+            </ul>
+          )}
+          <div class="flex flex-wrap gap-4">
+            <a
+              href={localizeHref(`/portfolio/${lead.slug}`, options)}
+              class="o-btn o-btn-primary"
+              data-magnet
+            >
+              {m.portfolio_details({}, options)}
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M2 8 H 13 M 9 4 L 13 8 L 9 12"
+                  fill="none"
+                  stroke="currentColor"
+                />
+              </svg>
+            </a>
+            {lead.websiteUrl && (
               <a
-                href={localizeHref(`/portfolio/${lead.slug}`, options)}
-                class="o-btn o-btn-primary"
+                href={lead.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="o-btn"
                 data-magnet
               >
-                {m.portfolio_details({}, options)}
+                {m.portfolio_visit({}, options)}
                 <svg viewBox="0 0 16 16" aria-hidden="true">
                   <path
-                    d="M2 8 H 13 M 9 4 L 13 8 L 9 12"
+                    d="M4 12 L 12 4 M 6 4 H 12 V 10"
                     fill="none"
                     stroke="currentColor"
                   />
                 </svg>
               </a>
-              {lead.websiteUrl && (
-                <a
-                  href={lead.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="o-btn"
-                  data-magnet
-                >
-                  {m.portfolio_visit({}, options)}
-                  <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <path
-                      d="M4 12 L 12 4 M 6 4 H 12 V 10"
-                      fill="none"
-                      stroke="currentColor"
-                    />
-                  </svg>
-                </a>
-              )}
-              {lead.repositoryUrl && (
-                <a
-                  href={lead.repositoryUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="o-btn"
-                  data-magnet
-                >
-                  {m.portfolio_source({}, options)}
-                </a>
-              )}
-            </div>
+            )}
+            {lead.repositoryUrl && (
+              <a
+                href={lead.repositoryUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="o-btn"
+                data-magnet
+              >
+                {m.portfolio_source({}, options)}
+              </a>
+            )}
           </div>
-          {rest.map((project) => (
-            <ProjectCard project={project} headingLevel={3} />
-          ))}
         </div>
-      </section>
-    )
-  }
+        {rest.map((project) => (
+          <ProjectCard project={project} headingLevel={3} />
+        ))}
+      </div>
+    </section>
+  )}
 
   <Derive content={site.derive} />
 
@@ -220,7 +216,8 @@ cachePage(Astro, "posts", "projects", "site");
               <path
                 d="M2 8 H 13 M 9 4 L 13 8 L 9 12"
                 fill="none"
-                stroke="currentColor"></path>
+                stroke="currentColor"
+              ></path>
             </svg>
           </a>
         </div>

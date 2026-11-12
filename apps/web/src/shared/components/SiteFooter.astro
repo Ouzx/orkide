@@ -55,34 +55,34 @@ const groups = [
   <div class="o-tb-grid">
     <div>
       <p class="o-wordmark" aria-hidden="true">
-        {[...site].map((letter) => <span>{letter}</span>)}
+        {[...site].map((letter) => (
+          <span>{letter}</span>
+        ))}
       </p>
       <p class="mt-4 mb-0 max-w-[28em] text-sm text-ink-2">
         {m.footer_about({}, options)}
       </p>
       <div class="o-tb-links">
-        {
-          groups.map((group) => (
-            <nav aria-labelledby={group.id}>
-              <h2 id={group.id} class="o-label">
-                {group.label}
-              </h2>
-              <ul>
-                {group.links.map((link) => (
-                  <li>
-                    <a
-                      class="o-link"
-                      href={link.href}
-                      data-astro-prefetch="false"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))
-        }
+        {groups.map((group) => (
+          <nav aria-labelledby={group.id}>
+            <h2 id={group.id} class="o-label">
+              {group.label}
+            </h2>
+            <ul>
+              {group.links.map((link) => (
+                <li>
+                  <a
+                    class="o-link"
+                    href={link.href}
+                    data-astro-prefetch="false"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
       </div>
     </div>
     <dl class="o-block">
@@ -114,43 +114,40 @@ const groups = [
         <dt>{m.tb_date({}, options)}</dt>
         <dd>{date}</dd>
       </div>
-      {
-        revisions.length > 0 && (
-          <div class="o-rev">
-            <dt class="sr-only">{m.tb_revisions({}, options)}</dt>
-            <dd class="m-0">
-              <table>
-                <thead>
+      {revisions.length > 0 && (
+        <div class="o-rev">
+          <dt class="sr-only">{m.tb_revisions({}, options)}</dt>
+          <dd class="m-0">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">{m.tb_revision({}, options)}</th>
+                  <th scope="col">{m.tb_date({}, options)}</th>
+                  <th scope="col">{m.tb_change({}, options)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {revisions.map((revision) => (
                   <tr>
-                    <th scope="col">{m.tb_revision({}, options)}</th>
-                    <th scope="col">{m.tb_date({}, options)}</th>
-                    <th scope="col">{m.tb_change({}, options)}</th>
+                    <td>{revision.hash}</td>
+                    <td>{revision.date}</td>
+                    <td>{revision.subject}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {revisions.map((revision) => (
-                    <tr>
-                      <td>{revision.hash}</td>
-                      <td>{revision.date}</td>
-                      <td>{revision.subject}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </dd>
-          </div>
-        )
-      }
+                ))}
+              </tbody>
+            </table>
+          </dd>
+        </div>
+      )}
     </dl>
   </div>
   <div class="o-tb-base">
     <span>
-      {
-        m.footer_copyright(
-          { name: owner.name, year: new Date().getFullYear().toString() },
-          options
-        )
-      } · {m.footer_built_with({}, options)}
+      {m.footer_copyright(
+        { name: owner.name, year: new Date().getFullYear().toString() },
+        options
+      )}{" "}
+      · {m.footer_built_with({}, options)}
     </span>
     <MotionSwitch />
   </div>

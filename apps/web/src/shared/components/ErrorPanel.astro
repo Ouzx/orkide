@@ -22,7 +22,9 @@ const sheet = `X-${code}`;
   data-section-title={`${sheet} · ${m.sheet_void({}, options)}`}
 >
   <ol class="o-crumbs">
-    <li><a href={localizeHref("/", options)}>G-001</a></li>
+    <li>
+      <a href={localizeHref("/", options)}>G-001</a>
+    </li>
     <li aria-current="page">{sheet}</li>
   </ol>
   <div class="o-pagehead">

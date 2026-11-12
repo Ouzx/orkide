@@ -23,41 +23,40 @@ const sheet = sheetNumber("P", project.publishedAt);
 const year = project.publishedAt?.slice(0, 4) ?? "—";
 ---
 
-<!-- A project as a plate: a drawing generated from its slug, a title strip and its summary. -->{
-  decorative ? (
-    <div class="o-plate" data-lead data-dim aria-hidden="true">
-      <PlateArt seed={project.slug} lead />
-      <div class="o-plate-tb">
-        <span>{sheet}</span>
-        <span>{project.title}</span>
-        <span>{m.plate_scale({}, options)}</span>
-        <span>{year}</span>
-      </div>
+<!-- A project as a plate: a drawing generated from its slug, a title strip and its summary. -->
+{decorative ? (
+  <div class="o-plate" data-lead data-dim aria-hidden="true">
+    <PlateArt seed={project.slug} lead />
+    <div class="o-plate-tb">
+      <span>{sheet}</span>
+      <span>{project.title}</span>
+      <span>{m.plate_scale({}, options)}</span>
+      <span>{year}</span>
     </div>
-  ) : (
-    <article class="o-plate" data-dim data-morph-href={href}>
-      <PlateArt seed={project.slug} />
-      <div class="o-plate-tb" aria-hidden="true">
-        <span data-morph="no">{sheet}</span>
-        <span>{project.title}</span>
-        <span>{m.plate_scale({}, options)}</span>
-        <span>{year}</span>
-      </div>
-      <div class="o-plate-body">
-        <Heading>
-          <a href={href} data-morph="title">
-            {project.title}
-          </a>
-        </Heading>
-        <p>{project.summary}</p>
-        {project.tags.length > 0 && (
-          <ul class="o-tags" aria-label={m.blog_tags({}, options)}>
-            {project.tags.map((tag) => (
-              <li class="o-tag">{tag.name}</li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </article>
-  )
-}
+  </div>
+) : (
+  <article class="o-plate" data-dim data-morph-href={href}>
+    <PlateArt seed={project.slug} />
+    <div class="o-plate-tb" aria-hidden="true">
+      <span data-morph="no">{sheet}</span>
+      <span>{project.title}</span>
+      <span>{m.plate_scale({}, options)}</span>
+      <span>{year}</span>
+    </div>
+    <div class="o-plate-body">
+      <Heading>
+        <a href={href} data-morph="title">
+          {project.title}
+        </a>
+      </Heading>
+      <p>{project.summary}</p>
+      {project.tags.length > 0 && (
+        <ul class="o-tags" aria-label={m.blog_tags({}, options)}>
+          {project.tags.map((tag) => (
+            <li class="o-tag">{tag.name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </article>
+)}

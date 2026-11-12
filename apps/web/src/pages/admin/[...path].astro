@@ -2,8 +2,8 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
-import AdminLayout from "@/modules/admin/AdminLayout.astro";
 import { AdminApp } from "@/modules/admin/admin-app.tsx";
+import AdminLayout from "@/modules/admin/AdminLayout.astro";
 import { getAdminSession } from "@/modules/admin/session.server.ts";
 import { SignIn } from "@/modules/admin/sign-in.tsx";
 
@@ -38,23 +38,21 @@ if (user && isSignIn) {
 <AdminLayout
   title={`${isSignIn ? m.admin_sign_in_title({}, options) : m.admin_title({}, options)} · ${m.site_name({}, options)}`}
 >
-  {
-    isRateLimited ? (
-      <main class="grid min-h-dvh place-items-center p-6">
-        <p role="alert" class="o-card m-0 max-w-md p-6">
-          {m.error_rate_limited({}, options)}
-        </p>
-      </main>
-    ) : user ? (
-      <AdminApp
-        client:only="react"
-        user={user}
-        locale={locale}
-        basePath={basePath}
-        siteHref={localizeHref("/", options)}
-      />
-    ) : (
-      <SignIn client:only="react" locale={locale} callbackPath={basePath} />
-    )
-  }
+  {isRateLimited ? (
+    <main class="grid min-h-dvh place-items-center p-6">
+      <p role="alert" class="o-card m-0 max-w-md p-6">
+        {m.error_rate_limited({}, options)}
+      </p>
+    </main>
+  ) : user ? (
+    <AdminApp
+      client:only="react"
+      user={user}
+      locale={locale}
+      basePath={basePath}
+      siteHref={localizeHref("/", options)}
+    />
+  ) : (
+    <SignIn client:only="react" locale={locale} callbackPath={basePath} />
+  )}
 </AdminLayout>

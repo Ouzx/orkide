@@ -5,17 +5,17 @@ import { Paperclip } from "lucide-react";
 
 import { getPost } from "@/modules/blog/blog.data.ts";
 import DocumentArticle from "@/shared/components/DocumentArticle.astro";
-import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
+import { asVisitor } from "@/shared/lib/forward.ts";
+import { formatDate } from "@/shared/lib/i18n.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
-import { formatDate } from "@/shared/lib/i18n.ts";
-import { absoluteUrl } from "@/shared/site.ts";
 import {
   blogPostingNode,
   breadcrumbNode,
   graph,
 } from "@/shared/seo/json-ld.ts";
+import { absoluteUrl } from "@/shared/site.ts";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -52,77 +52,67 @@ Astro.response.headers.set("vary", "accept");
     ])
   )}
 >
-  {
-    post.category && (
-      <p slot="runhead" class="o-kicker">
-        <a
-          href={localizeHref(`/blog/category/${post.category.slug}`, options)}
-          class="o-link"
-        >
-          {post.category.name}
-        </a>
-      </p>
-    )
-  }
+  {post.category && (
+    <p slot="runhead" class="o-kicker">
+      <a
+        href={localizeHref(`/blog/category/${post.category.slug}`, options)}
+        class="o-link"
+      >
+        {post.category.name}
+      </a>
+    </p>
+  )}
   <Fragment slot="meta">
-    {
-      post.publishedAt && (
-        <li>
-          {m.blog_published({}, options)}{" "}
-          <time datetime={post.publishedAt}>
-            <b>{formatDate(post.publishedAt, locale)}</b>
-          </time>
-        </li>
-      )
-    }
+    {post.publishedAt && (
+      <li>
+        {m.blog_published({}, options)}{" "}
+        <time datetime={post.publishedAt}>
+          <b>{formatDate(post.publishedAt, locale)}</b>
+        </time>
+      </li>
+    )}
     <li>
       <b>
-        {
-          m.blog_reading_time(
-            { minutes: post.readingTimeMinutes.toString() },
-            options
-          )
-        }
+        {m.blog_reading_time(
+          { minutes: post.readingTimeMinutes.toString() },
+          options
+        )}
       </b>
     </li>
-    {
-      post.publishedAt &&
-        post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
-          <li>
-            {m.blog_updated({}, options)}{" "}
-            <time datetime={post.updatedAt}>
-              <b>{formatDate(post.updatedAt, locale)}</b>
-            </time>
-          </li>
-        )
-    }
+    {post.publishedAt &&
+      post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && (
+        <li>
+          {m.blog_updated({}, options)}{" "}
+          <time datetime={post.updatedAt}>
+            <b>{formatDate(post.updatedAt, locale)}</b>
+          </time>
+        </li>
+      )}
   </Fragment>
-  {
-    post.attachments.length > 0 && (
-      <section slot="after" aria-labelledby="attachments" class="mt-14">
-        <h2 id="attachments" class="o-label m-0">
-          {m.blog_attachments({}, options)}
-        </h2>
-        <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
-          {post.attachments.map((attachment) => (
-            <li>
-              <a
-                href={attachment.url}
-                class="o-btn o-btn-sm"
-                data-astro-prefetch="false"
-              >
-                <Paperclip aria-hidden="true" />
-                <span class="max-w-60 truncate normal-case">
-                  {attachment.alt}
-                </span>
-                <span class="text-ink-2">
-                  {attachment.mimeType.split("/")[1]?.toUpperCase()}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
+  {post.attachments.length > 0 && (
+    <section slot="after" aria-labelledby="attachments" class="mt-14">
+      <h2 id="attachments" class="o-label m-0">
+        {m.blog_attachments({}, options)}
+      </h2>
+      <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
+        {post.attachments.map((attachment) => (
+          <li>
+            <a
+              href={attachment.url}
+              class="o-btn o-btn-sm"
+              data-astro-prefetch="false"
+            >
+              <Paperclip aria-hidden="true" />
+              <span class="max-w-60 truncate normal-case">
+                {attachment.alt}
+              </span>
+              <span class="text-ink-2">
+                {attachment.mimeType.split("/")[1]?.toUpperCase()}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 </DocumentArticle>

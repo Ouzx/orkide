@@ -21,8 +21,9 @@ const options = { locale };
 <header class="o-wrap" data-section-title={`${sheet} · ${kind}`}>
   <ol class="o-crumbs">
     <li>
-      <a href={localizeHref("/", options)}>G-001 {m.sheet_cover({}, options)}</a
-      >
+      <a href={localizeHref("/", options)}>
+        G-001 {m.sheet_cover({}, options)}
+      </a>
     </li>
     <li aria-current="page">{sheet}</li>
   </ol>
@@ -43,14 +44,13 @@ const options = { locale };
     </dl>
     <div class="o-pagehead-main">
       <h1 class="o-title">
-        {title}{
-          accent && (
-            <>
-              {" "}
-              <em>{accent}</em>
-            </>
-          )
-        }
+        {title}
+        {accent && (
+          <>
+            {" "}
+            <em>{accent}</em>
+          </>
+        )}
       </h1>
       {lead && <p class="o-lead">{lead}</p>}
       <slot />

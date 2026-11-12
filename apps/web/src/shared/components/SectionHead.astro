@@ -30,16 +30,16 @@ const { number, sheet = "G-001", tag, kicker, id, title, action } = Astro.props;
   <div class="o-sec-top">
     <div class="min-w-0">
       <p class="o-kicker o-rise">{kicker}</p>
-      <h2 id={id} class="o-h2 o-rise">{title}</h2>
+      <h2 id={id} class="o-h2 o-rise">
+        {title}
+      </h2>
     </div>
-    {
-      action && (
-        <a href={action.href} class="o-more o-link">
-          {action.label}
-          <span aria-hidden="true">→</span>
-        </a>
-      )
-    }
+    {action && (
+      <a href={action.href} class="o-more o-link">
+        {action.label}
+        <span aria-hidden="true">→</span>
+      </a>
+    )}
     <slot />
   </div>
 </header>

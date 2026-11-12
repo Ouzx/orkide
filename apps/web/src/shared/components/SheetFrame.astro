@@ -31,24 +31,20 @@ const rows = ["1", "2", "3", "4", "5", "6"];
   <i class="o-frame-border"></i>
   <i class="o-frame-corner" data-corner="tl"></i>
   <i class="o-frame-corner" data-corner="br"></i>
-  {
-    (["top", "bottom"] as const).map((edge) => (
-      <div class="o-zones" data-edge={edge} data-zones={edge}>
-        {columns.map((letter) => (
-          <span>{letter}</span>
-        ))}
-      </div>
-    ))
-  }
-  {
-    (["left", "right"] as const).map((edge) => (
-      <div class="o-zones" data-edge={edge}>
-        {rows.map((number) => (
-          <span>{number}</span>
-        ))}
-      </div>
-    ))
-  }
+  {(["top", "bottom"] as const).map((edge) => (
+    <div class="o-zones" data-edge={edge} data-zones={edge}>
+      {columns.map((letter) => (
+        <span>{letter}</span>
+      ))}
+    </div>
+  ))}
+  {(["left", "right"] as const).map((edge) => (
+    <div class="o-zones" data-edge={edge}>
+      {rows.map((number) => (
+        <span>{number}</span>
+      ))}
+    </div>
+  ))}
   <i class="o-ruler-mark" data-axis="x" data-ruler-mark="x"></i>
   <i class="o-ruler-mark" data-axis="y" data-ruler-mark="y"></i>
 </div>
@@ -56,10 +52,14 @@ const rows = ["1", "2", "3", "4", "5", "6"];
 <div class="o-status" aria-hidden="true">
   <span>{sheet}</span>
   <span data-section-name>{name}</span>
-  <span data-xy>X <b>0.0</b> Y <b>0.0</b> mm</span>
+  <span data-xy>
+    X <b>0.0</b> Y <b>0.0</b> mm
+  </span>
 </div>
 
-<div class="o-cad" aria-hidden="true" data-cad><i></i></div>
+<div class="o-cad" aria-hidden="true" data-cad>
+  <i></i>
+</div>
 <div
   class="o-osnap"
   aria-hidden="true"

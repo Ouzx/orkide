@@ -1,6 +1,6 @@
 ---
-import type { Term } from "@orkide/validators/taxonomy";
 import { localizeHref } from "@orkide/i18n/runtime";
+import type { Term } from "@orkide/validators/taxonomy";
 
 interface Props {
   tags: readonly Term[];
@@ -11,19 +11,17 @@ const { tags, label } = Astro.props;
 const { locale } = Astro.locals;
 ---
 
-{
-  tags.length > 0 && (
-    <ul class="o-tags" aria-label={label}>
-      {tags.map((tag) => (
-        <li>
-          <a
-            href={localizeHref(`/blog/tag/${tag.slug}`, { locale })}
-            class="o-tag"
-          >
-            #{tag.name}
-          </a>
-        </li>
-      ))}
-    </ul>
-  )
-}
+{tags.length > 0 && (
+  <ul class="o-tags" aria-label={label}>
+    {tags.map((tag) => (
+      <li>
+        <a
+          href={localizeHref(`/blog/tag/${tag.slug}`, { locale })}
+          class="o-tag"
+        >
+          #{tag.name}
+        </a>
+      </li>
+    ))}
+  </ul>
+)}

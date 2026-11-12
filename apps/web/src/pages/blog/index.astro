@@ -2,10 +2,10 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
-import PostIndex from "@/modules/blog/PostIndex.astro";
 import { getTaxonomy, listPosts } from "@/modules/blog/blog.data.ts";
-import { asVisitor } from "@/shared/lib/forward.ts";
+import PostIndex from "@/modules/blog/PostIndex.astro";
 import { cachePage } from "@/shared/lib/cache.ts";
+import { asVisitor } from "@/shared/lib/forward.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
 
 const { locale } = Astro.locals;

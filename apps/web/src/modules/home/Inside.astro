@@ -35,48 +35,44 @@ const pad = (n: number) => n.toString().padStart(2, "0");
     <div>
       <p class="o-lead">{content.lead}</p>
       <div class="o-qty-head" aria-hidden="true">
-        <span>#</span><span>{m.home_qty({}, options)}</span><span
-          >{m.home_item({}, options)}</span
-        >
+        <span>#</span>
+        <span>{m.home_qty({}, options)}</span>
+        <span>{m.home_item({}, options)}</span>
       </div>
       <ul class="o-qtys">
-        {
-          content.meters.map((meter, index) => (
-            <li class="o-qty">
-              <span class="o-qty-i" aria-hidden="true">
-                {pad(index + 1)}
+        {content.meters.map((meter, index) => (
+          <li class="o-qty">
+            <span class="o-qty-i" aria-hidden="true">
+              {pad(index + 1)}
+            </span>
+            <span class="o-qty-v">
+              <span
+                data-count={
+                  /^\d+$/u.test(meter.value) ? meter.value : undefined
+                }
+              >
+                {meter.value}
               </span>
-              <span class="o-qty-v">
-                <span
-                  data-count={
-                    /^\d+$/u.test(meter.value) ? meter.value : undefined
-                  }
-                >
-                  {meter.value}
-                </span>
-                {meter.unit && <small>{meter.unit}</small>}
-              </span>
-              <span class="o-qty-l">{meter.label}</span>
-            </li>
-          ))
-        }
+              {meter.unit && <small>{meter.unit}</small>}
+            </span>
+            <span class="o-qty-l">{meter.label}</span>
+          </li>
+        ))}
       </ul>
     </div>
     <div>
       <h3 class="o-label mt-0 mb-3.5">{m.home_notes({}, options)}</h3>
       <ol class="o-notes">
-        {
-          content.features.map((feature, index) => (
-            <li class="o-note">
-              <span class="o-note-n" aria-hidden="true">
-                {index + 1}
-              </span>
-              <span class="o-note-k">{feature.name}</span>
-              <h4 class="o-h3">{feature.title}</h4>
-              <p>{feature.text}</p>
-            </li>
-          ))
-        }
+        {content.features.map((feature, index) => (
+          <li class="o-note">
+            <span class="o-note-n" aria-hidden="true">
+              {index + 1}
+            </span>
+            <span class="o-note-k">{feature.name}</span>
+            <h4 class="o-h3">{feature.title}</h4>
+            <p>{feature.text}</p>
+          </li>
+        ))}
       </ol>
     </div>
   </div>

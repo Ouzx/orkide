@@ -32,29 +32,27 @@ const tag = m.home_assembly({}, options);
   />
   <p class="o-lead o-rise">{content.lead}</p>
   <ol class="o-steps" data-steps={content.steps.length}>
-    {
-      content.steps.map((step, index) => (
-        <li class="o-step">
-          <span class="o-step-n" aria-hidden="true">
-            {index + 1}
-          </span>
-          <h3>{step.title}</h3>
-          <p>{step.text}</p>
-          <div class="o-cmd">
-            <code>{step.command}</code>
-            <button
-              type="button"
-              class="o-copy"
-              data-copy
-              data-copied={m.copied({}, options)}
-              hidden
-            >
-              {m.copy({}, options)}
-            </button>
-          </div>
-        </li>
-      ))
-    }
+    {content.steps.map((step, index) => (
+      <li class="o-step">
+        <span class="o-step-n" aria-hidden="true">
+          {index + 1}
+        </span>
+        <h3>{step.title}</h3>
+        <p>{step.text}</p>
+        <div class="o-cmd">
+          <code>{step.command}</code>
+          <button
+            type="button"
+            class="o-copy"
+            data-copy
+            data-copied={m.copied({}, options)}
+            hidden
+          >
+            {m.copy({}, options)}
+          </button>
+        </div>
+      </li>
+    ))}
   </ol>
   <div class="mt-7 flex justify-end">
     <a
@@ -66,7 +64,10 @@ const tag = m.home_assembly({}, options);
     >
       {content.cta}
       <svg viewBox="0 0 16 16" aria-hidden="true">
-        <path d="M4 12 L 12 4 M 6 4 H 12 V 10" fill="none" stroke="currentColor"
+        <path
+          d="M4 12 L 12 4 M 6 4 H 12 V 10"
+          fill="none"
+          stroke="currentColor"
         ></path>
       </svg>
     </a>

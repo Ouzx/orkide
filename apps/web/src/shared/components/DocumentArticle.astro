@@ -90,7 +90,9 @@ const html = document.html.replaceAll(
       <li>
         <a href={localizeHref("/", options)}>G-001</a>
       </li>
-      <li><a href={sectionPath}>{sectionName}</a></li>
+      <li>
+        <a href={sectionPath}>{sectionName}</a>
+      </li>
       <li aria-current="page">{sheet}</li>
     </ol>
     <header
@@ -129,64 +131,61 @@ const html = document.html.replaceAll(
       </div>
     </header>
 
-    {
-      document.cover && (
-        <figure class="o-docgrid m-0 pt-0 pb-6">
-          <MediaImage
-            media={document.cover}
-            sizes="(min-width: 1080px) 760px, 100vw"
-            priority
-            class={`${coverClass} o-docbody border border-line-2`}
-          />
-          {document.cover.caption && (
-            <figcaption class="o-label o-docbody mt-2">
-              {document.cover.caption}
-            </figcaption>
-          )}
-        </figure>
-      )
-    }
+    {document.cover && (
+      <figure class="o-docgrid m-0 pt-0 pb-6">
+        <MediaImage
+          media={document.cover}
+          sizes="(min-width: 1080px) 760px, 100vw"
+          priority
+          class={`${coverClass} o-docbody border border-line-2`}
+        />
+        {document.cover.caption && (
+          <figcaption class="o-label o-docbody mt-2">
+            {document.cover.caption}
+          </figcaption>
+        )}
+      </figure>
+    )}
 
     <div class="o-scalebar" aria-hidden="true" data-scalebar>
       <span>0</span>
-      <span class="o-scalebar-track"><i></i><b></b></span>
+      <span class="o-scalebar-track">
+        <i></i>
+        <b></b>
+      </span>
       <output>0 %</output>
     </div>
 
     <div class="o-docgrid">
-      {
-        contents.length > 1 && (
-          <nav class="o-keyplan" aria-labelledby="contents-title">
-            <h2 id="contents-title" class="o-label mt-0 mb-2.5">
-              {m.doc_contents({}, options)}
-            </h2>
-            <ol>
-              {contents.map((entry, index) => (
-                <li>
-                  <a href={`#${entry.id}`} data-contents={entry.id}>
-                    <span>{index + 1}</span>
-                    {entry.text}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
-        )
-      }
+      {contents.length > 1 && (
+        <nav class="o-keyplan" aria-labelledby="contents-title">
+          <h2 id="contents-title" class="o-label mt-0 mb-2.5">
+            {m.doc_contents({}, options)}
+          </h2>
+          <ol>
+            {contents.map((entry, index) => (
+              <li>
+                <a href={`#${entry.id}`} data-contents={entry.id}>
+                  <span>{index + 1}</span>
+                  {entry.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
       <div class="o-docbody" data-document>
         <!-- Server-rendered from validated Tiptap JSON (allow-listed nodes, marks and link protocols). -->
         <div class="prose-orkide" set:html={html} />
 
         <slot name="after" />
 
-        {
-          document.tags.length > 0 && (
-            <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t border-line pt-5">
-              <span class="o-label">{m.blog_tags({}, options)}</span>
-              <TagList tags={document.tags} label={m.blog_tags({}, options)} />
-            </footer>
-          )
-        }
+        {document.tags.length > 0 && (
+          <footer class="mt-14 grid max-w-(--o-measure) gap-3 border-t border-line pt-5">
+            <span class="o-label">{m.blog_tags({}, options)}</span>
+            <TagList tags={document.tags} label={m.blog_tags({}, options)} />
+          </footer>
+        )}
       </div>
     </div>
   </article>

@@ -28,42 +28,36 @@ const fallback = `${media.url}?w=${widths.find((width) => width >= 960) ?? width
 ---
 
 <div class:list={["relative isolate overflow-hidden bg-muted", className]}>
-  {
-    isVideo(media) && (
-      <video
-        src={media.url}
-        controls
-        playsinline
-        preload="metadata"
-        aria-label={media.alt}
-        class="size-full object-contain"
-      />
-    )
-  }
-  {
-    !isVideo(media) && media.placeholder && (
-      <img
-        src={media.placeholder}
-        alt=""
-        aria-hidden="true"
-        class="absolute inset-0 -z-10 size-full scale-110 object-cover blur-xl"
-      />
-    )
-  }
-  {
-    !isVideo(media) && (
-      <img
-        src={fallback}
-        srcset={srcset}
-        sizes={sizes}
-        width={media.width ?? undefined}
-        height={media.height ?? undefined}
-        alt={media.alt}
-        loading={priority ? "eager" : "lazy"}
-        fetchpriority={priority ? "high" : "auto"}
-        decoding={priority ? "sync" : "async"}
-        class="size-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-103"
-      />
-    )
-  }
+  {isVideo(media) && (
+    <video
+      src={media.url}
+      controls
+      playsinline
+      preload="metadata"
+      aria-label={media.alt}
+      class="size-full object-contain"
+    />
+  )}
+  {!isVideo(media) && media.placeholder && (
+    <img
+      src={media.placeholder}
+      alt=""
+      aria-hidden="true"
+      class="absolute inset-0 -z-10 size-full scale-110 object-cover blur-xl"
+    />
+  )}
+  {!isVideo(media) && (
+    <img
+      src={fallback}
+      srcset={srcset}
+      sizes={sizes}
+      width={media.width ?? undefined}
+      height={media.height ?? undefined}
+      alt={media.alt}
+      loading={priority ? "eager" : "lazy"}
+      fetchpriority={priority ? "high" : "auto"}
+      decoding={priority ? "sync" : "async"}
+      class="size-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-103"
+    />
+  )}
 </div>

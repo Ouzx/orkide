@@ -18,48 +18,46 @@ const plate = plateArt(seed, lead ? { height: 330, width: 480 } : {});
   aria-hidden="true"
   data-plot
 >
-  {
-    plate.shapes.map((shape) =>
-      shape.kind === "line" ? (
-        shape.dash ? (
-          <path
-            data-line
-            data-tone={shape.tone}
-            d={shape.d}
-            stroke-width={shape.width}
-            stroke-dasharray={shape.dash}
-          />
-        ) : (
-          <path
-            data-stroke
-            data-line
-            data-tone={shape.tone}
-            d={shape.d}
-            stroke-width={shape.width}
-            pathLength="1"
-          />
-        )
-      ) : shape.kind === "wash" ? (
+  {plate.shapes.map((shape) =>
+    shape.kind === "line" ? (
+      shape.dash ? (
         <path
-          data-wash={shape.fill === "hatch" ? "" : shape.fill}
+          data-line
+          data-tone={shape.tone}
           d={shape.d}
-          fill-rule="evenodd"
+          stroke-width={shape.width}
+          stroke-dasharray={shape.dash}
         />
       ) : (
-        <text
-          x={shape.x.toFixed(1)}
-          y={shape.y.toFixed(1)}
-          text-anchor={shape.anchor}
+        <path
+          data-stroke
+          data-line
           data-tone={shape.tone}
-          transform={
-            shape.rotate
-              ? `rotate(${shape.rotate} ${shape.x.toFixed(1)} ${shape.y.toFixed(1)})`
-              : undefined
-          }
-        >
-          {shape.text}
-        </text>
+          d={shape.d}
+          stroke-width={shape.width}
+          pathLength="1"
+        />
       )
+    ) : shape.kind === "wash" ? (
+      <path
+        data-wash={shape.fill === "hatch" ? "" : shape.fill}
+        d={shape.d}
+        fill-rule="evenodd"
+      />
+    ) : (
+      <text
+        x={shape.x.toFixed(1)}
+        y={shape.y.toFixed(1)}
+        text-anchor={shape.anchor}
+        data-tone={shape.tone}
+        transform={
+          shape.rotate
+            ? `rotate(${shape.rotate} ${shape.x.toFixed(1)} ${shape.y.toFixed(1)})`
+            : undefined
+        }
+      >
+        {shape.text}
+      </text>
     )
-  }
+  )}
 </svg>

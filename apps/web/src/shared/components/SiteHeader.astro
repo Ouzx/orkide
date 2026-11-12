@@ -43,21 +43,21 @@ const links = [
         <BrandMark />
         <span class="o-brand-word">{m.site_name({}, options)}</span>
       </a>
-      <span class="o-sheetno" aria-hidden="true">{sheet}</span>
+      <span class="o-sheetno" aria-hidden="true">
+        {sheet}
+      </span>
     </div>
 
     <nav aria-label={m.nav_primary({}, options)} class="o-grp hidden md:flex">
-      {
-        links.map((link) => (
-          <a
-            href={link.localized}
-            aria-current={link.current ? "page" : undefined}
-            class="o-nav-link"
-          >
-            {link.label}
-          </a>
-        ))
-      }
+      {links.map((link) => (
+        <a
+          href={link.localized}
+          aria-current={link.current ? "page" : undefined}
+          class="o-nav-link"
+        >
+          {link.label}
+        </a>
+      ))}
     </nav>
 
     <div class="o-grp ml-auto hidden md:flex">
@@ -71,7 +71,9 @@ const links = [
       class="o-grp o-tool ml-auto md:hidden"
     >
       <svg viewBox="0 0 20 20" aria-hidden="true" class="size-5">
-        <path d="M2 6 H 18 M 2 10 H 18 M 2 14 H 18" stroke="currentColor"
+        <path
+          d="M2 6 H 18 M 2 10 H 18 M 2 14 H 18"
+          stroke="currentColor"
         ></path>
       </svg>
       <span class="sr-only">{m.nav_menu({}, options)}</span>
@@ -100,23 +102,25 @@ const links = [
       </button>
     </div>
     <ul class="o-wrap mt-8 grid gap-4">
-      {
-        links.map((link) => (
-          <li>
-            <a
-              href={link.localized}
-              aria-current={link.current ? "page" : undefined}
-              class="o-btn w-full justify-start"
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.localized}
+            aria-current={link.current ? "page" : undefined}
+            class="o-btn w-full justify-start"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
     </ul>
     <div class="o-wrap mt-8 flex flex-wrap items-center gap-4">
-      <div class="o-grp"><LocaleSwitch alternates={alternates} /></div>
-      <div class="o-grp min-h-11"><ThemeSwitch /></div>
+      <div class="o-grp">
+        <LocaleSwitch alternates={alternates} />
+      </div>
+      <div class="o-grp min-h-11">
+        <ThemeSwitch />
+      </div>
     </div>
   </nav>
 </header>

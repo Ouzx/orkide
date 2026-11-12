@@ -26,36 +26,34 @@ const Heading = `h${headingLevel}` as const;
     {sheetNumber("D", post.publishedAt)}
   </span>
   <div class="min-w-0">
-    <Heading class="o-row-title"
-      ><a href={href} data-morph="title">{post.title}</a></Heading
-    >
+    <Heading class="o-row-title">
+      <a href={href} data-morph="title">
+        {post.title}
+      </a>
+    </Heading>
     <p class="o-row-sum">{post.summary}</p>
   </div>
   <span class="o-row-meta">
-    {
-      post.category && (
-        <a href={localizeHref(`/blog/category/${post.category.slug}`, options)}>
-          {post.category.name}
-        </a>
-      )
-    }
+    {post.category && (
+      <a href={localizeHref(`/blog/category/${post.category.slug}`, options)}>
+        {post.category.name}
+      </a>
+    )}
   </span>
   <span class="o-row-meta">
-    {
-      post.publishedAt && (
-        <time datetime={post.publishedAt}>
-          {formatDate(post.publishedAt, locale, "medium")}
-        </time>
-      )
-    }
+    {post.publishedAt && (
+      <time datetime={post.publishedAt}>
+        {formatDate(post.publishedAt, locale, "medium")}
+      </time>
+    )}
   </span>
   <span class="o-row-meta">
-    {
-      m.blog_reading_time(
-        { minutes: post.readingTimeMinutes.toString() },
-        options
-      )
-    }
+    {m.blog_reading_time(
+      { minutes: post.readingTimeMinutes.toString() },
+      options
+    )}
   </span>
-  <span class="o-row-go" aria-hidden="true">{m.index_open({}, options)} →</span>
+  <span class="o-row-go" aria-hidden="true">
+    {m.index_open({}, options)} →
+  </span>
 </li>

@@ -38,44 +38,43 @@ const tag = m.home_section_cut({}, options);
   />
   <div class="o-cutwrap" data-cut>
     <div class="o-chain" aria-hidden="true">
-      {
-        content.stages.map((_, index) => (
-          <span data-chain={index}>
-            <b>
-              <small>t+</small>
-              <span data-timing={index}>—</span> <small>ms</small>
-            </b>
-          </span>
-        ))
-      }
+      {content.stages.map((_, index) => (
+        <span data-chain={index}>
+          <b>
+            <small>t+</small>
+            <span data-timing={index}>—</span> <small>ms</small>
+          </b>
+        </span>
+      ))}
     </div>
     <ol class="o-cut">
-      {
-        content.stages.map((stage, index) => (
-          <li class="o-stage" data-stage={index}>
-            <StageIcon index={index} />
-            <p class="o-stage-name">
-              <span>{stage.name}</span>
-              <i aria-hidden="true">·</i>
-              <span>{stage.timing}</span>
-              <span class="o-stage-time">
-                <span data-timing={index}>—</span> ms
-              </span>
-            </p>
-            <h3 class="o-h3">{stage.title}</h3>
-            <p>{stage.text}</p>
-          </li>
-        ))
-      }
+      {content.stages.map((stage, index) => (
+        <li class="o-stage" data-stage={index}>
+          <StageIcon index={index} />
+          <p class="o-stage-name">
+            <span>{stage.name}</span>
+            <i aria-hidden="true">·</i>
+            <span>{stage.timing}</span>
+            <span class="o-stage-time">
+              <span data-timing={index}>—</span> ms
+            </span>
+          </p>
+          <h3 class="o-h3">{stage.title}</h3>
+          <p>{stage.text}</p>
+        </li>
+      ))}
     </ol>
     <div class="o-cutline" aria-hidden="true">
-      <span>A</span><span></span><span>A</span>
+      <span>A</span>
+      <span></span>
+      <span>A</span>
     </div>
   </div>
   <p class="o-note-line">
     <span>{content.note}</span>
-    <span class="o-hand" aria-hidden="true">{m.home_cut_note({}, options)}</span
-    >
+    <span class="o-hand" aria-hidden="true">
+      {m.home_cut_note({}, options)}
+    </span>
   </p>
 </section>
 

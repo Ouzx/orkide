@@ -4,13 +4,13 @@ import { localizeHref } from "@orkide/i18n/runtime";
 
 import { getProject } from "@/modules/portfolio/portfolio.data.ts";
 import DocumentArticle from "@/shared/components/DocumentArticle.astro";
-import { asVisitor } from "@/shared/lib/forward.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
+import { asVisitor } from "@/shared/lib/forward.ts";
+import { languageTag } from "@/shared/lib/i18n.ts";
 import { parseDocumentParam, markdownResponse } from "@/shared/lib/markdown.ts";
 import { notFound } from "@/shared/lib/not-found.ts";
-import { languageTag } from "@/shared/lib/i18n.ts";
-import { absoluteUrl } from "@/shared/site.ts";
 import { breadcrumbNode, graph, projectNode } from "@/shared/seo/json-ld.ts";
+import { absoluteUrl } from "@/shared/site.ts";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -54,53 +54,47 @@ Astro.response.headers.set("vary", "accept");
     ])
   )}
 >
-  {
-    project.featured && (
-      <p slot="runhead" class="o-feat mb-3">
-        {m.portfolio_featured({}, options)}
-      </p>
-    )
-  }
-  {
-    timeline && (
-      <li slot="meta">
-        <b>{timeline}</b>
-      </li>
-    )
-  }
-  {
-    (project.websiteUrl || project.repositoryUrl) && (
-      <div slot="actions" class="mt-6 flex flex-wrap gap-4">
-        {project.websiteUrl && (
-          <a
-            href={project.websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="o-btn o-btn-primary"
-            data-magnet
-          >
-            {m.portfolio_visit({}, options)}
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path
-                d="M4 12 L 12 4 M 6 4 H 12 V 10"
-                fill="none"
-                stroke="currentColor"
-              />
-            </svg>
-          </a>
-        )}
-        {project.repositoryUrl && (
-          <a
-            href={project.repositoryUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="o-btn"
-            data-magnet
-          >
-            {m.portfolio_source({}, options)}
-          </a>
-        )}
-      </div>
-    )
-  }
+  {project.featured && (
+    <p slot="runhead" class="o-feat mb-3">
+      {m.portfolio_featured({}, options)}
+    </p>
+  )}
+  {timeline && (
+    <li slot="meta">
+      <b>{timeline}</b>
+    </li>
+  )}
+  {(project.websiteUrl || project.repositoryUrl) && (
+    <div slot="actions" class="mt-6 flex flex-wrap gap-4">
+      {project.websiteUrl && (
+        <a
+          href={project.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="o-btn o-btn-primary"
+          data-magnet
+        >
+          {m.portfolio_visit({}, options)}
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path
+              d="M4 12 L 12 4 M 6 4 H 12 V 10"
+              fill="none"
+              stroke="currentColor"
+            />
+          </svg>
+        </a>
+      )}
+      {project.repositoryUrl && (
+        <a
+          href={project.repositoryUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="o-btn"
+          data-magnet
+        >
+          {m.portfolio_source({}, options)}
+        </a>
+      )}
+    </div>
+  )}
 </DocumentArticle>

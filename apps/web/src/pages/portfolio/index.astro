@@ -2,8 +2,8 @@
 import { m } from "@orkide/i18n/messages";
 import { localizeHref } from "@orkide/i18n/runtime";
 
-import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
 import { listProjects } from "@/modules/portfolio/portfolio.data.ts";
+import ProjectCard from "@/modules/portfolio/ProjectCard.astro";
 import EmptyState from "@/shared/components/EmptyState.astro";
 import PageHeader from "@/shared/components/PageHeader.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
@@ -42,16 +42,14 @@ cachePage(Astro, "projects");
     lead={m.portfolio_description({}, options)}
   />
   <div class="o-wrap pt-4 pb-24 md:pb-32" data-reveal>
-    {
-      projects.length > 0 ? (
-        <div class="o-plates mt-0">
-          {projects.map((project) => (
-            <ProjectCard project={project} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState message={m.portfolio_empty({}, options)} />
-      )
-    }
+    {projects.length > 0 ? (
+      <div class="o-plates mt-0">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+    ) : (
+      <EmptyState message={m.portfolio_empty({}, options)} />
+    )}
   </div>
 </BaseLayout>

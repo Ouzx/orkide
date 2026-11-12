@@ -7,11 +7,11 @@ import { ContactForm } from "@/modules/contact/contact-form.tsx";
 import { contactLabels } from "@/modules/contact/labels.ts";
 import PageHeader from "@/shared/components/PageHeader.astro";
 import BaseLayout from "@/shared/layouts/BaseLayout.astro";
-import { owner } from "@/shared/site.ts";
 import { cachePage } from "@/shared/lib/cache.ts";
 import { getFlags } from "@/shared/lib/flags.ts";
 import { pageAlternates } from "@/shared/lib/i18n.ts";
 import { breadcrumbNode, graph } from "@/shared/seo/json-ld.ts";
+import { owner } from "@/shared/site.ts";
 
 const { locale } = Astro.locals;
 const options = { locale };
@@ -58,28 +58,26 @@ cachePage(Astro);
           <dd>{owner.name}</dd>
         </div>
       </dl>
-      {
-        flags["contact-form"] ? (
-          <ContactForm
-            client:visible
-            locale={locale}
-            siteKey={env.TURNSTILE_SITE_KEY}
-            labels={contactLabels(locale)}
-          />
-        ) : (
-          <div class="o-rfi-body">
-            <span
-              class="o-stamp o-stamp-static justify-self-start"
-              aria-hidden="true"
-            >
-              <b>{m.contact_offline({}, options)}</b>
-            </span>
-            <p role="status" class="m-0 text-ink-2">
-              {m.contact_disabled({}, options)}
-            </p>
-          </div>
-        )
-      }
+      {flags["contact-form"] ? (
+        <ContactForm
+          client:visible
+          locale={locale}
+          siteKey={env.TURNSTILE_SITE_KEY}
+          labels={contactLabels(locale)}
+        />
+      ) : (
+        <div class="o-rfi-body">
+          <span
+            class="o-stamp o-stamp-static justify-self-start"
+            aria-hidden="true"
+          >
+            <b>{m.contact_offline({}, options)}</b>
+          </span>
+          <p role="status" class="m-0 text-ink-2">
+            {m.contact_disabled({}, options)}
+          </p>
+        </div>
+      )}
     </div>
   </div>
 </BaseLayout>

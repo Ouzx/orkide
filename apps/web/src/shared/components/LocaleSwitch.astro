@@ -21,24 +21,22 @@ const { locale } = Astro.locals;
   data-locale-cookie-max-age={cookieMaxAge}
 >
   <ul class="o-seg">
-    {
-      locales.map((target) => (
-        <li>
-          <a
-            href={alternates[target] ?? localizeHref("/", { locale: target })}
-            hreflang={target}
-            lang={target}
-            title={localeName(target)}
-            aria-current={target === locale ? "true" : undefined}
-            data-locale-link={target}
-            data-astro-prefetch="false"
-          >
-            <span aria-hidden="true">{target}</span>
-            <span class="sr-only">{localeName(target)}</span>
-          </a>
-        </li>
-      ))
-    }
+    {locales.map((target) => (
+      <li>
+        <a
+          href={alternates[target] ?? localizeHref("/", { locale: target })}
+          hreflang={target}
+          lang={target}
+          title={localeName(target)}
+          aria-current={target === locale ? "true" : undefined}
+          data-locale-link={target}
+          data-astro-prefetch="false"
+        >
+          <span aria-hidden="true">{target}</span>
+          <span class="sr-only">{localeName(target)}</span>
+        </a>
+      </li>
+    ))}
   </ul>
 </nav>
 

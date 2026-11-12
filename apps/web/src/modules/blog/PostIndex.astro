@@ -60,20 +60,18 @@ const kind = m.sheet_index({}, options);
     <CategoryNav categories={categories} current={currentCategory} />
   </PageHeader>
   <div class="o-wrap pt-6 pb-24 md:pb-32" data-reveal>
-    {
-      posts.items.length > 0 ? (
-        <>
-          <IndexHead />
-          <ol class="o-index">
-            {posts.items.map((post, index) => (
-              <PostEntry post={post} latest={index === 0 && !cursor} />
-            ))}
-          </ol>
-        </>
-      ) : (
-        <EmptyState message={m.blog_empty({}, options)} />
-      )
-    }
+    {posts.items.length > 0 ? (
+      <>
+        <IndexHead />
+        <ol class="o-index">
+          {posts.items.map((post, index) => (
+            <PostEntry post={post} latest={index === 0 && !cursor} />
+          ))}
+        </ol>
+      </>
+    ) : (
+      <EmptyState message={m.blog_empty({}, options)} />
+    )}
     <Pagination
       basePath={basePath}
       hasPrevious={cursor !== undefined}

@@ -13,30 +13,28 @@ const { basePath, hasPrevious, nextCursor } = Astro.props;
 const { locale } = Astro.locals;
 ---
 
-{
-  (hasPrevious || nextCursor) && (
-    <nav
-      aria-label={m.blog_pagination({}, { locale })}
-      class="mt-12 flex justify-between gap-4"
-    >
-      {hasPrevious ? (
-        <a href={basePath} class="o-btn">
-          <span aria-hidden="true">←</span>
-          {m.blog_newer({}, { locale })}
-        </a>
-      ) : (
-        <span />
-      )}
-      {nextCursor && (
-        <a
-          href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`}
-          rel="next"
-          class="o-btn"
-        >
-          {m.blog_older({}, { locale })}
-          <span aria-hidden="true">→</span>
-        </a>
-      )}
-    </nav>
-  )
-}
+{(hasPrevious || nextCursor) && (
+  <nav
+    aria-label={m.blog_pagination({}, { locale })}
+    class="mt-12 flex justify-between gap-4"
+  >
+    {hasPrevious ? (
+      <a href={basePath} class="o-btn">
+        <span aria-hidden="true">←</span>
+        {m.blog_newer({}, { locale })}
+      </a>
+    ) : (
+      <span />
+    )}
+    {nextCursor && (
+      <a
+        href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`}
+        rel="next"
+        class="o-btn"
+      >
+        {m.blog_older({}, { locale })}
+        <span aria-hidden="true">→</span>
+      </a>
+    )}
+  </nav>
+)}
