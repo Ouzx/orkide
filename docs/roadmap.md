@@ -18,7 +18,6 @@ Planned work that is intentionally out of the first release. Each item is mirror
 ## Platform
 
 - [#6](https://github.com/Ouzx/orkide/issues/6) **TypeScript 7.1 + `@astrojs/ts-content-mapper`** — type-check `.astro` files with `tsc` and drop the TypeScript 6 hook (ADR-016).
-- [#7](https://github.com/Ouzx/orkide/issues/7) **`prettier-plugin-astro` 1.x** — upgrade once `prettier-plugin-tailwindcss` supports its JSX-based AST (pinned to 0.14 so `.astro` classes stay sorted).
 - [#8](https://github.com/Ouzx/orkide/issues/8) **Vitest 5** — upgrade once `@cloudflare/vitest-plugin` supports it (ADR-011).
 - [#9](https://github.com/Ouzx/orkide/issues/9) **`cf` CLI migration** — run `cf migrate` once the CLI leaves beta and supports monorepos (ADR-002).
 - [#10](https://github.com/Ouzx/orkide/issues/10) **Custom domain** — move off `workers.dev`, enable zone features (Image transformations via URL, Cache Rules, Markdown for Agents) and a WAF rate-limiting rule. Email no longer depends on it (ADR-027).

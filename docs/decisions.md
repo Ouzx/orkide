@@ -117,6 +117,7 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** strict catalog mode already stops version drift on `pnpm add`; nothing stopped dead dependencies or hand-edited ranges.
 - **Decision:** CI runs `ultracite check` (plus Prettier for `.astro`), Sherif, Knip, typecheck, tests and build. Knip checks files, dependencies, unlisted imports and binaries; unused-export reporting is off because Astro islands (default exports mounted through `client:*`) and tool entry points are not always followed. Renovate groups all `pnpm-workspace.yaml` bumps into one catalog PR and holds back the majors listed in the roadmap.
 - **Consequences:** unused exports must be reviewed by hand (a Knip run with exports enabled lists candidates). Turborepo Remote Cache is wired through optional `TURBO_TOKEN` / `TURBO_TEAM`.
+- **Update 2026-11-12:** Prettier is gone. Oxfmt 0.78 formats `.astro` files itself (`astro: true` in `oxfmt.config.ts`, Tailwind classes sorted as everywhere else), so `ultracite check`/`fix` cover them.
 
 ### ADR-022 · The Paraglide config is force-tracked
 

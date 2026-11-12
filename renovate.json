@@ -22,7 +22,7 @@
     },
     {
       "description": "Held back until their blockers clear (see docs/roadmap.md).",
-      "matchPackageNames": ["typescript", "vitest", "prettier-plugin-astro"],
+      "matchPackageNames": ["typescript", "vitest"],
       "matchUpdateTypes": ["major"],
       "enabled": false
     }
