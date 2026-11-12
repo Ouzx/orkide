@@ -23,7 +23,7 @@ import { onSite } from "@/shared/site.ts";
  */
 const app = new Hono<{ Bindings: Env }>();
 
-app.use((c, next) => {
+app.all("*", (c, next) => {
   const url = new URL(c.req.url);
   if (!c.env.WORKERS_DEV_HOST || url.hostname !== c.env.WORKERS_DEV_HOST) {
     return next();
