@@ -59,6 +59,7 @@ Short, dated records of decisions that shape the codebase, numbered in order. Ea
 - **Context:** `@cloudflare/vitest-plugin` (tests inside `workerd`) supports Vitest `^4.1` only.
 - **Decision:** the catalog pins Vitest 4; runtime-faithful tests outweigh the newer major.
 - **Consequences:** upgrade to Vitest 5 when the plugin supports it (roadmap).
+- **Update 2026-11-12:** Vitest 5. `@cloudflare/vitest-plugin` supports it from 1.4; the catalog takes 1.4.6, the last release that pins the same Zod as the app. The plugin pins its own Wrangler and Miniflare for the test pool, so unit tests run on a newer `workerd` than `vite dev` and the e2e preview until the root Wrangler catches up.
 
 ### ADR-012 · Cloudflare Flagship for feature flags
 

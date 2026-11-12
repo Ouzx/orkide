@@ -65,7 +65,7 @@ describe("media uploads", () => {
 
     expect(first.status).toBe(201);
     expect(second.status).toBe(200);
-    await expect(second.json()).resolves.toMatchObject(await first.json());
+    await expect(second.json()).resolves.toStrictEqual(await first.json());
   });
 
   it("trusts magic bytes, not the declared content type", async () => {
