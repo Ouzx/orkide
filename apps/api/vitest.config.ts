@@ -34,6 +34,9 @@ export default defineConfig({
     })),
   ],
   test: {
+    // With the cache on, the plugin answers a reused worker's warm-module request with every
+    // cached module inlined in one WebSocket message (~55 MB), over workerd's 32 MiB limit.
+    fsModuleCache: false,
     setupFiles: ["./test/setup.ts"],
   },
 });
